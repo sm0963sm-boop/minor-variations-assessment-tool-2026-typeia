@@ -10,7 +10,6 @@ export interface Variation {
   type: VariationType;
   conditions: string[];
   documents: string[];
-  notes?: string;
 }
 
 export const TYPE_INFO: Record<VariationType, { label: string; short: string; description: string; timeline: string }> = {
@@ -46,14 +45,13 @@ export const CATEGORIES = [
 ] as const;
 
 export const VARIATIONS: Variation[] = [
-  // ===== Administrative =====
   {
     code: "A.1",
     title: "Change in name and/or address of the Marketing Authorization Holder (MAH)",
     category: "Administrative",
     type: "IAIN",
     conditions: ["The MAH remains the same legal entity"],
-    documents: ["Official document from the competent authority evidencing the name/address change", "Updated registration form", "Updated labels and leaflets"],
+    documents: ["Official document evidencing the name/address change", "Updated registration form", "Updated labels and leaflets"],
   },
   {
     code: "A.2(a)",
@@ -69,7 +67,7 @@ export const VARIATIONS: Variation[] = [
     category: "Administrative",
     type: "IA",
     conditions: ["No change in the manufacturing site", "No change in manufacturing operations or quality controls"],
-    documents: ["Official document evidencing the name/address change", "Updated ASMF/CEP if needed"],
+    documents: ["Official document evidencing the change", "Updated ASMF/CEP if needed"],
   },
   {
     code: "A.4",
@@ -89,14 +87,12 @@ export const VARIATIONS: Variation[] = [
   },
   {
     code: "A.7",
-    title: "Deletion of a manufacturing site (API, intermediate, finished product, or packaging)",
+    title: "Deletion of a manufacturing site",
     category: "Administrative",
     type: "IA",
     conditions: ["Alternative authorized and registered sites are available", "The deleted site is not the only remaining site"],
     documents: ["Cover letter", "Updated registration form and CTD documents"],
   },
-
-  // ===== Active Substance =====
   {
     code: "B.I.a.1(a)",
     title: "Change in the API manufacturer (addition of a new manufacturer with CEP)",
@@ -129,8 +125,6 @@ export const VARIATIONS: Variation[] = [
     conditions: ["Method re-validation is documented", "Results equivalent to the approved method"],
     documents: ["Validation report", "Comparison between methods"],
   },
-
-  // ===== Finished Product =====
   {
     code: "B.II.a.1",
     title: "Change or addition of imprints/embossing on tablets or capsules",
@@ -168,7 +162,7 @@ export const VARIATIONS: Variation[] = [
     title: "Minor change in the manufacturing process of the finished product",
     category: "Quality — Finished Product",
     type: "IA",
-    conditions: ["Same manufacturing principle", "Equivalent batch data (3 batches)", "No impact on stability"],
+    conditions: ["Same manufacturing principle", "Equivalent batch data for 3 batches", "No impact on stability"],
     documents: ["Process description", "Batch data", "Stability data"],
   },
   {
@@ -192,4 +186,45 @@ export const VARIATIONS: Variation[] = [
     title: "Tightening of finished product specifications",
     category: "Quality — Finished Product",
     type: "IA",
-    conditions: ["Within previously approved lim
+    conditions: ["Within previously approved limits", "No deletion of quality parameters"],
+    documents: ["Specifications before/after", "Scientific justification"],
+  },
+  {
+    code: "B.II.d.2(a)",
+    title: "Change in analytical procedures of the finished product",
+    category: "Quality — Finished Product",
+    type: "IA",
+    conditions: ["Validation of the new method is documented", "Results equivalent to the current method"],
+    documents: ["Validation report", "Comparison of results"],
+  },
+  {
+    code: "B.II.e.1(a)",
+    title: "Change in the primary packaging (same type of material)",
+    category: "Container Closure System",
+    type: "IB",
+    conditions: ["Same material type (e.g., HDPE to HDPE)", "Stability data for at least 3 months"],
+    documents: ["Packaging specifications", "Comparative stability data", "Updated 3.2.P.7"],
+  },
+  {
+    code: "B.II.e.4(a)",
+    title: "Change in the shape or dimensions of the container (no material change)",
+    category: "Container Closure System",
+    type: "IA",
+    conditions: ["Same container material and closure system", "No impact on stability"],
+    documents: ["Drawings", "Comparative data"],
+  },
+  {
+    code: "B.II.e.5(a)",
+    title: "Change in pack size (number of units per pack)",
+    category: "Container Closure System",
+    type: "IAIN",
+    conditions: ["Within the approved dose range and duration", "Same primary packaging type"],
+    documents: ["Justification", "Updated label and leaflet"],
+  },
+  {
+    code: "B.II.f.1(a)",
+    title: "Extension of the finished product shelf-life based on real-time stability data",
+    category: "Stability & Shelf-life",
+    type: "IB",
+    conditions: ["Stability data for 3 batches under the approved conditions", "Compliant with ICH Q1A"],
+    documents: ["Stability study report", "Upd
