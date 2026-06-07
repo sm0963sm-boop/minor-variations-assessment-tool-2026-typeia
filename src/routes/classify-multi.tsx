@@ -14,7 +14,8 @@ export const Route = createFileRoute("/classify-multi")({
   component: ClassifyMulti,
 });
 
-type ChecksMap = Record<string, boolean[]>; // code -> conditions checked
+type CondStatus = "met" | "unmet" | "na";
+type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
 
 function ClassifyMulti() {
   const [step, setStep] = useState<0 | 1 | 2>(0);
@@ -37,13 +38,13 @@ function ClassifyMulti() {
         setChecks(rest);
         return next;
       } else {
-        setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill(false) });
+        setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill("unmet") });
         return [...prev, v.code];
       }
     });
   };
 
-  const setCheck = (code: string, idx: number, val: boolean) => {
+  const setStatus = (code: string, idx: number, val: CondStatus) => {
     const arr = [...(checks[code] || [])];
     arr[idx] = val;
     setChecks({ ...checks, [code]: arr });
@@ -56,8 +57,8 @@ function ClassifyMulti() {
   // Build per-variation status
   const results = selected.map(v => {
     const arr = checks[v.code] || [];
-    const unmet = v.conditions.filter((_, i) => !arr[i]);
-    return { v, unmet, accepted: unmet.length === 0 };
+    const unmet = v.conditions.filter((_, i) => (arr[i] || "unmet") === "unmet");
+    return { v, unmet, status: arr, accepted: unmet.length === 0 };
   });
 
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
