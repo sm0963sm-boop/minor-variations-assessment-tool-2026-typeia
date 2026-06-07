@@ -4,8 +4,9 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun } from "docx";
-import { saveAs } from "file-saver";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import fileSaver from "file-saver";
+const { saveAs } = fileSaver;
 
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
