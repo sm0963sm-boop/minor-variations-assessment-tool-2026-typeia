@@ -300,7 +300,6 @@ function ClassifyMulti() {
               </div>
               {!allAccepted && (
                 <p className="text-sm text-muted-foreground mt-4 leading-relaxed border-t border-destructive/20 pt-4">
-                  Reclassify the affected variation(s) as Type IB or Type II, or resubmit with full compliance evidence.
                 </p>
               )}
             </div>
