@@ -313,13 +313,15 @@ function RejectionView({
         </div>
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
           <div className="text-xs font-bold text-destructive mb-1">Final recommendation</div>
-          <p className="text-sm text-foreground font-bold">REJECT — does not qualify as Type {picked.type}.</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Non-applicable condition{unmet.length > 1 ? "s" : ""}: {unmet.length > 1
-              ? unmet.slice(0, -1).join("; ") + " and " + unmet.slice(-1)
-              : unmet[0] || "N/A"}.
+          <p className="text-sm text-foreground font-bold">
+            Based on the data submitted, the proposed variation is rejected, the following condition{unmet.length > 1 ? "s were" : " was"} not met:
           </p>
-          <p className="text-xs text-muted-foreground mt-1">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
+          <ul className="mt-2 space-y-1">
+            {unmet.map((c, i) => (
+              <li key={i} className="text-xs text-muted-foreground">• {c}</li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted-foreground mt-3">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
         </div>
       </div>
 
