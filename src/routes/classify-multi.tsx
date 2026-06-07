@@ -294,9 +294,11 @@ function ClassifyMulti() {
                   <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
                     <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
                     <span className="font-semibold">{v.title}</span>
-                    <span className={`ms-1 font-bold ${accepted ? "text-success" : "text-destructive"}`}>
-                      {accepted ? "is approved" : "is rejected"}
-                    </span>
+                    {accepted ? (
+                      <span className="ms-1 font-bold text-success">is approved</span>
+                    ) : (
+                      <span className="ms-1 font-bold text-destructive">is rejected, the following conditions are not met:</span>
+                    )}
                     {!accepted && unmet.length > 0 && (
                       <ul className="mt-2 space-y-1 ps-5">
                         {unmet.map((c, i) => (
