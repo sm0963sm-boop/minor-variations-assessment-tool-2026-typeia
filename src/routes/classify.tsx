@@ -92,12 +92,14 @@ function Classify() {
   const [checked, setChecked] = useState<boolean[]>([]);
   const [productName, setProductName] = useState("");
   const [applicant, setApplicant] = useState("");
+  const [reviewer, setReviewer] = useState("");
+  const [opinion, setOpinion] = useState("");
   const [copied, setCopied] = useState(false);
 
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setChecked([]); setCopied(false);
+    setStep(0); setCategory(null); setPicked(null); setChecked([]); setOpinion(""); setCopied(false);
   };
 
   const choose = (v: Variation) => {
@@ -190,6 +192,16 @@ function Classify() {
                 <input value={applicant} onChange={(e) => setApplicant(e.target.value)} placeholder="e.g., ACME Pharma Co."
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               </div>
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">Reviewer name <span className="text-muted-foreground font-normal">(optional)</span></label>
+                <input value={reviewer} onChange={(e) => setReviewer(e.target.value)} placeholder="e.g., Dr. A. Reviewer"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal">(optional — included in the final statement)</span></label>
+                <textarea value={opinion} onChange={(e) => setOpinion(e.target.value)} rows={3} placeholder="Technical opinion on the submitted dossier, justification for acceptance/rejection..."
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y" />
+              </div>
             </div>
 
             <button onClick={() => setStep(3)}
@@ -203,35 +215,19 @@ function Classify() {
         {step === 3 && picked && (
           <div className="rounded-3xl border border-border bg-card-gradient p-6 sm:p-8 shadow-elegant">
             {allMet ? (
-              <>
-                <div className="text-xs text-muted-foreground">Classification result</div>
-                <div className="mt-3"><TypeBadge type={picked.type} size="lg" /></div>
-                <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">{TYPE_INFO[picked.type].label}</h2>
-                <p className="mt-2 text-muted-foreground">{TYPE_INFO[picked.type].description}</p>
-
-                <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                  <div className="text-xs font-bold text-primary mb-1">Procedural timeline</div>
-                  <div className="text-sm text-foreground">{TYPE_INFO[picked.type].timeline}</div>
-                </div>
-
-                <div className="mt-6">
-                  <h3 className="font-bold text-foreground mb-2">Required documents</h3>
-                  <ul className="space-y-1.5">
-                    {picked.documents.map((d, i) => (
-                      <li key={i} className="flex gap-2 text-sm text-muted-foreground"><span className="text-primary">📄</span>{d}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-6 text-xs text-muted-foreground">
-                  Reference: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
-                </div>
-              </>
+              <AcceptanceView
+                draft={buildAcceptance(picked, productName, applicant, reviewer, opinion)}
+                picked={picked}
+                opinion={opinion}
+                copied={copied}
+                setCopied={setCopied}
+              />
             ) : (
               <RejectionView
-                draft={buildRejection(picked, unmet, productName, applicant)}
+                draft={buildRejection(picked, unmet, productName, applicant, reviewer, opinion)}
                 picked={picked}
                 unmet={unmet}
+                opinion={opinion}
                 copied={copied}
                 setCopied={setCopied}
               />
