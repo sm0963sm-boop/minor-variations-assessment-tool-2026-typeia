@@ -298,10 +298,6 @@ function ClassifyMulti() {
                   </div>
                 ))}
               </div>
-              {!allAccepted && (
-                <p className="text-sm text-muted-foreground mt-4 leading-relaxed border-t border-destructive/20 pt-4">
-                </p>
-              )}
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
