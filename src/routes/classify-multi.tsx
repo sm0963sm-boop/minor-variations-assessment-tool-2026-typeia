@@ -430,7 +430,69 @@ function ClassifyMulti() {
             children.push(infoTable);
             children.push(spacer());
 
-            children.push(h1("2. Reviewer opinion"));
+            // Submitted variations table
+            const varBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
+            const varBorders = { top: varBorder, bottom: varBorder, left: varBorder, right: varBorder };
+            const variationsTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [1600, 5460, 2300],
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 1600, type: WidthType.DXA },
+                      shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: "Code", bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 5460, type: WidthType.DXA },
+                      shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: "Variation title", bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 2300, type: WidthType.DXA },
+                      shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: "Type", bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                    }),
+                  ],
+                }),
+                ...selected.map(v => new TableRow({
+                  children: [
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 1600, type: WidthType.DXA },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: v.code, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 5460, type: WidthType.DXA },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: v.title, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 2300, type: WidthType.DXA },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: v.type, font: "Calibri", size: 22, color: v.type === "IA" ? SUCCESS_BORDER : ACCENT })] })],
+                    }),
+                  ],
+                })),
+              ],
+            });
+
+            children.push(h1("2. Submitted variations"));
+            children.push(para(`The following ${selected.length} variation(s) have been submitted for assessment:`));
+            children.push(variationsTable);
+            children.push(spacer());
+
+            children.push(h1("3. Reviewer opinion"));
             children.push(opinionCallout);
             if (opinion.trim()) {
               children.push(spacer());
@@ -439,7 +501,7 @@ function ClassifyMulti() {
             }
             children.push(spacer());
 
-            children.push(h1("3. Final recommendation"));
+            children.push(h1("4. Final recommendation"));
             children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
             children.push(spacer());
             results.forEach(({ v, unmet, accepted }, idx) => {
