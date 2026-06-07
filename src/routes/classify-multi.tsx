@@ -240,53 +240,6 @@ function ClassifyMulti() {
 
         {step === 2 && (
           <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
-            <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold ${allAccepted ? "bg-success/20 text-success" : "bg-destructive/15 text-destructive"}`}>
-              Combined decision
-            </div>
-            <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">
-              {allAccepted
-                ? `All ${results.length} variation${results.length > 1 ? "s" : ""} approved`
-                : `Combined result: ${results.filter(r => !r.accepted).length} of ${results.length} not met`}
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              {allAccepted
-                ? "Every selected variation fulfils its eligibility conditions."
-                : "One or more selected variations do not fulfil their eligibility conditions. See breakdown below."}
-            </p>
-
-            <div className="mt-5 space-y-3">
-              {results.map(({ v, unmet, accepted }) => (
-                <div key={v.code} className={`rounded-xl border p-4 ${accepted ? "border-success/30 bg-success/10" : "border-destructive/30 bg-destructive/10"}`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-mono font-bold ${accepted ? "bg-success/20 text-success" : "bg-destructive/15 text-destructive"}`}>
-                      {v.code}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Variation · Type {v.type}</div>
-                      <div className="text-sm font-semibold text-foreground leading-snug">{v.title}</div>
-                      <div className={`mt-1 text-xs font-bold ${accepted ? "text-success" : "text-destructive"}`}>
-                        {accepted ? "✓ All conditions met" : `✗ ${unmet.length} condition${unmet.length > 1 ? "s" : ""} not met`}
-                      </div>
-                      {!accepted && (
-                        <ul className="mt-2 space-y-1">
-                          {unmet.map((c, i) => (
-                            <li key={i} className="text-xs text-foreground/80">• {c}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {opinion.trim() && (
-              <div className="mt-5 rounded-xl border border-border bg-card p-4">
-                <div className="text-xs font-bold text-muted-foreground mb-1">Reviewer's opinion</div>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{opinion}</p>
-              </div>
-            )}
-
             <div className={`mt-6 rounded-2xl border-2 p-5 sm:p-6 ${allAccepted ? "border-success/40 bg-success/10" : "border-destructive/40 bg-destructive/10"}`}>
               <div className={`text-sm font-bold mb-4 ${allAccepted ? "text-success" : "text-destructive"}`}>Final recommendation</div>
               <ul className="space-y-3">
