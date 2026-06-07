@@ -148,17 +148,22 @@ function Classify() {
 
         {step === 1 && category && (
           <Panel title="2. Pick the specific variation" subtitle={`Category: ${category}`}>
-            <div className="space-y-2">
-              {inCategory.map(v => (
-                <button key={v.code} onClick={() => choose(v)}
-                  className="w-full text-left rounded-xl border border-border bg-card hover:border-primary hover:bg-muted/30 p-4 transition flex items-start gap-3">
-                  <TypeBadge type={v.type} size="sm" />
-                  <div className="flex-1">
-                    <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
-                    <div className="font-bold text-foreground mt-0.5">{v.title}</div>
-                  </div>
-                </button>
-              ))}
+            <div className="space-y-4">
+              <select
+                className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring appearance-none cursor-pointer"
+                value={picked?.code || ""}
+                onChange={(e) => {
+                  const v = inCategory.find(x => x.code === e.target.value);
+                  if (v) choose(v);
+                }}
+              >
+                <option value="" disabled>Choose a variation…</option>
+                {inCategory.map(v => (
+                  <option key={v.code} value={v.code}>
+                    {v.code} — {v.title} (Type {v.type})
+                  </option>
+                ))}
+              </select>
             </div>
             <button onClick={() => setStep(0)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
