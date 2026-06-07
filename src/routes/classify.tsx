@@ -219,11 +219,14 @@ function Classify() {
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's detailed opinion</label>
-                <p className="text-[11px] text-muted-foreground mb-3">
-                  Fill each section below. All sections will be combined into a single formal reviewer's opinion and printed before the final recommendation.
-                </p>
-                <OpinionFields value={opinionParts} onChange={setOpinionParts} />
+                <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal text-xs">(optional)</span></label>
+                <textarea
+                  value={opinion}
+                  onChange={(e) => setOpinion(e.target.value)}
+                  rows={4}
+                  placeholder="Enter your reviewer's opinion (optional). This will be printed before the final recommendation."
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y"
+                />
               </div>
             </div>
 
