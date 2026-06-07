@@ -84,11 +84,13 @@ Regulatory Affairs — Variations Assessment
 `;
 }
 
+type CondStatus = "met" | "unmet" | "na";
+
 function Classify() {
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState<string | null>(null);
   const [picked, setPicked] = useState<Variation | null>(null);
-  const [checked, setChecked] = useState<boolean[]>([]);
+  const [status, setStatus] = useState<CondStatus[]>([]);
   const [productName, setProductName] = useState("");
   const [applicant, setApplicant] = useState("");
   const [reviewer, setReviewer] = useState("");
@@ -98,17 +100,17 @@ function Classify() {
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setChecked([]); setOpinion(""); setCopied(false);
+    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinion(""); setCopied(false);
   };
 
   const choose = (v: Variation) => {
     setPicked(v);
-    setChecked(new Array(v.conditions.length).fill(false));
+    setStatus(new Array(v.conditions.length).fill("unmet"));
     setStep(2);
   };
 
-  const allMet = picked && checked.length > 0 && checked.every(Boolean);
-  const unmet = picked ? picked.conditions.filter((_, i) => !checked[i]) : [];
+  const allMet = picked && status.length > 0 && status.every(s => s !== "unmet");
+  const unmet = picked ? picked.conditions.filter((_, i) => status[i] === "unmet") : [];
 
   return (
     <div className="min-h-screen">
