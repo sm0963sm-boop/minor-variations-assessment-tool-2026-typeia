@@ -75,8 +75,7 @@ ${refOpinion}
 
 Final recommendation:
   • REJECT the proposed Type ${v.type} classification.
-  • Submit revised documentation demonstrating full compliance with the unmet condition(s), or
-  • Reclassify the change as a Type IB or Type II variation and submit it with the corresponding scientific dossier for full evaluation prior to implementation.
+  • Submit revised documentation demonstrating full compliance with the unmet condition(s).
 
 This decision is issued in accordance with the SFDA Variation Requirements Guideline for Registered Pharmaceutical Products.
 
