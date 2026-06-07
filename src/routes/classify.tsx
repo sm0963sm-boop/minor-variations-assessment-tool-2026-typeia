@@ -199,7 +199,10 @@ function Classify() {
               </div>
               <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal">(optional — included in the final statement)</span></label>
-                <textarea value={opinion} onChange={(e) => setOpinion(e.target.value)} rows={3} placeholder="Technical opinion on the submitted dossier, justification for acceptance/rejection..."
+                <p className="text-[11px] text-muted-foreground mb-1.5">
+                  Please include: (1) verification of submitted documents, (2) assessment of eligibility conditions, (3) any deviations or gaps noted, (4) scientific/technical justification, and (5) references to applicable SFDA guideline sections.
+                </p>
+                <textarea value={opinion} onChange={(e) => setOpinion(e.target.value)} rows={5} placeholder="Technical opinion on the submitted dossier..."
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y" />
               </div>
             </div>
