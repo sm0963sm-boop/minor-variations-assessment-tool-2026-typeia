@@ -242,8 +242,10 @@ function Classify() {
               <RejectionView
                 picked={picked}
                 unmet={unmet}
+                status={status}
                 opinion={opinion}
               />
+
             )}
 
             <div className="mt-8 flex flex-wrap gap-3">
