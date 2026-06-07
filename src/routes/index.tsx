@@ -6,8 +6,8 @@ import { TypeBadge } from "@/components/TypeBadge";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Type I Variations Classifier — SFDA Guideline" },
-      { name: "description", content: "Interactive tool to determine the classification (IA / IAIN / IB) of a change request on a registered medicinal product." },
+      { title: "Type IA classification tool — SFDA Guideline" },
+      { name: "description", content: "Classify Type IA / IAIN change requests on registered medicinal products per the SFDA Variation Requirements Guideline." },
     ],
   }),
   component: Home,
@@ -17,7 +17,6 @@ function Home() {
   const counts = {
     IA: VARIATIONS.filter(v => v.type === "IA").length,
     IAIN: VARIATIONS.filter(v => v.type === "IAIN").length,
-    IB: VARIATIONS.filter(v => v.type === "IB").length,
   };
 
   return (
@@ -32,13 +31,12 @@ function Home() {
               Aligned with the SFDA Variation Requirements Guideline
             </div>
             <h1 className="mt-5 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
-              Classify <span className="bg-hero bg-clip-text text-transparent">Type I variations</span> on your medicinal products with confidence.
+              <span className="bg-hero bg-clip-text text-transparent">Type IA classification tool</span> for registered medicinal products.
             </h1>
             <p className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
-              A guided tool grounded in the SFDA variations guideline. Determine whether your change is
-              <span className="font-bold text-foreground"> IA</span>,
-              <span className="font-bold text-foreground"> IAIN</span>, or
-              <span className="font-bold text-foreground"> IB</span> — and instantly draft a rejection statement when conditions are not met.
+              A guided tool grounded in the SFDA variations guideline. Determine whether your change qualifies as
+              <span className="font-bold text-foreground"> IA</span> or
+              <span className="font-bold text-foreground"> IAIN</span>, capture the reviewer's opinion, and issue a final recommendation.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/classify" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-elegant hover:shadow-soft hover:-translate-y-px transition">
@@ -50,8 +48,8 @@ function Home() {
             </div>
           </div>
 
-          <div className="mt-14 grid gap-4 sm:grid-cols-3">
-            {(["IA", "IAIN", "IB"] as const).map((t) => (
+          <div className="mt-14 grid gap-4 sm:grid-cols-2">
+            {(["IA", "IAIN"] as const).map((t) => (
               <div key={t} className="rounded-2xl border border-border bg-card-gradient p-6 shadow-soft hover:shadow-elegant transition">
                 <TypeBadge type={t} size="lg" />
                 <h3 className="mt-4 font-display font-bold text-lg text-foreground">{TYPE_INFO[t].label}</h3>
@@ -69,9 +67,9 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16 border-t border-border/60">
         <div className="grid gap-8 sm:grid-cols-3">
           {[
-            { t: "Step-by-step", d: "Answer guided questions to identify the exact variation type." },
-            { t: "Rejection drafts", d: "Auto-generate a formal rejection statement listing each unmet condition." },
-            { t: "SFDA-referenced", d: "Items follow the official guideline codes (B.I / B.II / C.I…)." },
+            { t: "Step-by-step", d: "Answer guided questions to identify the exact Type IA classification." },
+            { t: "Reviewer opinion", d: "Capture the reviewer's technical opinion alongside the system output." },
+            { t: "Final recommendation", d: "Issue a clear final recommendation: accept, reject, or reclassify." },
           ].map((f) => (
             <div key={f.t} className="rounded-xl p-6 bg-card/50 border border-border/40">
               <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold mb-3">✓</div>

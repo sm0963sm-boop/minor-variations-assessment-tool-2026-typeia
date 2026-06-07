@@ -7,8 +7,8 @@ import { CATEGORIES, TYPE_INFO, VARIATIONS, type VariationType } from "@/lib/var
 export const Route = createFileRoute("/catalog")({
   head: () => ({
     meta: [
-      { title: "Variations Catalog — Type I" },
-      { name: "description", content: "Browse all Type I variation classifications with eligibility conditions and required documents." },
+      { title: "Variations Catalog — Type IA" },
+      { name: "description", content: "Browse all Type IA variation classifications with eligibility conditions and required documents." },
     ],
   }),
   component: Catalog,
@@ -34,7 +34,7 @@ function Catalog() {
       <Header />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground">Variations Catalog</h1>
-        <p className="mt-2 text-muted-foreground">All Type I variations (IA / IAIN / IB) under the SFDA guideline.</p>
+        <p className="mt-2 text-muted-foreground">All Type IA variations (IA / IAIN) under the SFDA guideline.</p>
 
         <div className="mt-8 rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-soft">
           <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
@@ -45,7 +45,6 @@ function Catalog() {
               <option value="ALL">All types</option>
               <option value="IA">IA</option>
               <option value="IAIN">IAIN</option>
-              <option value="IB">IB</option>
             </select>
             <select value={cat} onChange={(e) => setCat(e.target.value)}
               className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm">

@@ -1,4 +1,4 @@
-export type VariationType = "IA" | "IAIN" | "IB";
+export type VariationType = "IA" | "IAIN";
 
 export interface Variation {
   code: string;
@@ -22,12 +22,6 @@ export const TYPE_INFO: Record<VariationType, { label: string; short: string; de
     description: "Type IA variations that must be notified immediately after implementation rather than via the annual report.",
     timeline: "Immediate notification after implementation",
   },
-  IB: {
-    label: "Type IB — Minor variation (Tell, Wait & Do)",
-    short: "IB",
-    description: "Variations that are not minor but do not reach Type II level. Submit the application and await SFDA acceptance before implementation.",
-    timeline: "Wait 30 working days before implementation (Tell, Wait & Do)",
-  },
 };
 
 export const CATEGORIES = [
@@ -49,14 +43,6 @@ export const VARIATIONS: Variation[] = [
     type: "IAIN",
     conditions: ["The MAH remains the same legal entity"],
     documents: ["Official document evidencing the name/address change", "Updated registration form", "Updated labels and leaflets"],
-  },
-  {
-    code: "A.2(a)",
-    title: "Change of the invented name of the medicinal product",
-    category: "Administrative",
-    type: "IB",
-    conditions: ["No similarity with other registered products that could cause a medication mix-up"],
-    documents: ["Justification for the change", "No-objection letter where applicable", "Labels and leaflets bearing the new name"],
   },
   {
     code: "A.3",
@@ -131,14 +117,6 @@ export const VARIATIONS: Variation[] = [
     documents: ["Before/after illustration", "Updated specifications and leaflet"],
   },
   {
-    code: "B.II.a.3(a)",
-    title: "Minor changes in the excipient composition of the finished product",
-    category: "Quality - Finished Product",
-    type: "IB",
-    conditions: ["Excipient is not a critical excipient", "Comparative stability data for at least 3 months are available"],
-    documents: ["Scientific justification", "Stability data", "Comparative dissolution data"],
-  },
-  {
     code: "B.II.b.1(a)",
     title: "Replacement or addition of a secondary packaging site",
     category: "Manufacturing and Sites",
@@ -195,14 +173,6 @@ export const VARIATIONS: Variation[] = [
     documents: ["Validation report", "Comparison of results"],
   },
   {
-    code: "B.II.e.1(a)",
-    title: "Change in the primary packaging (same type of material)",
-    category: "Container Closure System",
-    type: "IB",
-    conditions: ["Same material type (e.g., HDPE to HDPE)", "Stability data for at least 3 months"],
-    documents: ["Packaging specifications", "Comparative stability data", "Updated 3.2.P.7"],
-  },
-  {
     code: "B.II.e.4(a)",
     title: "Change in the shape or dimensions of the container (no material change)",
     category: "Container Closure System",
@@ -219,67 +189,11 @@ export const VARIATIONS: Variation[] = [
     documents: ["Justification", "Updated label and leaflet"],
   },
   {
-    code: "B.II.f.1(a)",
-    title: "Extension of the finished product shelf-life based on real-time stability data",
-    category: "Stability and Shelf-life",
-    type: "IB",
-    conditions: ["Stability data for 3 batches under approved conditions", "Compliant with ICH Q1A"],
-    documents: ["Stability study report", "Updated specifications and label"],
-  },
-  {
-    code: "B.II.f.1(b)",
-    title: "Extension of the in-use shelf-life after first opening",
-    category: "Stability and Shelf-life",
-    type: "IB",
-    conditions: ["In-use stability data available"],
-    documents: ["In-use stability report", "Updated leaflet"],
-  },
-  {
-    code: "B.II.f.1(d)",
-    title: "Change in storage conditions of the finished product",
-    category: "Stability and Shelf-life",
-    type: "IB",
-    conditions: ["Stability data supporting the new conditions"],
-    documents: ["Stability studies", "Updated label"],
-  },
-  {
     code: "C.I.z",
     title: "Editorial changes in the leaflet or label (linguistic/clarifying)",
     category: "Labeling and Leaflet",
     type: "IA",
     conditions: ["No impact on substantive medical information", "No change in dose, indication, or warnings"],
     documents: ["Before/after comparison", "Updated leaflet and label"],
-  },
-  {
-    code: "C.I.2(a)",
-    title: "Update of the leaflet to align with the latest reference/innovator product",
-    category: "Labeling and Leaflet",
-    type: "IB",
-    conditions: ["Matches the approved reference product leaflet", "Within the specified timeframe after reference update"],
-    documents: ["Reference leaflet", "Comparison table", "Updated leaflet"],
-  },
-  {
-    code: "C.I.3(a)",
-    title: "Update of section 4.8 (Side Effects) with a new warning aligned with PSUR",
-    category: "Labeling and Leaflet",
-    type: "IB",
-    conditions: ["Supported by pharmacovigilance reports", "No change in core indications"],
-    documents: ["Pharmacovigilance justification", "Updated leaflet"],
-  },
-  {
-    code: "C.I.4",
-    title: "Addition of new contraindications or warnings",
-    category: "Safety and Efficacy",
-    type: "IB",
-    conditions: ["Supporting safety data are available", "No change in main indication"],
-    documents: ["Safety report", "Updated leaflet and label"],
-  },
-  {
-    code: "C.I.6(a)",
-    title: "Deletion of an indication",
-    category: "Safety and Efficacy",
-    type: "IB",
-    conditions: ["Does not affect the benefit/risk balance of remaining indications"],
-    documents: ["Clinical justification", "Updated leaflet"],
   },
 ];
