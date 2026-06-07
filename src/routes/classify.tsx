@@ -292,27 +292,27 @@ function RejectionView({
             {opinion.trim() || defaultOpinion}
           </p>
         </div>
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="shrink-0 rounded-lg bg-destructive/10 text-destructive px-2.5 py-1 text-xs font-mono font-bold">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5">
+          <div className="flex items-start gap-4 mb-5">
+            <div className="shrink-0 rounded-md bg-destructive/15 text-destructive px-3 py-1.5 text-sm font-mono font-bold">
               {picked.code}
             </div>
-            <div>
-              <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Variation</div>
-              <div className="text-sm font-semibold text-foreground leading-snug">{picked.title}</div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Variation</div>
+              <div className="text-base font-semibold text-foreground leading-snug">{picked.title}</div>
             </div>
           </div>
-          <div className="border-t border-destructive/20 pt-3">
-            <div className="text-xs font-bold text-destructive mb-1">Final recommendation</div>
-            <p className="text-sm text-foreground font-bold">
+          <div className="border-t-2 border-destructive/20 pt-4">
+            <div className="text-sm font-bold text-destructive mb-2">Final recommendation</div>
+            <p className="text-base text-foreground font-bold leading-relaxed">
               Based on the data submitted, the proposed variation is rejected, the following condition{unmet.length > 1 ? "s were" : " was"} not met:
             </p>
-            <ul className="mt-2 space-y-1">
+            <ul className="mt-3 space-y-2">
               {unmet.map((c, i) => (
-                <li key={i} className="text-xs text-muted-foreground">• {c}</li>
+                <li key={i} className="text-sm text-foreground/80 leading-relaxed">• {c}</li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground mt-3">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
+            <p className="text-sm text-muted-foreground mt-4 leading-relaxed">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
           </div>
         </div>
       </div>
@@ -345,20 +345,20 @@ function AcceptanceView({
             {opinion.trim() || "All eligibility conditions have been verified and supporting documentation is adequate."}
           </p>
         </div>
-        <div className="rounded-xl border border-success/30 bg-success/10 p-4">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="shrink-0 rounded-lg bg-success/20 text-success px-2.5 py-1 text-xs font-mono font-bold">
+        <div className="rounded-xl border border-success/30 bg-success/10 p-5">
+          <div className="flex items-start gap-4 mb-5">
+            <div className="shrink-0 rounded-md bg-success/20 text-success px-3 py-1.5 text-sm font-mono font-bold">
               {picked.code}
             </div>
-            <div>
-              <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Variation</div>
-              <div className="text-sm font-semibold text-foreground leading-snug">{picked.title}</div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Variation</div>
+              <div className="text-base font-semibold text-foreground leading-snug">{picked.title}</div>
             </div>
           </div>
-          <div className="border-t border-success/20 pt-3">
-            <div className="text-xs font-bold text-success-foreground mb-1">Final recommendation</div>
-            <p className="text-sm text-foreground font-bold">Based on the data submitted, the proposed variation is approved.</p>
-            <p className="text-xs text-muted-foreground mt-1">{TYPE_INFO[picked.type].timeline}.</p>
+          <div className="border-t-2 border-success/20 pt-4">
+            <div className="text-sm font-bold text-success-foreground mb-2">Final recommendation</div>
+            <p className="text-base text-foreground font-bold leading-relaxed">Based on the data submitted, the proposed variation is approved.</p>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{TYPE_INFO[picked.type].timeline}.</p>
           </div>
         </div>
       </div>
