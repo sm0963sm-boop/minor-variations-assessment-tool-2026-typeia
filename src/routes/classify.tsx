@@ -264,10 +264,11 @@ function Classify() {
 }
 
 function RejectionView({
-  picked, unmet, opinion,
+  picked, unmet, status, opinion,
 }: {
   picked: Variation;
   unmet: string[];
+  status: CondStatus[];
   opinion: string;
 }) {
   const defaultOpinion = unmet.length
@@ -290,18 +291,23 @@ function RejectionView({
         <div className="text-xs font-bold text-foreground mb-3">Conditions checklist</div>
         <ul className="space-y-2">
           {picked.conditions.map((c, i) => {
-            const isMet = !unmet.includes(c);
+            const s = status[i] || "unmet";
+            const cfg = s === "met"
+              ? { icon: "✓", bg: "bg-success/10", color: "text-success", label: "Met" }
+              : s === "na"
+              ? { icon: "—", bg: "bg-muted", color: "text-muted-foreground", label: "N/A" }
+              : { icon: "✗", bg: "bg-destructive/5", color: "text-destructive", label: "Not met" };
             return (
-              <li key={i} className={`flex gap-2 text-sm p-2 rounded-lg ${isMet ? "bg-success/10" : "bg-destructive/5"}`}>
-                <span className={`font-bold ${isMet ? "text-success" : "text-destructive"}`}>
-                  {isMet ? "✓" : "✗"}
-                </span>
-                <span className={isMet ? "text-foreground" : "text-foreground"}>{c}</span>
+              <li key={i} className={`flex gap-2 text-sm p-2 rounded-lg ${cfg.bg}`}>
+                <span className={`font-bold ${cfg.color}`}>{cfg.icon}</span>
+                <span className="text-foreground flex-1">{c}</span>
+                <span className={`text-xs font-bold ${cfg.color}`}>{cfg.label}</span>
               </li>
             );
           })}
         </ul>
       </div>
+
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-muted/30 p-4">
