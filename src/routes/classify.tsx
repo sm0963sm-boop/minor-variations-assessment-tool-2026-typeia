@@ -441,3 +441,30 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
     </div>
   );
 }
+
+export function OpinionFields({ value, onChange }: { value: OpinionParts; onChange: (v: OpinionParts) => void }) {
+  const fields: { key: keyof OpinionParts; label: string; hint: string; rows: number }[] = [
+    { key: "docs", label: "1. Verification of submitted documents", hint: "List the documents reviewed (cover letter, dossier sections, change control, batch data, stability, etc.) and confirm completeness, signatures, dates and version control.", rows: 3 },
+    { key: "conditions", label: "2. Assessment of eligibility conditions", hint: "Discuss how each condition was assessed against the submitted evidence; reference the specific section/page where each requirement is supported.", rows: 4 },
+    { key: "gaps", label: "3. Deviations / gaps noted", hint: "Describe any deficiencies, missing data, inconsistencies, out-of-scope changes, or risks identified during the review.", rows: 3 },
+    { key: "justification", label: "4. Scientific & technical justification", hint: "Provide the scientific rationale supporting the proposed change (quality impact, risk to safety/efficacy, comparability, validation, equivalence).", rows: 4 },
+    { key: "references", label: "5. SFDA Variation Guideline references (v6.4)", hint: "Cite the exact clauses / annexes / condition numbers from the SFDA Variation Requirements Guideline v6.4 that were applied.", rows: 2 },
+    { key: "conclusion", label: "6. Reviewer's conclusion", hint: "State your overall technical judgement on the dossier and the basis for your recommendation, independent of the automated checklist.", rows: 3 },
+  ];
+  return (
+    <div className="space-y-3">
+      {fields.map(f => (
+        <div key={f.key} className="rounded-lg border border-border bg-background p-3">
+          <label className="block text-xs font-bold text-foreground">{f.label}</label>
+          <p className="text-[11px] text-muted-foreground mt-0.5 mb-1.5">{f.hint}</p>
+          <textarea
+            value={value[f.key]}
+            onChange={(e) => onChange({ ...value, [f.key]: e.target.value })}
+            rows={f.rows}
+            className="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
