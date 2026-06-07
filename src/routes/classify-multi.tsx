@@ -358,14 +358,18 @@ function ClassifyMulti() {
             children.push(infoTable);
             children.push(new Paragraph({ children: [new TextRun("")] }));
             children.push(heading("Reviewer opinion"));
-            children.push(para(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`));
-            children.push(para(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`));
-            children.push(para(`Assessment: ${overall}`));
-            if (rejectedCount > 0) {
-              children.push(para("Key gaps identified:", true));
-              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-                children.push(bullet(`${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`));
-              });
+            if (allAccepted) {
+              children.push(
+                para("The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.")
+              );
+            } else {
+              children.push(para(`Assessment: ${overall}`));
+              if (rejectedCount > 0) {
+                children.push(para("Key gaps identified:", true));
+                results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+                  children.push(bullet(`${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`));
+                });
+              }
             }
             if (opinion.trim()) {
               children.push(para("Reviewer's note:", true));
