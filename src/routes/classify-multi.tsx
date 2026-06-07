@@ -77,38 +77,82 @@ function ClassifyMulti() {
         </div>
 
         {step === 0 && (
-          <Panel title="1. Select one or more variations" subtitle="Tick every variation you want to evaluate together.">
+          <Panel title="1. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
             <div className="space-y-6">
               {CATEGORIES.map(cat => {
                 const items = VARIATIONS.filter(v => v.category === cat);
                 if (items.length === 0) return null;
+                const [openCat, setOpenCat] = useState<string | null>(null);
                 return (
                   <div key={cat}>
                     <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{cat}</div>
-                    <div className="space-y-2">
-                      {items.map(v => {
-                        const isChecked = selectedCodes.includes(v.code);
-                        return (
-                          <label key={v.code} className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${isChecked ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/50"}`}>
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => toggleSelect(v)}
-                              className="mt-1 size-4 accent-primary"
-                            />
-                            <TypeBadge type={v.type} size="sm" />
-                            <div className="flex-1 min-w-0">
-                              <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
-                              <div className="font-bold text-foreground text-sm leading-snug">{v.title}</div>
-                            </div>
-                          </label>
-                        );
-                      })}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setOpenCat(openCat === cat ? null : cat)}
+                        className="w-full flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-left hover:border-primary/50 transition"
+                      >
+                        <span className="text-sm text-muted-foreground">Choose a variation…</span>
+                        <span className="text-muted-foreground">{openCat === cat ? "▲" : "▼"}</span>
+                      </button>
+                      {openCat === cat && (
+                        <div className="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-xl border border-border bg-card shadow-elegant">
+                          {items.map(v => {
+                            const isChecked = selectedCodes.includes(v.code);
+                            return (
+                              <button
+                                key={v.code}
+                                type="button"
+                                onClick={() => { toggleSelect(v); setOpenCat(null); }}
+                                className={`w-full flex items-start gap-3 px-4 py-3 text-left transition border-b border-border/50 last:border-b-0 ${isChecked ? "bg-primary/5" : "hover:bg-muted/40"}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  readOnly
+                                  className="mt-1 size-4 accent-primary pointer-events-none"
+                                />
+                                <TypeBadge type={v.type} size="sm" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
+                                  <div className="font-bold text-foreground text-sm leading-snug">{v.title}</div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
+
+            {selectedCodes.length > 0 && (
+              <div className="mt-6 rounded-xl border border-border bg-card p-4">
+                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Selected variations ({selectedCodes.length})</div>
+                <div className="space-y-2">
+                  {selected.map(v => (
+                    <div key={v.code} className="flex items-center gap-3 rounded-lg bg-primary/5 border border-primary/20 px-3 py-2">
+                      <TypeBadge type={v.type} size="sm" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
+                        <div className="font-bold text-foreground text-sm leading-snug">{v.title}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleSelect(v)}
+                        className="text-muted-foreground hover:text-destructive text-sm font-bold px-2"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-6 flex items-center justify-between gap-3">
               <div className="text-sm text-muted-foreground">{selectedCodes.length} selected</div>
               <button
