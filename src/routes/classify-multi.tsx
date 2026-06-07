@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat } from "docx";
 import fileSaver from "file-saver";
 const { saveAs } = fileSaver;
 
@@ -309,12 +309,39 @@ function ClassifyMulti() {
           }).join("\n\n");
 
           const downloadWord = async () => {
-            const heading = (text: string) =>
-              new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text, bold: true })] });
-            const para = (text: string, bold = false) =>
-              new Paragraph({ children: [new TextRun({ text, bold })] });
+            const BRAND = "1F3A68"; // deep navy
+            const ACCENT = "2E75B6";
+            const MUTED = "595959";
+            const LIGHT_BG = "F2F6FB";
+            const SUCCESS_BG = "E8F3EC";
+            const SUCCESS_BORDER = "3F8A56";
+            const DANGER_BG = "FBEAEA";
+            const DANGER_BORDER = "B33A3A";
+
+            const today = new Date().toLocaleDateString("en-GB", {
+              day: "2-digit", month: "long", year: "numeric",
+            });
+
+            const h1 = (text: string) =>
+              new Paragraph({
+                heading: HeadingLevel.HEADING_1,
+                spacing: { before: 280, after: 160 },
+                border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT, space: 4 } },
+                children: [new TextRun({ text, bold: true, size: 28, color: BRAND, font: "Calibri" })],
+              });
+            const para = (text: string, opts: { bold?: boolean; italic?: boolean; color?: string; align?: typeof AlignmentType[keyof typeof AlignmentType] } = {}) =>
+              new Paragraph({
+                alignment: opts.align,
+                spacing: { after: 120, line: 300 },
+                children: [new TextRun({ text, bold: opts.bold, italics: opts.italic, color: opts.color, font: "Calibri", size: 22 })],
+              });
             const bullet = (text: string) =>
-              new Paragraph({ bullet: { level: 0 }, children: [new TextRun(text)] });
+              new Paragraph({
+                numbering: { reference: "bullets", level: 0 },
+                spacing: { after: 80, line: 280 },
+                children: [new TextRun({ text, font: "Calibri", size: 22 })],
+              });
+            const spacer = () => new Paragraph({ children: [new TextRun("")], spacing: { after: 80 } });
 
             const infoRows: [string, string][] = [
               ["Product name", productInfo.productName],
@@ -326,7 +353,7 @@ function ClassifyMulti() {
               ["Storage condition", productInfo.storageCondition],
               ["Shelf life", productInfo.shelfLife],
             ];
-            const cellBorder = { style: BorderStyle.SINGLE, size: 6, color: "BFBFBF" };
+            const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
             const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
             const infoTable = new Table({
               width: { size: 9360, type: WidthType.DXA },
@@ -336,55 +363,157 @@ function ClassifyMulti() {
                   new TableCell({
                     borders,
                     width: { size: 3120, type: WidthType.DXA },
-                    margins: { top: 80, bottom: 80, left: 120, right: 120 },
-                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true })] })],
+                    shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                    margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
                   }),
                   new TableCell({
                     borders,
                     width: { size: 6240, type: WidthType.DXA },
-                    margins: { top: 80, bottom: 80, left: 120, right: 120 },
-                    children: [new Paragraph({ children: [new TextRun(value || "—")] })],
+                    margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: value || "—", font: "Calibri", size: 22 })] })],
                   }),
                 ],
               })),
             });
 
+            // Opinion callout box (single-cell shaded table)
+            const calloutFill = allAccepted ? SUCCESS_BG : DANGER_BG;
+            const calloutBorderColor = allAccepted ? SUCCESS_BORDER : DANGER_BORDER;
+            const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
+            const opinionText = allAccepted
+              ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
+              : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+            const opinionCallout = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [9360],
+              rows: [new TableRow({
+                children: [new TableCell({
+                  borders: { top: calloutBorder, bottom: calloutBorder, left: calloutBorder, right: calloutBorder },
+                  width: { size: 9360, type: WidthType.DXA },
+                  shading: { fill: calloutFill, type: ShadingType.CLEAR, color: "auto" },
+                  margins: { top: 200, bottom: 200, left: 240, right: 240 },
+                  children: [
+                    new Paragraph({
+                      spacing: { after: 80 },
+                      children: [new TextRun({ text: allAccepted ? "APPROVED" : "NOT ACCEPTED", bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
+                    }),
+                    new Paragraph({
+                      spacing: { line: 300 },
+                      children: [new TextRun({ text: opinionText, font: "Calibri", size: 22 })],
+                    }),
+                  ],
+                })],
+              })],
+            });
+
             const children: (Paragraph | Table)[] = [];
-            children.push(heading("Product information"));
+            // Title block
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              children: [new TextRun({ text: "Variation Assessment Report", bold: true, size: 40, color: BRAND, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              children: [new TextRun({ text: "Type IA / IAIN Variations — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 240 },
+              border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 6 } },
+              children: [new TextRun({ text: `Date: ${today}`, size: 20, color: MUTED, font: "Calibri" })],
+            }));
+
+            children.push(h1("1. Product information"));
             children.push(infoTable);
-            children.push(new Paragraph({ children: [new TextRun("")] }));
-            children.push(heading("Reviewer opinion"));
-            if (allAccepted) {
-              children.push(
-                para("The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.")
-              );
-            } else {
-              children.push(
-                para("The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.")
-              );
-            }
+            children.push(spacer());
+
+            children.push(h1("2. Reviewer opinion"));
+            children.push(opinionCallout);
             if (opinion.trim()) {
-              children.push(para("Reviewer's note:", true));
+              children.push(spacer());
+              children.push(para("Reviewer's note", { bold: true, color: BRAND }));
               opinion.trim().split("\n").forEach(l => children.push(para(l)));
             }
+            children.push(spacer());
 
-            children.push(new Paragraph({ children: [new TextRun("")] }));
-            children.push(heading("Final recommendation"));
-            results.forEach(({ v, unmet, accepted }) => {
+            children.push(h1("3. Final recommendation"));
+            children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
+            children.push(spacer());
+            results.forEach(({ v, unmet, accepted }, idx) => {
+              const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
+              const statusLabel = accepted ? "APPROVED" : "REJECTED";
               children.push(new Paragraph({
+                spacing: { before: 120, after: 60 },
                 children: [
-                  new TextRun({ text: `${v.code} `, bold: true }),
-                  new TextRun({ text: v.title, bold: true }),
-                  new TextRun({ text: accepted ? " is approved" : ` is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:` }),
+                  new TextRun({ text: `${idx + 1}. ${v.code} `, bold: true, color: BRAND, font: "Calibri", size: 24 }),
+                  new TextRun({ text: v.title, bold: true, font: "Calibri", size: 24 }),
+                ],
+              }));
+              children.push(new Paragraph({
+                spacing: { after: 80 },
+                children: [
+                  new TextRun({ text: statusLabel, bold: true, color: statusColor, font: "Calibri", size: 20 }),
+                  new TextRun({ text: accepted
+                    ? "  —  All required conditions are met."
+                    : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`, font: "Calibri", size: 22 }),
                 ],
               }));
               if (!accepted) unmet.forEach(c => children.push(bullet(c)));
-              children.push(new Paragraph({ children: [new TextRun("")] }));
             });
 
-            const doc = new Document({ sections: [{ children }] });
+            const doc = new Document({
+              creator: "Variation Classifier",
+              title: "Variation Assessment Report",
+              styles: {
+                default: { document: { run: { font: "Calibri", size: 22 } } },
+              },
+              numbering: {
+                config: [{
+                  reference: "bullets",
+                  levels: [{
+                    level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT,
+                    style: { paragraph: { indent: { left: 720, hanging: 360 } } },
+                  }],
+                }],
+              },
+              sections: [{
+                properties: {
+                  page: {
+                    size: { width: 12240, height: 15840 },
+                    margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+                  },
+                },
+                headers: {
+                  default: new DocHeader({
+                    children: [new Paragraph({
+                      alignment: AlignmentType.RIGHT,
+                      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT, space: 4 } },
+                      children: [new TextRun({ text: "Variation Assessment Report", italics: true, color: MUTED, font: "Calibri", size: 18 })],
+                    })],
+                  }),
+                },
+                footers: {
+                  default: new DocFooter({
+                    children: [new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({ text: "Page ", color: MUTED, font: "Calibri", size: 18 }),
+                        new TextRun({ children: [PageNumber.CURRENT], color: MUTED, font: "Calibri", size: 18 }),
+                        new TextRun({ text: " of ", color: MUTED, font: "Calibri", size: 18 }),
+                        new TextRun({ children: [PageNumber.TOTAL_PAGES], color: MUTED, font: "Calibri", size: 18 }),
+                      ],
+                    })],
+                  }),
+                },
+                children,
+              }],
+            });
             const blob = await Packer.toBlob(doc);
-            saveAs(blob, `reviewer-decision-${new Date().toISOString().slice(0, 10)}.docx`);
+            const safeName = (productInfo.productName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
+            saveAs(blob, `variation-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
           };
 
           return (
