@@ -273,6 +273,11 @@ function RejectionView({
     URL.revokeObjectURL(url);
   };
 
+  const met = picked.conditions.filter((_, i) => !unmet.includes(picked.conditions[i]));
+  const defaultOpinion = unmet.length
+    ? `The following eligibility condition${unmet.length > 1 ? "s" : ""} required for a Type ${picked.type} classification ${unmet.length > 1 ? "are" : "is"} not fulfilled based on the submitted documentation:\n\n${unmet.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\nTherefore, the proposed change cannot be accepted as Type ${picked.type}.`
+    : "One or more mandatory conditions for Type IA classification are not fulfilled.";
+
   return (
     <>
       <div className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-3 py-1 text-xs font-bold">
@@ -285,14 +290,20 @@ function RejectionView({
         The proposed variation cannot be classified as Type {picked.type}. A formal rejection statement with the reviewer's opinion and the final recommendation has been generated below.
       </p>
 
-      <div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-        <div className="text-xs font-bold text-destructive mb-2">Unmet conditions</div>
-        <ul className="space-y-1.5">
-          {unmet.map((c, i) => (
-            <li key={i} className="flex gap-2 text-sm text-foreground">
-              <span className="text-destructive font-bold">✗</span><span>{c}</span>
-            </li>
-          ))}
+      <div className="mt-5 rounded-xl border border-border bg-card p-4">
+        <div className="text-xs font-bold text-foreground mb-3">Conditions checklist</div>
+        <ul className="space-y-2">
+          {picked.conditions.map((c, i) => {
+            const isMet = !unmet.includes(c);
+            return (
+              <li key={i} className={`flex gap-2 text-sm p-2 rounded-lg ${isMet ? "bg-success/10" : "bg-destructive/5"}`}>
+                <span className={`font-bold ${isMet ? "text-success" : "text-destructive"}`}>
+                  {isMet ? "✓" : "✗"}
+                </span>
+                <span className={isMet ? "text-foreground" : "text-foreground"}>{c}</span>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
@@ -300,12 +311,17 @@ function RejectionView({
         <div className="rounded-xl border border-border bg-muted/30 p-4">
           <div className="text-xs font-bold text-muted-foreground mb-1">Reviewer's opinion</div>
           <p className="text-sm text-foreground whitespace-pre-wrap">
-            {opinion.trim() || "One or more mandatory conditions for Type IA classification are not fulfilled."}
+            {opinion.trim() || defaultOpinion}
           </p>
         </div>
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
           <div className="text-xs font-bold text-destructive mb-1">Final recommendation</div>
           <p className="text-sm text-foreground font-bold">REJECT — does not qualify as Type {picked.type}.</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Non-applicable condition{unmet.length > 1 ? "s" : ""}: {unmet.length > 1
+              ? unmet.slice(0, -1).join("; ") + " and " + unmet.slice(-1)
+              : unmet[0] || "N/A"}.
+          </p>
           <p className="text-xs text-muted-foreground mt-1">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
         </div>
       </div>
