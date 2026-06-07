@@ -17,13 +17,10 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">الصفحة غير موجودة</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            العودة للرئيسية
+          <Link to="/" className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            Go home
           </Link>
         </div>
       </div>
@@ -41,13 +38,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold text-foreground">حدث خطأ غير متوقع</h1>
+        <h1 className="text-xl font-semibold text-foreground">Something went wrong</h1>
         <div className="mt-6">
-          <button
-            onClick={() => { router.invalidate(); reset(); }}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            إعادة المحاولة
+          <button onClick={() => { router.invalidate(); reset(); }}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            Try again
           </button>
         </div>
       </div>
@@ -60,17 +55,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "دليل تصنيف تغييرات النوع الأول | هيئة الغذاء والدواء" },
-      { name: "description", content: "أداة تفاعلية لتصنيف طلبات التغيير من النوع الأول (IA / IAIN / IB) وفق الدليل الإرشادي للهيئة العامة للغذاء والدواء السعودية." },
-      { property: "og:title", content: "دليل تصنيف تغييرات النوع الأول — SFDA" },
-      { property: "og:description", content: "صنّف طلب التغيير الخاص بمنتجك الدوائي بسرعة وفق متطلبات SFDA." },
+      { title: "Type I Variations Classifier — SFDA Guideline" },
+      { name: "description", content: "Interactive classifier for Type I variations (IA / IAIN / IB) under the SFDA Variation Requirements Guideline." },
+      { property: "og:title", content: "Type I Variations Classifier — SFDA" },
+      { property: "og:description", content: "Classify your pharmaceutical change request fast and generate a rejection draft when conditions are not met." },
       { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Cairo:wght@600;800&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -81,14 +76,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
+    <html lang="en">
+      <head><HeadContent /></head>
+      <body>{children}<Scripts /></body>
     </html>
   );
 }
