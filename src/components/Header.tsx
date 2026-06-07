@@ -18,9 +18,6 @@ export function Header() {
           <Link to="/classify" className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition">Classifier</Link>
           <Link to="/catalog" className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition">Catalog</Link>
         </nav>
-        <Link to="/classify" className="hidden sm:inline-flex items-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft hover:bg-primary/90 transition">
-          Start →
-        </Link>
       </div>
     </header>
   );
