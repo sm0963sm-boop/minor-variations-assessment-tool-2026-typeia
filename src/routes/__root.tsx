@@ -60,6 +60,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Type IA classification tool — SFDA" },
       { property: "og:description", content: "Classify your pharmaceutical change request fast and generate a rejection draft when conditions are not met." },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Type IA classification tool — SFDA" },
+      { name: "twitter:description", content: "Classify your pharmaceutical change request fast and generate a rejection draft when conditions are not met." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
