@@ -180,21 +180,33 @@ function ClassifyMulti() {
                     </div>
                   </div>
                   <ul className="space-y-2">
-                    {v.conditions.map((c, i) => (
-                      <li key={i}>
-                        <label className="flex gap-3 p-2.5 rounded-lg bg-muted/40 border border-border cursor-pointer hover:bg-muted/60 transition">
-                          <input
-                            type="checkbox"
-                            checked={(checks[v.code] || [])[i] || false}
-                            onChange={(e) => setCheck(v.code, i, e.target.checked)}
-                            className="mt-1 size-4 accent-primary"
-                          />
-                          <span className="text-sm text-foreground flex-1">
+                    {v.conditions.map((c, i) => {
+                      const s = (checks[v.code] || [])[i] || "unmet";
+                      const opts: { val: CondStatus; label: string; cls: string }[] = [
+                        { val: "met", label: "Met", cls: "bg-success/15 text-success border-success/40" },
+                        { val: "unmet", label: "Not met", cls: "bg-destructive/10 text-destructive border-destructive/40" },
+                        { val: "na", label: "N/A", cls: "bg-muted text-muted-foreground border-border" },
+                      ];
+                      return (
+                        <li key={i} className={`p-2.5 rounded-lg border ${s === "na" ? "bg-muted/20 border-border opacity-70" : "bg-muted/40 border-border"}`}>
+                          <span className="text-sm text-foreground block">
                             <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
                           </span>
-                        </label>
-                      </li>
-                    ))}
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {opts.map(o => (
+                              <button
+                                key={o.val}
+                                type="button"
+                                onClick={() => setStatus(v.code, i, o.val)}
+                                className={`text-xs font-bold px-2.5 py-1 rounded-md border transition ${s === o.val ? o.cls : "bg-background text-muted-foreground border-border hover:border-foreground/30"}`}
+                              >
+                                {o.label}
+                              </button>
+                            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
