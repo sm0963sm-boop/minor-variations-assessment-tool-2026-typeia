@@ -249,11 +249,12 @@ function Classify() {
 }
 
 function RejectionView({
-  draft, picked, unmet, copied, setCopied,
+  draft, picked, unmet, opinion, copied, setCopied,
 }: {
   draft: string;
   picked: Variation;
   unmet: string[];
+  opinion: string;
   copied: boolean;
   setCopied: (b: boolean) => void;
 }) {
@@ -281,7 +282,7 @@ function RejectionView({
         {unmet.length} condition{unmet.length > 1 ? "s" : ""} not met for {picked.code}
       </h2>
       <p className="mt-2 text-muted-foreground">
-        The proposed variation cannot be classified as Type {picked.type}. A formal rejection draft listing every unmet condition has been generated below.
+        The proposed variation cannot be classified as Type {picked.type}. A formal rejection statement with the reviewer's opinion and the final recommendation has been generated below.
       </p>
 
       <div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
@@ -295,9 +296,108 @@ function RejectionView({
         </ul>
       </div>
 
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-muted/30 p-4">
+          <div className="text-xs font-bold text-muted-foreground mb-1">Reviewer's opinion</div>
+          <p className="text-sm text-foreground whitespace-pre-wrap">
+            {opinion.trim() || "One or more mandatory conditions for Type IA classification are not fulfilled."}
+          </p>
+        </div>
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+          <div className="text-xs font-bold text-destructive mb-1">Final recommendation</div>
+          <p className="text-sm text-foreground font-bold">REJECT — does not qualify as Type {picked.type}.</p>
+          <p className="text-xs text-muted-foreground mt-1">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
+        </div>
+      </div>
+
       <div className="mt-6">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-bold text-foreground">Rejection statement draft</h3>
+          <div className="flex gap-2">
+            <button onClick={copy}
+              className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">
+              {copied ? "✓ Copied" : "Copy"}
+            </button>
+            <button onClick={download}
+              className="text-xs rounded-lg bg-primary text-primary-foreground px-3 py-1.5 font-medium hover:bg-primary/90 transition">
+              Download .txt
+            </button>
+          </div>
+        </div>
+        <pre className="rounded-xl border border-border bg-background p-4 text-xs sm:text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed overflow-auto max-h-[420px]">
+{draft}
+        </pre>
+      </div>
+    </>
+  );
+}
+
+function AcceptanceView({
+  draft, picked, opinion, copied, setCopied,
+}: {
+  draft: string;
+  picked: Variation;
+  opinion: string;
+  copied: boolean;
+  setCopied: (b: boolean) => void;
+}) {
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(draft);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* ignore */ }
+  };
+  const download = () => {
+    const blob = new Blob([draft], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `acceptance-${picked.code}.txt`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <>
+      <div className="text-xs text-muted-foreground">Classification result</div>
+      <div className="mt-3"><TypeBadge type={picked.type} size="lg" /></div>
+      <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">{TYPE_INFO[picked.type].label}</h2>
+      <p className="mt-2 text-muted-foreground">{TYPE_INFO[picked.type].description}</p>
+
+      <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <div className="text-xs font-bold text-primary mb-1">Procedural timeline</div>
+        <div className="text-sm text-foreground">{TYPE_INFO[picked.type].timeline}</div>
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-muted/30 p-4">
+          <div className="text-xs font-bold text-muted-foreground mb-1">Reviewer's opinion</div>
+          <p className="text-sm text-foreground whitespace-pre-wrap">
+            {opinion.trim() || "All eligibility conditions have been verified and supporting documentation is adequate."}
+          </p>
+        </div>
+        <div className="rounded-xl border border-success/30 bg-success/10 p-4">
+          <div className="text-xs font-bold text-success-foreground mb-1">Final recommendation</div>
+          <p className="text-sm text-foreground font-bold">ACCEPT as Type {picked.type}.</p>
+          <p className="text-xs text-muted-foreground mt-1">{TYPE_INFO[picked.type].timeline}.</p>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h3 className="font-bold text-foreground mb-2">Required documents</h3>
+        <ul className="space-y-1.5">
+          {picked.documents.map((d, i) => (
+            <li key={i} className="flex gap-2 text-sm text-muted-foreground"><span className="text-primary">📄</span>{d}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-6 text-xs text-muted-foreground">
+        Reference: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
+      </div>
+
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-foreground">Acceptance statement draft</h3>
           <div className="flex gap-2">
             <button onClick={copy}
               className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">
