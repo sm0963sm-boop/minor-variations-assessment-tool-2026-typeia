@@ -224,12 +224,9 @@ function Classify() {
               />
             ) : (
               <RejectionView
-                draft={buildRejection(picked, unmet, productName, applicant, reviewer, opinion)}
                 picked={picked}
                 unmet={unmet}
                 opinion={opinion}
-                copied={copied}
-                setCopied={setCopied}
               />
             )}
 
@@ -249,31 +246,12 @@ function Classify() {
 }
 
 function RejectionView({
-  draft, picked, unmet, opinion, copied, setCopied,
+  picked, unmet, opinion,
 }: {
-  draft: string;
   picked: Variation;
   unmet: string[];
   opinion: string;
-  copied: boolean;
-  setCopied: (b: boolean) => void;
 }) {
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(draft);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* ignore */ }
-  };
-  const download = () => {
-    const blob = new Blob([draft], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `rejection-${picked.code}.txt`; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const met = picked.conditions.filter((_, i) => !unmet.includes(picked.conditions[i]));
   const defaultOpinion = unmet.length
     ? `The following eligibility condition${unmet.length > 1 ? "s" : ""} required for a Type ${picked.type} classification ${unmet.length > 1 ? "are" : "is"} not fulfilled based on the submitted documentation:\n\n${unmet.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\nTherefore, the proposed change cannot be accepted as Type ${picked.type}.`
     : "One or more mandatory conditions for Type IA classification are not fulfilled.";
@@ -326,25 +304,6 @@ function RejectionView({
           </ul>
           <p className="text-xs text-muted-foreground mt-3">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
         </div>
-      </div>
-
-      <div className="mt-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-bold text-foreground">Rejection statement draft</h3>
-          <div className="flex gap-2">
-            <button onClick={copy}
-              className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">
-              {copied ? "✓ Copied" : "Copy"}
-            </button>
-            <button onClick={download}
-              className="text-xs rounded-lg bg-primary text-primary-foreground px-3 py-1.5 font-medium hover:bg-primary/90 transition">
-              Download .txt
-            </button>
-          </div>
-        </div>
-        <pre className="rounded-xl border border-border bg-background p-4 text-xs sm:text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed overflow-auto max-h-[420px]">
-{draft}
-        </pre>
       </div>
     </>
   );
