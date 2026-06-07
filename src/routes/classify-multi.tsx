@@ -286,13 +286,9 @@ function ClassifyMulti() {
               "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
             );
           } else {
-            reviewerLines.push(`Assessment: ${overall}`);
-            if (rejectedCount > 0) {
-              reviewerLines.push("Key gaps identified:");
-              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-                reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
-              });
-            }
+            reviewerLines.push(
+              "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted."
+            );
           }
           if (opinion.trim()) {
             reviewerLines.push("Reviewer's note:");
@@ -363,13 +359,9 @@ function ClassifyMulti() {
                 para("The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.")
               );
             } else {
-              children.push(para(`Assessment: ${overall}`));
-              if (rejectedCount > 0) {
-                children.push(para("Key gaps identified:", true));
-                results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-                  children.push(bullet(`${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`));
-                });
-              }
+              children.push(
+                para("The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.")
+              );
             }
             if (opinion.trim()) {
               children.push(para("Reviewer's note:", true));
@@ -415,23 +407,9 @@ function ClassifyMulti() {
                       The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.
                     </p>
                   ) : (
-                    <>
-                      <p>
-                        <span className="font-bold">Assessment:</span> {overall}
-                      </p>
-                      {rejectedCount > 0 && (
-                        <div>
-                          <div className="font-bold mb-1">Key gaps identified:</div>
-                          <ul className="space-y-1 ps-5 list-disc">
-                            {results.filter(r => !r.accepted).map(({ v, unmet }) => (
-                              <li key={v.code} className="text-sm text-foreground/90">
-                                <span className="font-mono font-bold">{v.code}</span> — {unmet.length} unmet {unmet.length === 1 ? "condition" : "conditions"}.
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </>
+                    <p className="text-foreground/90 whitespace-pre-wrap">
+                      The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.
+                    </p>
                   )}
                   {opinion.trim() && (
                     <div className="pt-2 border-t border-primary/20">
