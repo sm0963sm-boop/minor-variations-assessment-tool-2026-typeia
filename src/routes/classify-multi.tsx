@@ -4,8 +4,9 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun } from "docx";
-import { saveAs } from "file-saver";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import fileSaver from "file-saver";
+const { saveAs } = fileSaver;
 
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
@@ -27,6 +28,16 @@ function ClassifyMulti() {
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [productInfo, setProductInfo] = useState({
+    productName: "",
+    requestNumber: "",
+    apiSupplier: "",
+    fppManufacture: "",
+    strength: "",
+    packSize: "",
+    storageCondition: "",
+    shelfLife: "",
+  });
 
   const handleCopy = async (text: string, key: string) => {
     try {
@@ -232,6 +243,32 @@ function ClassifyMulti() {
             </div>
 
             <div className="mt-5 rounded-xl border border-border bg-card p-4">
+              <div className="text-sm font-extrabold text-foreground mb-3">Product information <span className="text-muted-foreground font-normal text-xs">(included in Word export)</span></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {([
+                  ["productName", "Product name"],
+                  ["requestNumber", "Request number"],
+                  ["apiSupplier", "API supplier"],
+                  ["fppManufacture", "FPP manufacture"],
+                  ["strength", "Strength"],
+                  ["packSize", "Pack size"],
+                  ["storageCondition", "Storage condition"],
+                  ["shelfLife", "Shelf life"],
+                ] as const).map(([key, label]) => (
+                  <div key={key}>
+                    <label className="block text-xs font-bold text-muted-foreground mb-1">{label}</label>
+                    <input
+                      type="text"
+                      value={productInfo[key]}
+                      onChange={(e) => setProductInfo({ ...productInfo, [key]: e.target.value })}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-xl border border-border bg-card p-4">
               <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal text-xs">(optional)</span></label>
               <textarea
                 value={opinion}
@@ -305,7 +342,43 @@ function ClassifyMulti() {
             const bullet = (text: string) =>
               new Paragraph({ bullet: { level: 0 }, children: [new TextRun(text)] });
 
-            const children: Paragraph[] = [];
+            const infoRows: [string, string][] = [
+              ["Product name", productInfo.productName],
+              ["Request number", productInfo.requestNumber],
+              ["API supplier", productInfo.apiSupplier],
+              ["FPP manufacture", productInfo.fppManufacture],
+              ["Strength", productInfo.strength],
+              ["Pack size", productInfo.packSize],
+              ["Storage condition", productInfo.storageCondition],
+              ["Shelf life", productInfo.shelfLife],
+            ];
+            const cellBorder = { style: BorderStyle.SINGLE, size: 6, color: "BFBFBF" };
+            const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
+            const infoTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [3120, 6240],
+              rows: infoRows.map(([label, value]) => new TableRow({
+                children: [
+                  new TableCell({
+                    borders,
+                    width: { size: 3120, type: WidthType.DXA },
+                    margins: { top: 80, bottom: 80, left: 120, right: 120 },
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true })] })],
+                  }),
+                  new TableCell({
+                    borders,
+                    width: { size: 6240, type: WidthType.DXA },
+                    margins: { top: 80, bottom: 80, left: 120, right: 120 },
+                    children: [new Paragraph({ children: [new TextRun(value || "—")] })],
+                  }),
+                ],
+              })),
+            });
+
+            const children: (Paragraph | Table)[] = [];
+            children.push(heading("Product information"));
+            children.push(infoTable);
+            children.push(new Paragraph({ children: [new TextRun("")] }));
             children.push(heading("Reviewer opinion"));
             children.push(para(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`));
             children.push(para(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`));
