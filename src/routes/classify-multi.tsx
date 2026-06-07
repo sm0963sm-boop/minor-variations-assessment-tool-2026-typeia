@@ -28,6 +28,16 @@ function ClassifyMulti() {
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [productInfo, setProductInfo] = useState({
+    productName: "",
+    requestNumber: "",
+    apiSupplier: "",
+    fppManufacture: "",
+    strength: "",
+    packSize: "",
+    storageCondition: "",
+    shelfLife: "",
+  });
 
   const handleCopy = async (text: string, key: string) => {
     try {
