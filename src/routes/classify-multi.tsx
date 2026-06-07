@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat } from "docx";
 import fileSaver from "file-saver";
 const { saveAs } = fileSaver;
 
