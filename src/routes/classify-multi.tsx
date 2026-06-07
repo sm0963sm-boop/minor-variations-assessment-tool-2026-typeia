@@ -240,8 +240,8 @@ function ClassifyMulti() {
 
         {step === 2 && (
           <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
-            <div className={`mt-6 rounded-2xl border-2 p-5 sm:p-6 ${allAccepted ? "border-success/40 bg-success/10" : "border-destructive/40 bg-destructive/10"}`}>
-              <div className={`text-sm font-bold mb-4 ${allAccepted ? "text-success" : "text-destructive"}`}>Final recommendation</div>
+            <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
+              <div className="text-sm font-bold mb-4 text-primary">Final recommendation</div>
               <ul className="space-y-3">
                 {results.map(({ v, unmet, accepted }) => (
                   <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
