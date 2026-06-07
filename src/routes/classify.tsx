@@ -311,7 +311,6 @@ function RejectionView({
                 <li key={i} className="text-sm text-foreground/80 leading-relaxed">• {c}</li>
               ))}
             </ul>
-            <p className="text-sm text-muted-foreground mt-4 leading-relaxed">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
           </div>
         </div>
       </div>
