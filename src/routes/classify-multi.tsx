@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
+import { Copy, Check } from "lucide-react";
 
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
@@ -23,6 +24,17 @@ function ClassifyMulti() {
   const [checks, setChecks] = useState<ChecksMap>({});
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopy = async (text: string, key: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    } catch {
+      // ignore
+    }
+  };
 
   const selected = useMemo(
     () => VARIATIONS.filter(v => selectedCodes.includes(v.code)),
@@ -256,9 +268,38 @@ function ClassifyMulti() {
                 : approvedCount === 0
                   ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
                   : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
+
+              const reviewerText = (() => {
+                const lines: string[] = [];
+                lines.push(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`);
+                lines.push(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`);
+                lines.push(`Assessment: ${overall}`);
+                if (rejectedCount > 0) {
+                  lines.push("Key gaps identified:");
+                  results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+                    lines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
+                  });
+                }
+                if (opinion.trim()) {
+                  lines.push("Reviewer's note:");
+                  lines.push(opinion.trim());
+                }
+                return lines.join("\n");
+              })();
+
               return (
                 <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
-                  <div className="text-sm font-bold mb-4 text-primary">Reviewer opinion</div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-sm font-bold text-primary">Reviewer opinion</div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(reviewerText, "reviewer")}
+                      className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+                    >
+                      {copiedKey === "reviewer" ? <Check size={14} /> : <Copy size={14} />}
+                      {copiedKey === "reviewer" ? "Copied!" : "Copy"}
+                    </button>
+                  </div>
                   <div className="space-y-3 text-sm sm:text-base text-foreground leading-relaxed">
                     <p>
                       <span className="font-bold">Scope reviewed:</span> {total} variation{total === 1 ? "" : "s"} ({typesSummary}).
@@ -295,31 +336,57 @@ function ClassifyMulti() {
               );
             })()}
 
-            <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
-              <div className="text-sm font-bold mb-4 text-primary">Final recommendation</div>
-              <ul className="space-y-3">
-                {results.map(({ v, unmet, accepted }) => (
-                  <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
-                    <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
-                    <span className="font-semibold">{v.title}</span>
-                    {accepted ? (
-                      <span className="ms-1 font-bold text-success">is approved</span>
-                    ) : (
-                      <span className="ms-1 font-bold text-destructive">
-                        is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
-                      </span>
-                    )}
-                    {!accepted && unmet.length > 0 && (
-                      <ul className="mt-2 space-y-1 ps-5">
-                        {unmet.map((c, i) => (
-                          <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {(() => {
+              const finalText = results.map(({ v, unmet, accepted }) => {
+                const lines: string[] = [];
+                lines.push(`${v.code} ${v.title}`);
+                if (accepted) {
+                  lines.push("is approved");
+                } else {
+                  lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
+                  unmet.forEach(c => lines.push(`• ${c}`));
+                }
+                return lines.join("\n");
+              }).join("\n\n");
+
+              return (
+                <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-sm font-bold text-primary">Final recommendation</div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(finalText, "final")}
+                      className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+                    >
+                      {copiedKey === "final" ? <Check size={14} /> : <Copy size={14} />}
+                      {copiedKey === "final" ? "Copied!" : "Copy"}
+                    </button>
+                  </div>
+                  <ul className="space-y-3">
+                    {results.map(({ v, unmet, accepted }) => (
+                      <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
+                        <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
+                        <span className="font-semibold">{v.title}</span>
+                        {accepted ? (
+                          <span className="ms-1 font-bold text-success">is approved</span>
+                        ) : (
+                          <span className="ms-1 font-bold text-destructive">
+                            is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
+                          </span>
+                        )}
+                        {!accepted && unmet.length > 0 && (
+                          <ul className="mt-2 space-y-1 ps-5">
+                            {unmet.map((c, i) => (
+                              <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })()}
 
             <div className="mt-8 flex flex-wrap gap-3">
               <button onClick={reset} className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
