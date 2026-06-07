@@ -86,31 +86,6 @@ Regulatory Affairs — Variations Assessment
 
 type CondStatus = "met" | "unmet" | "na";
 
-type OpinionParts = {
-  docs: string;
-  conditions: string;
-  gaps: string;
-  justification: string;
-  references: string;
-  conclusion: string;
-};
-const EMPTY_OPINION: OpinionParts = { docs: "", conditions: "", gaps: "", justification: "", references: "", conclusion: "" };
-
-function composeOpinion(p: OpinionParts): string {
-  const sections: [string, string][] = [
-    ["1) Verification of submitted documents", p.docs],
-    ["2) Assessment of eligibility conditions", p.conditions],
-    ["3) Deviations / gaps noted", p.gaps],
-    ["4) Scientific & technical justification", p.justification],
-    ["5) Applicable SFDA guideline references (v6.4)", p.references],
-    ["6) Reviewer's conclusion", p.conclusion],
-  ];
-  return sections
-    .filter(([, v]) => v.trim().length > 0)
-    .map(([h, v]) => `${h}:\n${v.trim()}`)
-    .join("\n\n");
-}
-
 function Classify() {
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState<string | null>(null);
@@ -119,14 +94,13 @@ function Classify() {
   const [productName, setProductName] = useState("");
   const [applicant, setApplicant] = useState("");
   const [reviewer, setReviewer] = useState("");
-  const [opinionParts, setOpinionParts] = useState<OpinionParts>(EMPTY_OPINION);
-  const opinion = useMemo(() => composeOpinion(opinionParts), [opinionParts]);
+  const [opinion, setOpinion] = useState("");
   const [copied, setCopied] = useState(false);
 
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinionParts(EMPTY_OPINION); setCopied(false);
+    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinion(""); setCopied(false);
   };
 
   const choose = (v: Variation) => {
@@ -245,11 +219,14 @@ function Classify() {
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's detailed opinion</label>
-                <p className="text-[11px] text-muted-foreground mb-3">
-                  Fill each section below. All sections will be combined into a single formal reviewer's opinion and printed before the final recommendation.
-                </p>
-                <OpinionFields value={opinionParts} onChange={setOpinionParts} />
+                <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal text-xs">(optional)</span></label>
+                <textarea
+                  value={opinion}
+                  onChange={(e) => setOpinion(e.target.value)}
+                  rows={4}
+                  placeholder="Enter your reviewer's opinion (optional). This will be printed before the final recommendation."
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y"
+                />
               </div>
             </div>
 
@@ -438,33 +415,6 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
       <h2 className="font-display text-xl sm:text-2xl font-extrabold text-foreground">{title}</h2>
       {subtitle && <p className="mt-1 text-sm text-muted-foreground mb-5">{subtitle}</p>}
       {children}
-    </div>
-  );
-}
-
-export function OpinionFields({ value, onChange }: { value: OpinionParts; onChange: (v: OpinionParts) => void }) {
-  const fields: { key: keyof OpinionParts; label: string; hint: string; rows: number }[] = [
-    { key: "docs", label: "1. Verification of submitted documents", hint: "List the documents reviewed (cover letter, dossier sections, change control, batch data, stability, etc.) and confirm completeness, signatures, dates and version control.", rows: 3 },
-    { key: "conditions", label: "2. Assessment of eligibility conditions", hint: "Discuss how each condition was assessed against the submitted evidence; reference the specific section/page where each requirement is supported.", rows: 4 },
-    { key: "gaps", label: "3. Deviations / gaps noted", hint: "Describe any deficiencies, missing data, inconsistencies, out-of-scope changes, or risks identified during the review.", rows: 3 },
-    { key: "justification", label: "4. Scientific & technical justification", hint: "Provide the scientific rationale supporting the proposed change (quality impact, risk to safety/efficacy, comparability, validation, equivalence).", rows: 4 },
-    { key: "references", label: "5. SFDA Variation Guideline references (v6.4)", hint: "Cite the exact clauses / annexes / condition numbers from the SFDA Variation Requirements Guideline v6.4 that were applied.", rows: 2 },
-    { key: "conclusion", label: "6. Reviewer's conclusion", hint: "State your overall technical judgement on the dossier and the basis for your recommendation, independent of the automated checklist.", rows: 3 },
-  ];
-  return (
-    <div className="space-y-3">
-      {fields.map(f => (
-        <div key={f.key} className="rounded-lg border border-border bg-background p-3">
-          <label className="block text-xs font-bold text-foreground">{f.label}</label>
-          <p className="text-[11px] text-muted-foreground mt-0.5 mb-1.5">{f.hint}</p>
-          <textarea
-            value={value[f.key]}
-            onChange={(e) => onChange({ ...value, [f.key]: e.target.value })}
-            rows={f.rows}
-            className="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y"
-          />
-        </div>
-      ))}
     </div>
   );
 }
