@@ -21,8 +21,7 @@ function ClassifyMulti() {
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [checks, setChecks] = useState<ChecksMap>({});
-  const [opinionParts, setOpinionParts] = useState<OpinionParts>(EMPTY_OPINION);
-  const opinion = useMemo(() => composeOpinion(opinionParts), [opinionParts]);
+  const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
 
   const selected = useMemo(
@@ -52,7 +51,7 @@ function ClassifyMulti() {
   };
 
   const reset = () => {
-    setStep(0); setSelectedCodes([]); setChecks({}); setOpinionParts(EMPTY_OPINION);
+    setStep(0); setSelectedCodes([]); setChecks({}); setOpinion("");
   };
 
   // Build per-variation status
@@ -219,11 +218,14 @@ function ClassifyMulti() {
             </div>
 
             <div className="mt-5 rounded-xl border border-border bg-card p-4">
-              <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's detailed opinion</label>
-              <p className="text-[11px] text-muted-foreground mb-3">
-                Fill each section below — it applies to the combined decision and will appear before the final recommendation.
-              </p>
-              <OpinionFields value={opinionParts} onChange={setOpinionParts} />
+              <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal text-xs">(optional)</span></label>
+              <textarea
+                value={opinion}
+                onChange={(e) => setOpinion(e.target.value)}
+                rows={4}
+                placeholder="Enter your reviewer's opinion (optional). This will be printed before the final recommendation."
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y"
+              />
             </div>
 
             <div className="mt-5 flex items-center justify-between gap-3">
