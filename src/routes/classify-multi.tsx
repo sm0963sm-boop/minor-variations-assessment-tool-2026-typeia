@@ -68,6 +68,11 @@ function ClassifyMulti() {
     <div className="min-h-screen">
       <Header />
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 mb-8">
+          <p className="text-sm text-foreground leading-relaxed">
+            <span className="font-bold text-warning">Note:</span> This tool assists the reviewer in evaluating Type IA / IAIN variation requests. It does not replace the full independent assessment required by the reviewer.
+          </p>
+        </div>
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-display text-3xl font-extrabold text-foreground">Multi-variation classifier</h1>
           <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
