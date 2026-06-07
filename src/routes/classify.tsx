@@ -14,10 +14,45 @@ export const Route = createFileRoute("/classify")({
   component: Classify,
 });
 
-function buildRejection(v: Variation, unmet: string[], productName: string, applicant: string) {
+function buildAcceptance(v: Variation, productName: string, applicant: string, reviewer: string, opinion: string) {
   const today = new Date().toISOString().slice(0, 10);
   const refProduct = productName.trim() || "[Product Name]";
   const refApplicant = applicant.trim() || "[Applicant / MAH]";
+  const refReviewer = reviewer.trim() || "[Reviewer Name]";
+  const refOpinion = opinion.trim() || "All eligibility conditions have been verified and supporting documentation is adequate.";
+  return `Date: ${today}
+Applicant / MAH: ${refApplicant}
+Product: ${refProduct}
+Variation reference: ${v.code} — ${v.title}
+Classification: Type ${v.type}
+
+Subject: Acceptance of the proposed Type ${v.type} variation
+
+Dear Applicant,
+
+Upon technical review of the submitted change request against the SFDA Variation Requirements Guideline, the change qualifies as a Type ${v.type} variation (${v.code}). All eligibility conditions for this category are fulfilled.
+
+Reviewer's opinion:
+${refOpinion}
+
+Final recommendation:
+  • ACCEPT as Type ${v.type}.
+  • Procedural pathway: ${TYPE_INFO[v.type].timeline}.
+  • The applicant shall ensure that all supporting documentation listed in the guideline is maintained in the dossier.
+
+This decision is issued in accordance with the SFDA Variation Requirements Guideline for Registered Pharmaceutical Products.
+
+Reviewer: ${refReviewer}
+Regulatory Affairs — Variations Assessment
+`;
+}
+
+function buildRejection(v: Variation, unmet: string[], productName: string, applicant: string, reviewer: string, opinion: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  const refProduct = productName.trim() || "[Product Name]";
+  const refApplicant = applicant.trim() || "[Applicant / MAH]";
+  const refReviewer = reviewer.trim() || "[Reviewer Name]";
+  const refOpinion = opinion.trim() || "One or more mandatory eligibility conditions for the proposed Type IA classification are not fulfilled based on the submitted documentation.";
   const bullets = unmet.map((c, i) => `   ${i + 1}. ${c}`).join("\n");
   return `Date: ${today}
 Applicant / MAH: ${refApplicant}
@@ -35,14 +70,17 @@ The following eligibility condition(s) required for this variation category are 
 
 ${bullets}
 
-Because one or more mandatory conditions for Type ${v.type} are not met, the change does not qualify as a Type I (minor) variation under the referenced guideline. The applicant is therefore requested to either:
+Reviewer's opinion:
+${refOpinion}
 
-  • Submit revised documentation demonstrating full compliance with the condition(s) listed above, or
-  • Reclassify the change as a Type II (major) variation and submit it with the corresponding scientific dossier for full evaluation prior to implementation.
+Final recommendation:
+  • REJECT the proposed Type ${v.type} classification.
+  • Submit revised documentation demonstrating full compliance with the unmet condition(s), or
+  • Reclassify the change as a Type IB or Type II variation and submit it with the corresponding scientific dossier for full evaluation prior to implementation.
 
 This decision is issued in accordance with the SFDA Variation Requirements Guideline for Registered Pharmaceutical Products.
 
-Regards,
+Reviewer: ${refReviewer}
 Regulatory Affairs — Variations Assessment
 `;
 }
