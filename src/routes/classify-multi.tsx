@@ -281,14 +281,18 @@ function ClassifyMulti() {
               : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
 
           const reviewerLines: string[] = [];
-          reviewerLines.push(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`);
-          reviewerLines.push(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`);
-          reviewerLines.push(`Assessment: ${overall}`);
-          if (rejectedCount > 0) {
-            reviewerLines.push("Key gaps identified:");
-            results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-              reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
-            });
+          if (allAccepted) {
+            reviewerLines.push(
+              "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
+            );
+          } else {
+            reviewerLines.push(`Assessment: ${overall}`);
+            if (rejectedCount > 0) {
+              reviewerLines.push("Key gaps identified:");
+              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+                reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
+              });
+            }
           }
           if (opinion.trim()) {
             reviewerLines.push("Reviewer's note:");
@@ -354,14 +358,18 @@ function ClassifyMulti() {
             children.push(infoTable);
             children.push(new Paragraph({ children: [new TextRun("")] }));
             children.push(heading("Reviewer opinion"));
-            children.push(para(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`));
-            children.push(para(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`));
-            children.push(para(`Assessment: ${overall}`));
-            if (rejectedCount > 0) {
-              children.push(para("Key gaps identified:", true));
-              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-                children.push(bullet(`${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`));
-              });
+            if (allAccepted) {
+              children.push(
+                para("The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.")
+              );
+            } else {
+              children.push(para(`Assessment: ${overall}`));
+              if (rejectedCount > 0) {
+                children.push(para("Key gaps identified:", true));
+                results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+                  children.push(bullet(`${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`));
+                });
+              }
             }
             if (opinion.trim()) {
               children.push(para("Reviewer's note:", true));
@@ -402,29 +410,28 @@ function ClassifyMulti() {
                   </button>
                 </div>
                 <div className="space-y-3 text-sm sm:text-base text-foreground leading-relaxed">
-                  <p>
-                    <span className="font-bold">Scope reviewed:</span> {total} variation{total === 1 ? "" : "s"} ({typesSummary}).
-                  </p>
-                  <p>
-                    <span className="font-bold">Outcome summary:</span>{" "}
-                    <span className="font-bold text-success">{approvedCount} approved</span>
-                    {" · "}
-                    <span className="font-bold text-destructive">{rejectedCount} rejected</span>.
-                  </p>
-                  <p>
-                    <span className="font-bold">Assessment:</span> {overall}
-                  </p>
-                  {rejectedCount > 0 && (
-                    <div>
-                      <div className="font-bold mb-1">Key gaps identified:</div>
-                      <ul className="space-y-1 ps-5 list-disc">
-                        {results.filter(r => !r.accepted).map(({ v, unmet }) => (
-                          <li key={v.code} className="text-sm text-foreground/90">
-                            <span className="font-mono font-bold">{v.code}</span> — {unmet.length} unmet {unmet.length === 1 ? "condition" : "conditions"}.
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  {allAccepted ? (
+                    <p className="text-foreground/90 whitespace-pre-wrap">
+                      The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.
+                    </p>
+                  ) : (
+                    <>
+                      <p>
+                        <span className="font-bold">Assessment:</span> {overall}
+                      </p>
+                      {rejectedCount > 0 && (
+                        <div>
+                          <div className="font-bold mb-1">Key gaps identified:</div>
+                          <ul className="space-y-1 ps-5 list-disc">
+                            {results.filter(r => !r.accepted).map(({ v, unmet }) => (
+                              <li key={v.code} className="text-sm text-foreground/90">
+                                <span className="font-mono font-bold">{v.code}</span> — {unmet.length} unmet {unmet.length === 1 ? "condition" : "conditions"}.
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
                   )}
                   {opinion.trim() && (
                     <div className="pt-2 border-t border-primary/20">
