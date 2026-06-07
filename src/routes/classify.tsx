@@ -7,51 +7,93 @@ import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variati
 export const Route = createFileRoute("/classify")({
   head: () => ({
     meta: [
-      { title: "أداة تصنيف التغيير — تفاعلية" },
-      { name: "description", content: "أداة موجّهة لتحديد نوع تغيير المستحضر الدوائي وفق الدليل الإرشادي SFDA." },
+      { title: "Variation Classifier — Interactive" },
+      { name: "description", content: "Guided tool to determine the variation type per SFDA, with auto-generated rejection drafts for unmet conditions." },
     ],
   }),
   component: Classify,
 });
 
+function buildRejection(v: Variation, unmet: string[], productName: string, applicant: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  const refProduct = productName.trim() || "[Product Name]";
+  const refApplicant = applicant.trim() || "[Applicant / MAH]";
+  const bullets = unmet.map((c, i) => `   ${i + 1}. ${c}`).join("\n");
+  return `Date: ${today}
+Applicant / MAH: ${refApplicant}
+Product: ${refProduct}
+Variation reference: ${v.code} — ${v.title}
+Proposed classification: Type ${v.type}
+
+Subject: Non-acceptance of the proposed Type ${v.type} variation
+
+Dear Applicant,
+
+Upon technical review of the submitted change request against the SFDA Variation Requirements Guideline, the proposed classification as a Type ${v.type} variation (${v.code}) cannot be accepted.
+
+The following eligibility condition(s) required for this variation category are not fulfilled:
+
+${bullets}
+
+Because one or more mandatory conditions for Type ${v.type} are not met, the change does not qualify as a Type I (minor) variation under the referenced guideline. The applicant is therefore requested to either:
+
+  • Submit revised documentation demonstrating full compliance with the condition(s) listed above, or
+  • Reclassify the change as a Type II (major) variation and submit it with the corresponding scientific dossier for full evaluation prior to implementation.
+
+This decision is issued in accordance with the SFDA Variation Requirements Guideline for Registered Pharmaceutical Products.
+
+Regards,
+Regulatory Affairs — Variations Assessment
+`;
+}
+
 function Classify() {
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState<string | null>(null);
-  const [conditionsMet, setConditionsMet] = useState<boolean | null>(null);
   const [picked, setPicked] = useState<Variation | null>(null);
+  const [checked, setChecked] = useState<boolean[]>([]);
+  const [productName, setProductName] = useState("");
+  const [applicant, setApplicant] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const inCategory = useMemo(
-    () => VARIATIONS.filter(v => v.category === category),
-    [category]
-  );
+  const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
-  const reset = () => { setStep(0); setCategory(null); setPicked(null); setConditionsMet(null); };
+  const reset = () => {
+    setStep(0); setCategory(null); setPicked(null); setChecked([]); setCopied(false);
+  };
+
+  const choose = (v: Variation) => {
+    setPicked(v);
+    setChecked(new Array(v.conditions.length).fill(false));
+    setStep(2);
+  };
+
+  const allMet = picked && checked.length > 0 && checked.every(Boolean);
+  const unmet = picked ? picked.conditions.filter((_, i) => !checked[i]) : [];
 
   return (
     <div className="min-h-screen">
       <Header />
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10">
-        {/* Stepper */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-display text-3xl font-extrabold text-foreground">أداة التصنيف</h1>
-          <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ إعادة البدء</button>
+          <h1 className="font-display text-3xl font-extrabold text-foreground">Classifier</h1>
+          <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
-          {[0,1,2,3].map(i => (
+          {[0, 1, 2, 3].map(i => (
             <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-border"}`} />
           ))}
         </div>
 
-        {/* Step 0 - Category */}
         {step === 0 && (
-          <Panel title="١. اختر فئة التغيير" subtitle="ما النطاق الذي يتعلق به طلب التغيير؟">
+          <Panel title="1. Select the change category" subtitle="What is the scope of your change request?">
             <div className="grid gap-3 sm:grid-cols-2">
               {CATEGORIES.map(c => (
                 <button key={c} onClick={() => { setCategory(c); setStep(1); }}
-                  className="text-right rounded-xl border border-border bg-card hover:border-primary hover:shadow-soft p-4 transition">
+                  className="text-left rounded-xl border border-border bg-card hover:border-primary hover:shadow-soft p-4 transition">
                   <div className="font-bold text-foreground">{c}</div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    {VARIATIONS.filter(v => v.category === c).length} تغييرات متاحة
+                    {VARIATIONS.filter(v => v.category === c).length} variations
                   </div>
                 </button>
               ))}
@@ -59,13 +101,12 @@ function Classify() {
           </Panel>
         )}
 
-        {/* Step 1 - Pick specific variation */}
         {step === 1 && category && (
-          <Panel title="٢. حدّد التغيير المطلوب" subtitle={`الفئة: ${category}`}>
+          <Panel title="2. Pick the specific variation" subtitle={`Category: ${category}`}>
             <div className="space-y-2">
               {inCategory.map(v => (
-                <button key={v.code} onClick={() => { setPicked(v); setStep(2); }}
-                  className="w-full text-right rounded-xl border border-border bg-card hover:border-primary hover:bg-muted/30 p-4 transition flex items-start gap-3">
+                <button key={v.code} onClick={() => choose(v)}
+                  className="w-full text-left rounded-xl border border-border bg-card hover:border-primary hover:bg-muted/30 p-4 transition flex items-start gap-3">
                   <TypeBadge type={v.type} size="sm" />
                   <div className="flex-1">
                     <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
@@ -74,94 +115,171 @@ function Classify() {
                 </button>
               ))}
             </div>
-            <button onClick={() => setStep(0)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">→ رجوع</button>
+            <button onClick={() => setStep(0)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {/* Step 2 - Check conditions */}
         {step === 2 && picked && (
-          <Panel title="٣. تحقق من شروط التأهيل" subtitle="هل تنطبق جميع الشروط التالية على حالتك؟">
+          <Panel title="3. Verify eligibility conditions" subtitle="Tick every condition that is fully met for your case.">
             <ul className="space-y-2.5 mb-6">
               {picked.conditions.map((c, i) => (
-                <li key={i} className="flex gap-3 p-3 rounded-lg bg-muted/40 border border-border">
-                  <span className="text-primary font-bold">{i+1}.</span>
-                  <span className="text-sm text-foreground">{c}</span>
+                <li key={i}>
+                  <label className="flex gap-3 p-3 rounded-lg bg-muted/40 border border-border cursor-pointer hover:bg-muted/60 transition">
+                    <input
+                      type="checkbox"
+                      checked={checked[i] || false}
+                      onChange={(e) => {
+                        const next = [...checked]; next[i] = e.target.checked; setChecked(next);
+                      }}
+                      className="mt-1 size-4 accent-primary"
+                    />
+                    <span className="text-sm text-foreground flex-1">
+                      <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
+                    </span>
+                  </label>
                 </li>
               ))}
             </ul>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <button onClick={() => { setConditionsMet(true); setStep(3); }}
-                className="rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition">
-                ✓ نعم، جميع الشروط مستوفاة
-              </button>
-              <button onClick={() => { setConditionsMet(false); setStep(3); }}
-                className="rounded-xl border border-border bg-card py-3 font-bold text-foreground hover:bg-muted transition">
-                ✗ لا، بعضها غير مستوفى
-              </button>
+
+            <div className="rounded-xl border border-border bg-card p-4 mb-4 grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">Product name <span className="text-muted-foreground font-normal">(optional)</span></label>
+                <input value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="e.g., Paracetamol 500 mg Tablets"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">Applicant / MAH <span className="text-muted-foreground font-normal">(optional)</span></label>
+                <input value={applicant} onChange={(e) => setApplicant(e.target.value)} placeholder="e.g., ACME Pharma Co."
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
             </div>
-            <button onClick={() => setStep(1)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">→ رجوع</button>
+
+            <button onClick={() => setStep(3)}
+              className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition">
+              Generate result →
+            </button>
+            <button onClick={() => setStep(1)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {/* Step 3 - Result */}
         {step === 3 && picked && (
           <div className="rounded-3xl border border-border bg-card-gradient p-6 sm:p-8 shadow-elegant">
-            {conditionsMet ? (
+            {allMet ? (
               <>
-                <div className="text-xs text-muted-foreground">نتيجة التصنيف</div>
-                <div className="mt-3 flex items-center gap-3">
-                  <TypeBadge type={picked.type} size="lg" />
-                </div>
+                <div className="text-xs text-muted-foreground">Classification result</div>
+                <div className="mt-3"><TypeBadge type={picked.type} size="lg" /></div>
                 <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">{TYPE_INFO[picked.type].label}</h2>
                 <p className="mt-2 text-muted-foreground">{TYPE_INFO[picked.type].description}</p>
 
                 <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                  <div className="text-xs font-bold text-primary mb-1">الإجراء الزمني</div>
+                  <div className="text-xs font-bold text-primary mb-1">Procedural timeline</div>
                   <div className="text-sm text-foreground">{TYPE_INFO[picked.type].timeline}</div>
                 </div>
 
                 <div className="mt-6">
-                  <h3 className="font-bold text-foreground mb-2">الوثائق المطلوبة</h3>
+                  <h3 className="font-bold text-foreground mb-2">Required documents</h3>
                   <ul className="space-y-1.5">
                     {picked.documents.map((d, i) => (
-                      <li key={i} className="flex gap-2 text-sm text-muted-foreground">
-                        <span className="text-primary">📄</span>{d}
-                      </li>
+                      <li key={i} className="flex gap-2 text-sm text-muted-foreground"><span className="text-primary">📄</span>{d}</li>
                     ))}
                   </ul>
                 </div>
 
                 <div className="mt-6 text-xs text-muted-foreground">
-                  المرجع: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
+                  Reference: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
                 </div>
               </>
             ) : (
-              <>
-                <div className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-3 py-1 text-xs font-bold">
-                  لا يندرج تحت النوع الأول
-                </div>
-                <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">قد يكون تغييرك من النوع الثاني (Type II)</h2>
-                <p className="mt-2 text-muted-foreground">
-                  عدم استيفاء شروط النوع الأول يعني عادةً أن التغيير يُصنّف كتغيير كبير (Major / Type II) ويتطلب تقييماً علمياً كاملاً ومراجعة من الهيئة قبل التنفيذ.
-                </p>
-                <div className="mt-6 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-foreground">
-                  <strong>توصية:</strong> راجع متطلبات الـ Type II في الدليل الإرشادي، أو اختر تصنيفاً مختلفاً يلائم حالتك.
-                </div>
-              </>
+              <RejectionView
+                draft={buildRejection(picked, unmet, productName, applicant)}
+                picked={picked}
+                unmet={unmet}
+                copied={copied}
+                setCopied={setCopied}
+              />
             )}
 
             <div className="mt-8 flex flex-wrap gap-3">
               <button onClick={reset} className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
-                تصنيف تغيير آخر
+                Classify another change
               </button>
               <Link to="/catalog" className="rounded-xl border border-border bg-card px-5 py-2.5 font-medium text-foreground hover:bg-muted transition">
-                تصفّح الكتالوج كاملاً
+                Browse the full catalog
               </Link>
             </div>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function RejectionView({
+  draft, picked, unmet, copied, setCopied,
+}: {
+  draft: string;
+  picked: Variation;
+  unmet: string[];
+  copied: boolean;
+  setCopied: (b: boolean) => void;
+}) {
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(draft);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* ignore */ }
+  };
+  const download = () => {
+    const blob = new Blob([draft], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `rejection-${picked.code}.txt`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <>
+      <div className="inline-flex items-center gap-2 rounded-full bg-destructive/10 text-destructive px-3 py-1 text-xs font-bold">
+        Does not qualify as Type {picked.type}
+      </div>
+      <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">
+        {unmet.length} condition{unmet.length > 1 ? "s" : ""} not met for {picked.code}
+      </h2>
+      <p className="mt-2 text-muted-foreground">
+        The proposed variation cannot be classified as Type {picked.type}. A formal rejection draft listing every unmet condition has been generated below.
+      </p>
+
+      <div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+        <div className="text-xs font-bold text-destructive mb-2">Unmet conditions</div>
+        <ul className="space-y-1.5">
+          {unmet.map((c, i) => (
+            <li key={i} className="flex gap-2 text-sm text-foreground">
+              <span className="text-destructive font-bold">✗</span><span>{c}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-foreground">Rejection statement draft</h3>
+          <div className="flex gap-2">
+            <button onClick={copy}
+              className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">
+              {copied ? "✓ Copied" : "Copy"}
+            </button>
+            <button onClick={download}
+              className="text-xs rounded-lg bg-primary text-primary-foreground px-3 py-1.5 font-medium hover:bg-primary/90 transition">
+              Download .txt
+            </button>
+          </div>
+        </div>
+        <pre className="rounded-xl border border-border bg-background p-4 text-xs sm:text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed overflow-auto max-h-[420px]">
+{draft}
+        </pre>
+      </div>
+    </>
   );
 }
 
