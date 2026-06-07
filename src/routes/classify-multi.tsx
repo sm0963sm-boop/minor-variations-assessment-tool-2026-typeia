@@ -14,7 +14,8 @@ export const Route = createFileRoute("/classify-multi")({
   component: ClassifyMulti,
 });
 
-type ChecksMap = Record<string, boolean[]>; // code -> conditions checked
+type CondStatus = "met" | "unmet" | "na";
+type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
 
 function ClassifyMulti() {
   const [step, setStep] = useState<0 | 1 | 2>(0);
@@ -37,13 +38,13 @@ function ClassifyMulti() {
         setChecks(rest);
         return next;
       } else {
-        setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill(false) });
+        setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill("unmet") });
         return [...prev, v.code];
       }
     });
   };
 
-  const setCheck = (code: string, idx: number, val: boolean) => {
+  const setStatus = (code: string, idx: number, val: CondStatus) => {
     const arr = [...(checks[code] || [])];
     arr[idx] = val;
     setChecks({ ...checks, [code]: arr });
@@ -56,8 +57,8 @@ function ClassifyMulti() {
   // Build per-variation status
   const results = selected.map(v => {
     const arr = checks[v.code] || [];
-    const unmet = v.conditions.filter((_, i) => !arr[i]);
-    return { v, unmet, accepted: unmet.length === 0 };
+    const unmet = v.conditions.filter((_, i) => (arr[i] || "unmet") === "unmet");
+    return { v, unmet, status: arr, accepted: unmet.length === 0 };
   });
 
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
@@ -179,21 +180,33 @@ function ClassifyMulti() {
                     </div>
                   </div>
                   <ul className="space-y-2">
-                    {v.conditions.map((c, i) => (
-                      <li key={i}>
-                        <label className="flex gap-3 p-2.5 rounded-lg bg-muted/40 border border-border cursor-pointer hover:bg-muted/60 transition">
-                          <input
-                            type="checkbox"
-                            checked={(checks[v.code] || [])[i] || false}
-                            onChange={(e) => setCheck(v.code, i, e.target.checked)}
-                            className="mt-1 size-4 accent-primary"
-                          />
-                          <span className="text-sm text-foreground flex-1">
+                    {v.conditions.map((c, i) => {
+                      const s = (checks[v.code] || [])[i] || "unmet";
+                      const opts: { val: CondStatus; label: string; cls: string }[] = [
+                        { val: "met", label: "Met", cls: "bg-success/15 text-success border-success/40" },
+                        { val: "unmet", label: "Not met", cls: "bg-destructive/10 text-destructive border-destructive/40" },
+                        { val: "na", label: "N/A", cls: "bg-muted text-muted-foreground border-border" },
+                      ];
+                      return (
+                        <li key={i} className={`p-2.5 rounded-lg border ${s === "na" ? "bg-muted/20 border-border opacity-70" : "bg-muted/40 border-border"}`}>
+                          <span className="text-sm text-foreground block">
                             <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
                           </span>
-                        </label>
-                      </li>
-                    ))}
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {opts.map(o => (
+                              <button
+                                key={o.val}
+                                type="button"
+                                onClick={() => setStatus(v.code, i, o.val)}
+                                className={`text-xs font-bold px-2.5 py-1 rounded-md border transition ${s === o.val ? o.cls : "bg-background text-muted-foreground border-border hover:border-foreground/30"}`}
+                              >
+                                {o.label}
+                              </button>
+                            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
