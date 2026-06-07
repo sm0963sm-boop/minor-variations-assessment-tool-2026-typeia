@@ -281,14 +281,18 @@ function ClassifyMulti() {
               : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
 
           const reviewerLines: string[] = [];
-          reviewerLines.push(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`);
-          reviewerLines.push(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`);
-          reviewerLines.push(`Assessment: ${overall}`);
-          if (rejectedCount > 0) {
-            reviewerLines.push("Key gaps identified:");
-            results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-              reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
-            });
+          if (allAccepted) {
+            reviewerLines.push(
+              "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
+            );
+          } else {
+            reviewerLines.push(`Assessment: ${overall}`);
+            if (rejectedCount > 0) {
+              reviewerLines.push("Key gaps identified:");
+              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+                reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
+              });
+            }
           }
           if (opinion.trim()) {
             reviewerLines.push("Reviewer's note:");
