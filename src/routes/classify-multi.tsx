@@ -83,7 +83,6 @@ function ClassifyMulti() {
               {CATEGORIES.map(cat => {
                 const items = VARIATIONS.filter(v => v.category === cat);
                 if (items.length === 0) return null;
-                const [openCat, setOpenCat] = useState<string | null>(null);
                 return (
                   <div key={cat}>
                     <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{cat}</div>
