@@ -14,10 +14,45 @@ export const Route = createFileRoute("/classify")({
   component: Classify,
 });
 
-function buildRejection(v: Variation, unmet: string[], productName: string, applicant: string) {
+function buildAcceptance(v: Variation, productName: string, applicant: string, reviewer: string, opinion: string) {
   const today = new Date().toISOString().slice(0, 10);
   const refProduct = productName.trim() || "[Product Name]";
   const refApplicant = applicant.trim() || "[Applicant / MAH]";
+  const refReviewer = reviewer.trim() || "[Reviewer Name]";
+  const refOpinion = opinion.trim() || "All eligibility conditions have been verified and supporting documentation is adequate.";
+  return `Date: ${today}
+Applicant / MAH: ${refApplicant}
+Product: ${refProduct}
+Variation reference: ${v.code} — ${v.title}
+Classification: Type ${v.type}
+
+Subject: Acceptance of the proposed Type ${v.type} variation
+
+Dear Applicant,
+
+Upon technical review of the submitted change request against the SFDA Variation Requirements Guideline, the change qualifies as a Type ${v.type} variation (${v.code}). All eligibility conditions for this category are fulfilled.
+
+Reviewer's opinion:
+${refOpinion}
+
+Final recommendation:
+  • ACCEPT as Type ${v.type}.
+  • Procedural pathway: ${TYPE_INFO[v.type].timeline}.
+  • The applicant shall ensure that all supporting documentation listed in the guideline is maintained in the dossier.
+
+This decision is issued in accordance with the SFDA Variation Requirements Guideline for Registered Pharmaceutical Products.
+
+Reviewer: ${refReviewer}
+Regulatory Affairs — Variations Assessment
+`;
+}
+
+function buildRejection(v: Variation, unmet: string[], productName: string, applicant: string, reviewer: string, opinion: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  const refProduct = productName.trim() || "[Product Name]";
+  const refApplicant = applicant.trim() || "[Applicant / MAH]";
+  const refReviewer = reviewer.trim() || "[Reviewer Name]";
+  const refOpinion = opinion.trim() || "One or more mandatory eligibility conditions for the proposed Type IA classification are not fulfilled based on the submitted documentation.";
   const bullets = unmet.map((c, i) => `   ${i + 1}. ${c}`).join("\n");
   return `Date: ${today}
 Applicant / MAH: ${refApplicant}
@@ -35,14 +70,17 @@ The following eligibility condition(s) required for this variation category are 
 
 ${bullets}
 
-Because one or more mandatory conditions for Type ${v.type} are not met, the change does not qualify as a Type I (minor) variation under the referenced guideline. The applicant is therefore requested to either:
+Reviewer's opinion:
+${refOpinion}
 
-  • Submit revised documentation demonstrating full compliance with the condition(s) listed above, or
-  • Reclassify the change as a Type II (major) variation and submit it with the corresponding scientific dossier for full evaluation prior to implementation.
+Final recommendation:
+  • REJECT the proposed Type ${v.type} classification.
+  • Submit revised documentation demonstrating full compliance with the unmet condition(s), or
+  • Reclassify the change as a Type IB or Type II variation and submit it with the corresponding scientific dossier for full evaluation prior to implementation.
 
 This decision is issued in accordance with the SFDA Variation Requirements Guideline for Registered Pharmaceutical Products.
 
-Regards,
+Reviewer: ${refReviewer}
 Regulatory Affairs — Variations Assessment
 `;
 }
@@ -54,12 +92,14 @@ function Classify() {
   const [checked, setChecked] = useState<boolean[]>([]);
   const [productName, setProductName] = useState("");
   const [applicant, setApplicant] = useState("");
+  const [reviewer, setReviewer] = useState("");
+  const [opinion, setOpinion] = useState("");
   const [copied, setCopied] = useState(false);
 
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setChecked([]); setCopied(false);
+    setStep(0); setCategory(null); setPicked(null); setChecked([]); setOpinion(""); setCopied(false);
   };
 
   const choose = (v: Variation) => {
@@ -152,6 +192,16 @@ function Classify() {
                 <input value={applicant} onChange={(e) => setApplicant(e.target.value)} placeholder="e.g., ACME Pharma Co."
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               </div>
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">Reviewer name <span className="text-muted-foreground font-normal">(optional)</span></label>
+                <input value={reviewer} onChange={(e) => setReviewer(e.target.value)} placeholder="e.g., Dr. A. Reviewer"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal">(optional — included in the final statement)</span></label>
+                <textarea value={opinion} onChange={(e) => setOpinion(e.target.value)} rows={3} placeholder="Technical opinion on the submitted dossier, justification for acceptance/rejection..."
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y" />
+              </div>
             </div>
 
             <button onClick={() => setStep(3)}
@@ -165,35 +215,19 @@ function Classify() {
         {step === 3 && picked && (
           <div className="rounded-3xl border border-border bg-card-gradient p-6 sm:p-8 shadow-elegant">
             {allMet ? (
-              <>
-                <div className="text-xs text-muted-foreground">Classification result</div>
-                <div className="mt-3"><TypeBadge type={picked.type} size="lg" /></div>
-                <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">{TYPE_INFO[picked.type].label}</h2>
-                <p className="mt-2 text-muted-foreground">{TYPE_INFO[picked.type].description}</p>
-
-                <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                  <div className="text-xs font-bold text-primary mb-1">Procedural timeline</div>
-                  <div className="text-sm text-foreground">{TYPE_INFO[picked.type].timeline}</div>
-                </div>
-
-                <div className="mt-6">
-                  <h3 className="font-bold text-foreground mb-2">Required documents</h3>
-                  <ul className="space-y-1.5">
-                    {picked.documents.map((d, i) => (
-                      <li key={i} className="flex gap-2 text-sm text-muted-foreground"><span className="text-primary">📄</span>{d}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-6 text-xs text-muted-foreground">
-                  Reference: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
-                </div>
-              </>
+              <AcceptanceView
+                draft={buildAcceptance(picked, productName, applicant, reviewer, opinion)}
+                picked={picked}
+                opinion={opinion}
+                copied={copied}
+                setCopied={setCopied}
+              />
             ) : (
               <RejectionView
-                draft={buildRejection(picked, unmet, productName, applicant)}
+                draft={buildRejection(picked, unmet, productName, applicant, reviewer, opinion)}
                 picked={picked}
                 unmet={unmet}
+                opinion={opinion}
                 copied={copied}
                 setCopied={setCopied}
               />
@@ -215,11 +249,12 @@ function Classify() {
 }
 
 function RejectionView({
-  draft, picked, unmet, copied, setCopied,
+  draft, picked, unmet, opinion, copied, setCopied,
 }: {
   draft: string;
   picked: Variation;
   unmet: string[];
+  opinion: string;
   copied: boolean;
   setCopied: (b: boolean) => void;
 }) {
@@ -247,7 +282,7 @@ function RejectionView({
         {unmet.length} condition{unmet.length > 1 ? "s" : ""} not met for {picked.code}
       </h2>
       <p className="mt-2 text-muted-foreground">
-        The proposed variation cannot be classified as Type {picked.type}. A formal rejection draft listing every unmet condition has been generated below.
+        The proposed variation cannot be classified as Type {picked.type}. A formal rejection statement with the reviewer's opinion and the final recommendation has been generated below.
       </p>
 
       <div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
@@ -261,9 +296,108 @@ function RejectionView({
         </ul>
       </div>
 
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-muted/30 p-4">
+          <div className="text-xs font-bold text-muted-foreground mb-1">Reviewer's opinion</div>
+          <p className="text-sm text-foreground whitespace-pre-wrap">
+            {opinion.trim() || "One or more mandatory conditions for Type IA classification are not fulfilled."}
+          </p>
+        </div>
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+          <div className="text-xs font-bold text-destructive mb-1">Final recommendation</div>
+          <p className="text-sm text-foreground font-bold">REJECT — does not qualify as Type {picked.type}.</p>
+          <p className="text-xs text-muted-foreground mt-1">Reclassify as Type IB or Type II, or resubmit with full compliance evidence.</p>
+        </div>
+      </div>
+
       <div className="mt-6">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-bold text-foreground">Rejection statement draft</h3>
+          <div className="flex gap-2">
+            <button onClick={copy}
+              className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">
+              {copied ? "✓ Copied" : "Copy"}
+            </button>
+            <button onClick={download}
+              className="text-xs rounded-lg bg-primary text-primary-foreground px-3 py-1.5 font-medium hover:bg-primary/90 transition">
+              Download .txt
+            </button>
+          </div>
+        </div>
+        <pre className="rounded-xl border border-border bg-background p-4 text-xs sm:text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed overflow-auto max-h-[420px]">
+{draft}
+        </pre>
+      </div>
+    </>
+  );
+}
+
+function AcceptanceView({
+  draft, picked, opinion, copied, setCopied,
+}: {
+  draft: string;
+  picked: Variation;
+  opinion: string;
+  copied: boolean;
+  setCopied: (b: boolean) => void;
+}) {
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(draft);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* ignore */ }
+  };
+  const download = () => {
+    const blob = new Blob([draft], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `acceptance-${picked.code}.txt`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <>
+      <div className="text-xs text-muted-foreground">Classification result</div>
+      <div className="mt-3"><TypeBadge type={picked.type} size="lg" /></div>
+      <h2 className="mt-4 font-display text-2xl font-extrabold text-foreground">{TYPE_INFO[picked.type].label}</h2>
+      <p className="mt-2 text-muted-foreground">{TYPE_INFO[picked.type].description}</p>
+
+      <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <div className="text-xs font-bold text-primary mb-1">Procedural timeline</div>
+        <div className="text-sm text-foreground">{TYPE_INFO[picked.type].timeline}</div>
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-border bg-muted/30 p-4">
+          <div className="text-xs font-bold text-muted-foreground mb-1">Reviewer's opinion</div>
+          <p className="text-sm text-foreground whitespace-pre-wrap">
+            {opinion.trim() || "All eligibility conditions have been verified and supporting documentation is adequate."}
+          </p>
+        </div>
+        <div className="rounded-xl border border-success/30 bg-success/10 p-4">
+          <div className="text-xs font-bold text-success-foreground mb-1">Final recommendation</div>
+          <p className="text-sm text-foreground font-bold">ACCEPT as Type {picked.type}.</p>
+          <p className="text-xs text-muted-foreground mt-1">{TYPE_INFO[picked.type].timeline}.</p>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h3 className="font-bold text-foreground mb-2">Required documents</h3>
+        <ul className="space-y-1.5">
+          {picked.documents.map((d, i) => (
+            <li key={i} className="flex gap-2 text-sm text-muted-foreground"><span className="text-primary">📄</span>{d}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-6 text-xs text-muted-foreground">
+        Reference: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
+      </div>
+
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-foreground">Acceptance statement draft</h3>
           <div className="flex gap-2">
             <button onClick={copy}
               className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">

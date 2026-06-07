@@ -55,9 +55,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Type I Variations Classifier — SFDA Guideline" },
-      { name: "description", content: "Interactive classifier for Type I variations (IA / IAIN / IB) under the SFDA Variation Requirements Guideline." },
-      { property: "og:title", content: "Type I Variations Classifier — SFDA" },
+      { title: "Type IA classification tool — SFDA Guideline" },
+      { name: "description", content: "Type IA classification tool for variations (IA / IAIN) under the SFDA Variation Requirements Guideline." },
+      { property: "og:title", content: "Type IA classification tool — SFDA" },
       { property: "og:description", content: "Classify your pharmaceutical change request fast and generate a rejection draft when conditions are not met." },
       { property: "og:type", content: "website" },
     ],
