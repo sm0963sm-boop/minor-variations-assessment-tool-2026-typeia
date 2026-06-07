@@ -86,6 +86,31 @@ Regulatory Affairs — Variations Assessment
 
 type CondStatus = "met" | "unmet" | "na";
 
+type OpinionParts = {
+  docs: string;
+  conditions: string;
+  gaps: string;
+  justification: string;
+  references: string;
+  conclusion: string;
+};
+const EMPTY_OPINION: OpinionParts = { docs: "", conditions: "", gaps: "", justification: "", references: "", conclusion: "" };
+
+function composeOpinion(p: OpinionParts): string {
+  const sections: [string, string][] = [
+    ["1) Verification of submitted documents", p.docs],
+    ["2) Assessment of eligibility conditions", p.conditions],
+    ["3) Deviations / gaps noted", p.gaps],
+    ["4) Scientific & technical justification", p.justification],
+    ["5) Applicable SFDA guideline references (v6.4)", p.references],
+    ["6) Reviewer's conclusion", p.conclusion],
+  ];
+  return sections
+    .filter(([, v]) => v.trim().length > 0)
+    .map(([h, v]) => `${h}:\n${v.trim()}`)
+    .join("\n\n");
+}
+
 function Classify() {
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState<string | null>(null);
@@ -94,13 +119,14 @@ function Classify() {
   const [productName, setProductName] = useState("");
   const [applicant, setApplicant] = useState("");
   const [reviewer, setReviewer] = useState("");
-  const [opinion, setOpinion] = useState("");
+  const [opinionParts, setOpinionParts] = useState<OpinionParts>(EMPTY_OPINION);
+  const opinion = useMemo(() => composeOpinion(opinionParts), [opinionParts]);
   const [copied, setCopied] = useState(false);
 
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinion(""); setCopied(false);
+    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinionParts(EMPTY_OPINION); setCopied(false);
   };
 
   const choose = (v: Variation) => {
@@ -219,12 +245,11 @@ function Classify() {
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal">(optional — included in the final statement)</span></label>
-                <p className="text-[11px] text-muted-foreground mb-1.5">
-                  Please include: (1) verification of submitted documents, (2) assessment of eligibility conditions, (3) any deviations or gaps noted, (4) scientific/technical justification, and (5) references to applicable SFDA guideline sections.
+                <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's detailed opinion</label>
+                <p className="text-[11px] text-muted-foreground mb-3">
+                  Fill each section below. All sections will be combined into a single formal reviewer's opinion and printed before the final recommendation.
                 </p>
-                <textarea value={opinion} onChange={(e) => setOpinion(e.target.value)} rows={5} placeholder="Technical opinion on the submitted dossier..."
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-y" />
+                <OpinionFields value={opinionParts} onChange={setOpinionParts} />
               </div>
             </div>
 
