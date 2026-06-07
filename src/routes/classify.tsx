@@ -94,14 +94,13 @@ function Classify() {
   const [productName, setProductName] = useState("");
   const [applicant, setApplicant] = useState("");
   const [reviewer, setReviewer] = useState("");
-  const [opinionParts, setOpinionParts] = useState<OpinionParts>(EMPTY_OPINION);
-  const opinion = useMemo(() => composeOpinion(opinionParts), [opinionParts]);
+  const [opinion, setOpinion] = useState("");
   const [copied, setCopied] = useState(false);
 
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinionParts(EMPTY_OPINION); setCopied(false);
+    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinion(""); setCopied(false);
   };
 
   const choose = (v: Variation) => {
