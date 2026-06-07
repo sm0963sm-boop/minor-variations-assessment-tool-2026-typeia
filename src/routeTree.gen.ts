@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ClassifyMultiRouteImport } from './routes/classify-multi'
 import { Route as ClassifyRouteImport } from './routes/classify'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ClassifyMultiRoute = ClassifyMultiRouteImport.update({
+  id: '/classify-multi',
+  path: '/classify-multi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClassifyRoute = ClassifyRouteImport.update({
   id: '/classify',
   path: '/classify',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
   '/classify': typeof ClassifyRoute
+  '/classify-multi': typeof ClassifyMultiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
   '/classify': typeof ClassifyRoute
+  '/classify-multi': typeof ClassifyMultiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
   '/classify': typeof ClassifyRoute
+  '/classify-multi': typeof ClassifyMultiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog' | '/classify'
+  fullPaths: '/' | '/catalog' | '/classify' | '/classify-multi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog' | '/classify'
-  id: '__root__' | '/' | '/catalog' | '/classify'
+  to: '/' | '/catalog' | '/classify' | '/classify-multi'
+  id: '__root__' | '/' | '/catalog' | '/classify' | '/classify-multi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CatalogRoute: typeof CatalogRoute
   ClassifyRoute: typeof ClassifyRoute
+  ClassifyMultiRoute: typeof ClassifyMultiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/classify-multi': {
+      id: '/classify-multi'
+      path: '/classify-multi'
+      fullPath: '/classify-multi'
+      preLoaderRoute: typeof ClassifyMultiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/classify': {
       id: '/classify'
       path: '/classify'
@@ -89,7 +106,18 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogRoute: CatalogRoute,
   ClassifyRoute: ClassifyRoute,
+  ClassifyMultiRoute: ClassifyMultiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
