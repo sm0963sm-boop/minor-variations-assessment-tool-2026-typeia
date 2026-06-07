@@ -216,11 +216,8 @@ function Classify() {
           <div className="rounded-3xl border border-border bg-card-gradient p-6 sm:p-8 shadow-elegant">
             {allMet ? (
               <AcceptanceView
-                draft={buildAcceptance(picked, productName, applicant, reviewer, opinion)}
                 picked={picked}
                 opinion={opinion}
-                copied={copied}
-                setCopied={setCopied}
               />
             ) : (
               <RejectionView
@@ -349,29 +346,11 @@ function RejectionView({
 }
 
 function AcceptanceView({
-  draft, picked, opinion, copied, setCopied,
+  picked, opinion,
 }: {
-  draft: string;
   picked: Variation;
   opinion: string;
-  copied: boolean;
-  setCopied: (b: boolean) => void;
 }) {
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(draft);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* ignore */ }
-  };
-  const download = () => {
-    const blob = new Blob([draft], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `acceptance-${picked.code}.txt`; a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <>
       <div className="text-xs text-muted-foreground">Classification result</div>
@@ -409,25 +388,6 @@ function AcceptanceView({
 
       <div className="mt-6 text-xs text-muted-foreground">
         Reference: <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{picked.code}</code> — {picked.category}
-      </div>
-
-      <div className="mt-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-bold text-foreground">Acceptance statement draft</h3>
-          <div className="flex gap-2">
-            <button onClick={copy}
-              className="text-xs rounded-lg border border-border bg-card px-3 py-1.5 font-medium hover:bg-muted transition">
-              {copied ? "✓ Copied" : "Copy"}
-            </button>
-            <button onClick={download}
-              className="text-xs rounded-lg bg-primary text-primary-foreground px-3 py-1.5 font-medium hover:bg-primary/90 transition">
-              Download .txt
-            </button>
-          </div>
-        </div>
-        <pre className="rounded-xl border border-border bg-background p-4 text-xs sm:text-sm text-foreground whitespace-pre-wrap font-mono leading-relaxed overflow-auto max-h-[420px]">
-{draft}
-        </pre>
       </div>
     </>
   );
