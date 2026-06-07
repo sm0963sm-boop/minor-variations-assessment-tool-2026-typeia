@@ -291,24 +291,19 @@ function ClassifyMulti() {
               <div className={`text-sm font-bold mb-4 ${allAccepted ? "text-success" : "text-destructive"}`}>Final recommendation</div>
               <ul className="space-y-3">
                 {results.map(({ v, unmet, accepted }) => (
-                  <li key={v.code} className="flex gap-3">
-                    <span className={`mt-2 size-2 shrink-0 rounded-full ${accepted ? "bg-success" : "bg-destructive"}`} />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm sm:text-base text-foreground leading-relaxed">
-                        <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
-                        <span className="font-semibold">{v.title}</span>
-                        <span className={`ms-2 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${accepted ? "bg-success/20 text-success" : "bg-destructive/15 text-destructive"}`}>
-                          {accepted ? "Approved" : "Rejected"}
-                        </span>
-                      </div>
-                      {!accepted && unmet.length > 0 && (
-                        <ul className="mt-2 space-y-1 ps-4">
-                          {unmet.map((c, i) => (
-                            <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
+                  <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
+                    <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
+                    <span className="font-semibold">{v.title}</span>
+                    <span className={`ms-1 font-bold ${accepted ? "text-success" : "text-destructive"}`}>
+                      {accepted ? "is approved" : "is rejected"}
+                    </span>
+                    {!accepted && unmet.length > 0 && (
+                      <ul className="mt-2 space-y-1 ps-5">
+                        {unmet.map((c, i) => (
+                          <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>
