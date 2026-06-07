@@ -342,7 +342,43 @@ function ClassifyMulti() {
             const bullet = (text: string) =>
               new Paragraph({ bullet: { level: 0 }, children: [new TextRun(text)] });
 
-            const children: Paragraph[] = [];
+            const infoRows: [string, string][] = [
+              ["Product name", productInfo.productName],
+              ["Request number", productInfo.requestNumber],
+              ["API supplier", productInfo.apiSupplier],
+              ["FPP manufacture", productInfo.fppManufacture],
+              ["Strength", productInfo.strength],
+              ["Pack size", productInfo.packSize],
+              ["Storage condition", productInfo.storageCondition],
+              ["Shelf life", productInfo.shelfLife],
+            ];
+            const cellBorder = { style: BorderStyle.SINGLE, size: 6, color: "BFBFBF" };
+            const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
+            const infoTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [3120, 6240],
+              rows: infoRows.map(([label, value]) => new TableRow({
+                children: [
+                  new TableCell({
+                    borders,
+                    width: { size: 3120, type: WidthType.DXA },
+                    margins: { top: 80, bottom: 80, left: 120, right: 120 },
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true })] })],
+                  }),
+                  new TableCell({
+                    borders,
+                    width: { size: 6240, type: WidthType.DXA },
+                    margins: { top: 80, bottom: 80, left: 120, right: 120 },
+                    children: [new Paragraph({ children: [new TextRun(value || "—")] })],
+                  }),
+                ],
+              })),
+            });
+
+            const children: (Paragraph | Table)[] = [];
+            children.push(heading("Product information"));
+            children.push(infoTable);
+            children.push(new Paragraph({ children: [new TextRun("")] }));
             children.push(heading("Reviewer opinion"));
             children.push(para(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`));
             children.push(para(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`));
