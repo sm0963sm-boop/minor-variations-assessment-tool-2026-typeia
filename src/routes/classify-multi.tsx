@@ -220,28 +220,44 @@ function ClassifyMulti() {
               </div>
             )}
 
-            <div className={`mt-6 rounded-xl border-2 p-5 ${allAccepted ? "border-success/40 bg-success/10" : "border-destructive/40 bg-destructive/10"}`}>
-              <div className={`text-sm font-bold mb-2 ${allAccepted ? "text-success" : "text-destructive"}`}>Final combined recommendation</div>
-              {allAccepted ? (
-                <p className="text-base text-foreground font-bold leading-relaxed">
-                  Based on the data submitted, all {results.length} proposed variation{results.length > 1 ? "s are" : " is"} approved.
-                </p>
-              ) : (
-                <>
-                  <p className="text-base text-foreground font-bold leading-relaxed">
-                    Based on the data submitted, the combined submission is rejected because the following condition{anyRejected ? "s were" : " was"} not met across the selected variations:
-                  </p>
-                  <ul className="mt-3 space-y-1.5">
-                    {results.filter(r => !r.accepted).flatMap(r =>
-                      r.unmet.map((c, i) => (
-                        <li key={`${r.v.code}-${i}`} className="text-sm text-foreground/85 leading-relaxed">
-                          • <span className="font-mono text-xs font-bold text-destructive">{r.v.code}</span> — {c}
-                        </li>
-                      ))
+            <div className={`mt-6 rounded-2xl border-2 p-5 sm:p-6 ${allAccepted ? "border-success/40 bg-success/10" : "border-destructive/40 bg-destructive/10"}`}>
+              <div className={`text-sm font-bold mb-4 ${allAccepted ? "text-success" : "text-destructive"}`}>Final recommendation — per variation</div>
+              <div className="space-y-4">
+                {results.map(({ v, unmet, accepted }) => (
+                  <div key={v.code} className={`rounded-xl border p-4 ${accepted ? "border-success/30 bg-background" : "border-destructive/30 bg-background"}`}>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-mono font-bold ${accepted ? "bg-success/20 text-success" : "bg-destructive/15 text-destructive"}`}>
+                        {v.code}
+                      </div>
+                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Variation · Type {v.type}</div>
+                      <div className={`ml-auto text-xs font-bold ${accepted ? "text-success" : "text-destructive"}`}>
+                        {accepted ? "Accepted" : "Rejected"}
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold text-foreground leading-snug mb-2">{v.title}</div>
+                    {accepted ? (
+                      <p className="text-sm text-foreground/90 leading-relaxed">
+                        Based on the data submitted, this variation is approved. All eligibility conditions are fully met.
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-sm text-foreground/90 leading-relaxed mb-2">
+                          Based on the data submitted, this variation is rejected because the following condition{unmet.length > 1 ? "s were" : " was"} not met:
+                        </p>
+                        <ul className="space-y-1">
+                          {unmet.map((c, i) => (
+                            <li key={i} className="text-sm text-foreground/85 leading-relaxed">• {c}</li>
+                          ))}
+                        </ul>
+                      </>
                     )}
-                  </ul>
-                  <p className="text-sm text-muted-foreground mt-4 leading-relaxed">Reclassify the affected variation(s) as Type IB or Type II, or resubmit with full compliance evidence.</p>
-                </>
+                  </div>
+                ))}
+              </div>
+              {!allAccepted && (
+                <p className="text-sm text-muted-foreground mt-4 leading-relaxed border-t border-destructive/20 pt-4">
+                  Reclassify the affected variation(s) as Type IB or Type II, or resubmit with full compliance evidence.
+                </p>
               )}
             </div>
 
