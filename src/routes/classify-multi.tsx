@@ -286,13 +286,9 @@ function ClassifyMulti() {
               "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
             );
           } else {
-            reviewerLines.push(`Assessment: ${overall}`);
-            if (rejectedCount > 0) {
-              reviewerLines.push("Key gaps identified:");
-              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-                reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
-              });
-            }
+            reviewerLines.push(
+              "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted."
+            );
           }
           if (opinion.trim()) {
             reviewerLines.push("Reviewer's note:");
