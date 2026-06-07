@@ -28,7 +28,7 @@ function Home() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs text-primary font-medium">
               <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-              Aligned with the SFDA Variation Requirements Guideline
+              Aligned with the SFDA Variation Requirements Guideline v6.4
             </div>
             <h1 className="mt-5 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
               <span className="bg-hero bg-clip-text text-transparent">Type IA classification tool</span>
