@@ -3,32 +3,6 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
-import { OpinionFields } from "./classify";
-
-type OpinionParts = {
-  docs: string;
-  conditions: string;
-  gaps: string;
-  justification: string;
-  references: string;
-  conclusion: string;
-};
-const EMPTY_OPINION: OpinionParts = { docs: "", conditions: "", gaps: "", justification: "", references: "", conclusion: "" };
-
-function composeOpinion(p: OpinionParts): string {
-  const sections: [string, string][] = [
-    ["1) Verification of submitted documents", p.docs],
-    ["2) Assessment of eligibility conditions", p.conditions],
-    ["3) Deviations / gaps noted", p.gaps],
-    ["4) Scientific & technical justification", p.justification],
-    ["5) Applicable SFDA guideline references (v6.4)", p.references],
-    ["6) Reviewer's conclusion", p.conclusion],
-  ];
-  return sections
-    .filter(([, v]) => v.trim().length > 0)
-    .map(([h, v]) => `${h}:\n${v.trim()}`)
-    .join("\n\n");
-}
 
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
