@@ -372,7 +372,7 @@ function AcceptanceView({
         </div>
         <div className="rounded-xl border border-success/30 bg-success/10 p-4">
           <div className="text-xs font-bold text-success-foreground mb-1">Final recommendation</div>
-          <p className="text-sm text-foreground font-bold">ACCEPT as Type {picked.type}.</p>
+          <p className="text-sm text-foreground font-bold">Based on the data submitted, the proposed variation is approved.</p>
           <p className="text-xs text-muted-foreground mt-1">{TYPE_INFO[picked.type].timeline}.</p>
         </div>
       </div>
