@@ -240,6 +240,61 @@ function ClassifyMulti() {
 
         {step === 2 && (
           <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
+            {(() => {
+              const total = results.length;
+              const approvedCount = results.filter(r => r.accepted).length;
+              const rejectedCount = total - approvedCount;
+              const typeCounts = results.reduce<Record<string, number>>((acc, r) => {
+                acc[r.v.type] = (acc[r.v.type] || 0) + 1;
+                return acc;
+              }, {});
+              const typesSummary = Object.entries(typeCounts)
+                .map(([t, n]) => `${n} × ${t}`)
+                .join(", ");
+              const overall = allAccepted
+                ? "All selected variations satisfy their required conditions and qualify for the requested classification."
+                : approvedCount === 0
+                  ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
+                  : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
+              return (
+                <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
+                  <div className="text-sm font-bold mb-4 text-primary">Reviewer opinion</div>
+                  <div className="space-y-3 text-sm sm:text-base text-foreground leading-relaxed">
+                    <p>
+                      <span className="font-bold">Scope reviewed:</span> {total} variation{total === 1 ? "" : "s"} ({typesSummary}).
+                    </p>
+                    <p>
+                      <span className="font-bold">Outcome summary:</span>{" "}
+                      <span className="font-bold text-success">{approvedCount} approved</span>
+                      {" · "}
+                      <span className="font-bold text-destructive">{rejectedCount} rejected</span>.
+                    </p>
+                    <p>
+                      <span className="font-bold">Assessment:</span> {overall}
+                    </p>
+                    {rejectedCount > 0 && (
+                      <div>
+                        <div className="font-bold mb-1">Key gaps identified:</div>
+                        <ul className="space-y-1 ps-5 list-disc">
+                          {results.filter(r => !r.accepted).map(({ v, unmet }) => (
+                            <li key={v.code} className="text-sm text-foreground/90">
+                              <span className="font-mono font-bold">{v.code}</span> — {unmet.length} unmet {unmet.length === 1 ? "condition" : "conditions"}.
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {opinion.trim() && (
+                      <div className="pt-2 border-t border-primary/20">
+                        <div className="font-bold mb-1">Reviewer's note:</div>
+                        <p className="text-foreground/90 whitespace-pre-wrap">{opinion.trim()}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
             <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
               <div className="text-sm font-bold mb-4 text-primary">Final recommendation</div>
               <ul className="space-y-3">
