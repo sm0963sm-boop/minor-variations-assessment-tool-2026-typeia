@@ -243,32 +243,6 @@ function ClassifyMulti() {
             </div>
 
             <div className="mt-5 rounded-xl border border-border bg-card p-4">
-              <div className="text-sm font-extrabold text-foreground mb-3">Product information <span className="text-muted-foreground font-normal text-xs">(included in Word export)</span></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {([
-                  ["productName", "Product name"],
-                  ["requestNumber", "Request number"],
-                  ["apiSupplier", "API supplier"],
-                  ["fppManufacture", "FPP manufacture"],
-                  ["strength", "Strength"],
-                  ["packSize", "Pack size"],
-                  ["storageCondition", "Storage condition"],
-                  ["shelfLife", "Shelf life"],
-                ] as const).map(([key, label]) => (
-                  <div key={key}>
-                    <label className="block text-xs font-bold text-muted-foreground mb-1">{label}</label>
-                    <input
-                      type="text"
-                      value={productInfo[key]}
-                      onChange={(e) => setProductInfo({ ...productInfo, [key]: e.target.value })}
-                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5 rounded-xl border border-border bg-card p-4">
               <label className="block text-sm font-extrabold text-foreground mb-1">Reviewer's opinion <span className="text-muted-foreground font-normal text-xs">(optional)</span></label>
               <textarea
                 value={opinion}
