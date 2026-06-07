@@ -21,6 +21,7 @@ function ClassifyMulti() {
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [checks, setChecks] = useState<ChecksMap>({});
   const [opinion, setOpinion] = useState("");
+  const [openCat, setOpenCat] = useState<string | null>(null);
 
   const selected = useMemo(
     () => VARIATIONS.filter(v => selectedCodes.includes(v.code)),
