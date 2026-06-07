@@ -3,7 +3,9 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, FileDown } from "lucide-react";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun } from "docx";
+import { saveAs } from "file-saver";
 
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
@@ -250,154 +252,195 @@ function ClassifyMulti() {
           </Panel>
         )}
 
-        {step === 2 && (
-          <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
-            {(() => {
-              const total = results.length;
-              const approvedCount = results.filter(r => r.accepted).length;
-              const rejectedCount = total - approvedCount;
-              const typeCounts = results.reduce<Record<string, number>>((acc, r) => {
-                acc[r.v.type] = (acc[r.v.type] || 0) + 1;
-                return acc;
-              }, {});
-              const typesSummary = Object.entries(typeCounts)
-                .map(([t, n]) => `${n} × ${t}`)
-                .join(", ");
-              const overall = allAccepted
-                ? "All selected variations satisfy their required conditions and qualify for the requested classification."
-                : approvedCount === 0
-                  ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
-                  : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
+        {step === 2 && (() => {
+          const total = results.length;
+          const approvedCount = results.filter(r => r.accepted).length;
+          const rejectedCount = total - approvedCount;
+          const typeCounts = results.reduce<Record<string, number>>((acc, r) => {
+            acc[r.v.type] = (acc[r.v.type] || 0) + 1;
+            return acc;
+          }, {});
+          const typesSummary = Object.entries(typeCounts)
+            .map(([t, n]) => `${n} × ${t}`)
+            .join(", ");
+          const overall = allAccepted
+            ? "All selected variations satisfy their required conditions and qualify for the requested classification."
+            : approvedCount === 0
+              ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
+              : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
 
-              const reviewerText = (() => {
-                const lines: string[] = [];
-                lines.push(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`);
-                lines.push(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`);
-                lines.push(`Assessment: ${overall}`);
-                if (rejectedCount > 0) {
-                  lines.push("Key gaps identified:");
-                  results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
-                    lines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
-                  });
-                }
-                if (opinion.trim()) {
-                  lines.push("Reviewer's note:");
-                  lines.push(opinion.trim());
-                }
-                return lines.join("\n");
-              })();
+          const reviewerLines: string[] = [];
+          reviewerLines.push(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`);
+          reviewerLines.push(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`);
+          reviewerLines.push(`Assessment: ${overall}`);
+          if (rejectedCount > 0) {
+            reviewerLines.push("Key gaps identified:");
+            results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+              reviewerLines.push(`• ${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`);
+            });
+          }
+          if (opinion.trim()) {
+            reviewerLines.push("Reviewer's note:");
+            reviewerLines.push(opinion.trim());
+          }
+          const reviewerText = reviewerLines.join("\n");
 
-              return (
-                <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm font-bold text-primary">Reviewer opinion</div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(reviewerText, "reviewer")}
-                      className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
-                    >
-                      {copiedKey === "reviewer" ? <Check size={14} /> : <Copy size={14} />}
-                      {copiedKey === "reviewer" ? "Copied!" : "Copy"}
-                    </button>
-                  </div>
-                  <div className="space-y-3 text-sm sm:text-base text-foreground leading-relaxed">
-                    <p>
-                      <span className="font-bold">Scope reviewed:</span> {total} variation{total === 1 ? "" : "s"} ({typesSummary}).
-                    </p>
-                    <p>
-                      <span className="font-bold">Outcome summary:</span>{" "}
-                      <span className="font-bold text-success">{approvedCount} approved</span>
-                      {" · "}
-                      <span className="font-bold text-destructive">{rejectedCount} rejected</span>.
-                    </p>
-                    <p>
-                      <span className="font-bold">Assessment:</span> {overall}
-                    </p>
-                    {rejectedCount > 0 && (
-                      <div>
-                        <div className="font-bold mb-1">Key gaps identified:</div>
-                        <ul className="space-y-1 ps-5 list-disc">
-                          {results.filter(r => !r.accepted).map(({ v, unmet }) => (
-                            <li key={v.code} className="text-sm text-foreground/90">
-                              <span className="font-mono font-bold">{v.code}</span> — {unmet.length} unmet {unmet.length === 1 ? "condition" : "conditions"}.
-                            </li>
+          const finalText = results.map(({ v, unmet, accepted }) => {
+            const lines: string[] = [];
+            lines.push(`${v.code} ${v.title}`);
+            if (accepted) {
+              lines.push("is approved");
+            } else {
+              lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
+              unmet.forEach(c => lines.push(`• ${c}`));
+            }
+            return lines.join("\n");
+          }).join("\n\n");
+
+          const downloadWord = async () => {
+            const heading = (text: string) =>
+              new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text, bold: true })] });
+            const para = (text: string, bold = false) =>
+              new Paragraph({ children: [new TextRun({ text, bold })] });
+            const bullet = (text: string) =>
+              new Paragraph({ bullet: { level: 0 }, children: [new TextRun(text)] });
+
+            const children: Paragraph[] = [];
+            children.push(heading("Reviewer opinion"));
+            children.push(para(`Scope reviewed: ${total} variation${total === 1 ? "" : "s"} (${typesSummary}).`));
+            children.push(para(`Outcome summary: ${approvedCount} approved · ${rejectedCount} rejected.`));
+            children.push(para(`Assessment: ${overall}`));
+            if (rejectedCount > 0) {
+              children.push(para("Key gaps identified:", true));
+              results.filter(r => !r.accepted).forEach(({ v, unmet }) => {
+                children.push(bullet(`${v.code} — ${unmet.length} unmet ${unmet.length === 1 ? "condition" : "conditions"}.`));
+              });
+            }
+            if (opinion.trim()) {
+              children.push(para("Reviewer's note:", true));
+              opinion.trim().split("\n").forEach(l => children.push(para(l)));
+            }
+
+            children.push(new Paragraph({ children: [new TextRun("")] }));
+            children.push(heading("Final recommendation"));
+            results.forEach(({ v, unmet, accepted }) => {
+              children.push(new Paragraph({
+                children: [
+                  new TextRun({ text: `${v.code} `, bold: true }),
+                  new TextRun({ text: v.title, bold: true }),
+                  new TextRun({ text: accepted ? " is approved" : ` is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:` }),
+                ],
+              }));
+              if (!accepted) unmet.forEach(c => children.push(bullet(c)));
+              children.push(new Paragraph({ children: [new TextRun("")] }));
+            });
+
+            const doc = new Document({ sections: [{ children }] });
+            const blob = await Packer.toBlob(doc);
+            saveAs(blob, `reviewer-decision-${new Date().toISOString().slice(0, 10)}.docx`);
+          };
+
+          return (
+            <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
+              <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-sm font-bold text-primary">Reviewer opinion</div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(reviewerText, "reviewer")}
+                    className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+                  >
+                    {copiedKey === "reviewer" ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedKey === "reviewer" ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <div className="space-y-3 text-sm sm:text-base text-foreground leading-relaxed">
+                  <p>
+                    <span className="font-bold">Scope reviewed:</span> {total} variation{total === 1 ? "" : "s"} ({typesSummary}).
+                  </p>
+                  <p>
+                    <span className="font-bold">Outcome summary:</span>{" "}
+                    <span className="font-bold text-success">{approvedCount} approved</span>
+                    {" · "}
+                    <span className="font-bold text-destructive">{rejectedCount} rejected</span>.
+                  </p>
+                  <p>
+                    <span className="font-bold">Assessment:</span> {overall}
+                  </p>
+                  {rejectedCount > 0 && (
+                    <div>
+                      <div className="font-bold mb-1">Key gaps identified:</div>
+                      <ul className="space-y-1 ps-5 list-disc">
+                        {results.filter(r => !r.accepted).map(({ v, unmet }) => (
+                          <li key={v.code} className="text-sm text-foreground/90">
+                            <span className="font-mono font-bold">{v.code}</span> — {unmet.length} unmet {unmet.length === 1 ? "condition" : "conditions"}.
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {opinion.trim() && (
+                    <div className="pt-2 border-t border-primary/20">
+                      <div className="font-bold mb-1">Reviewer's note:</div>
+                      <p className="text-foreground/90 whitespace-pre-wrap">{opinion.trim()}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-sm font-bold text-primary">Final recommendation</div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(finalText, "final")}
+                    className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+                  >
+                    {copiedKey === "final" ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedKey === "final" ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <ul className="space-y-3">
+                  {results.map(({ v, unmet, accepted }) => (
+                    <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
+                      <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
+                      <span className="font-semibold">{v.title}</span>
+                      {accepted ? (
+                        <span className="ms-1 font-bold text-success">is approved</span>
+                      ) : (
+                        <span className="ms-1 font-bold text-destructive">
+                          is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
+                        </span>
+                      )}
+                      {!accepted && unmet.length > 0 && (
+                        <ul className="mt-2 space-y-1 ps-5">
+                          {unmet.map((c, i) => (
+                            <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
                           ))}
                         </ul>
-                      </div>
-                    )}
-                    {opinion.trim() && (
-                      <div className="pt-2 border-t border-primary/20">
-                        <div className="font-bold mb-1">Reviewer's note:</div>
-                        <p className="text-foreground/90 whitespace-pre-wrap">{opinion.trim()}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })()}
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            {(() => {
-              const finalText = results.map(({ v, unmet, accepted }) => {
-                const lines: string[] = [];
-                lines.push(`${v.code} ${v.title}`);
-                if (accepted) {
-                  lines.push("is approved");
-                } else {
-                  lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
-                  unmet.forEach(c => lines.push(`• ${c}`));
-                }
-                return lines.join("\n");
-              }).join("\n\n");
-
-              return (
-                <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm font-bold text-primary">Final recommendation</div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(finalText, "final")}
-                      className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
-                    >
-                      {copiedKey === "final" ? <Check size={14} /> : <Copy size={14} />}
-                      {copiedKey === "final" ? "Copied!" : "Copy"}
-                    </button>
-                  </div>
-                  <ul className="space-y-3">
-                    {results.map(({ v, unmet, accepted }) => (
-                      <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
-                        <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
-                        <span className="font-semibold">{v.title}</span>
-                        {accepted ? (
-                          <span className="ms-1 font-bold text-success">is approved</span>
-                        ) : (
-                          <span className="ms-1 font-bold text-destructive">
-                            is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
-                          </span>
-                        )}
-                        {!accepted && unmet.length > 0 && (
-                          <ul className="mt-2 space-y-1 ps-5">
-                            {unmet.map((c, i) => (
-                              <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })()}
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button onClick={reset} className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
-                Start over
-              </button>
-              <Link to="/catalog" className="rounded-xl border border-border bg-card px-5 py-2.5 font-medium text-foreground hover:bg-muted transition">
-                Browse the full catalog
-              </Link>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <button
+                  onClick={downloadWord}
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition"
+                >
+                  <FileDown size={16} /> Download as Word
+                </button>
+                <button onClick={reset} className="rounded-xl border border-border bg-card px-5 py-2.5 font-medium text-foreground hover:bg-muted transition">
+                  Start over
+                </button>
+                <Link to="/catalog" className="rounded-xl border border-border bg-card px-5 py-2.5 font-medium text-foreground hover:bg-muted transition">
+                  Browse the full catalog
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
