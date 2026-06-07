@@ -250,7 +250,9 @@ function ClassifyMulti() {
                     {accepted ? (
                       <span className="ms-1 font-bold text-success">is approved</span>
                     ) : (
-                      <span className="ms-1 font-bold text-destructive">is rejected, the following conditions are not met:</span>
+                      <span className="ms-1 font-bold text-destructive">
+                        is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
+                      </span>
                     )}
                     {!accepted && unmet.length > 0 && (
                       <ul className="mt-2 space-y-1 ps-5">
