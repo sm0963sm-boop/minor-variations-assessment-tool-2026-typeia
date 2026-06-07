@@ -288,39 +288,30 @@ function ClassifyMulti() {
             )}
 
             <div className={`mt-6 rounded-2xl border-2 p-5 sm:p-6 ${allAccepted ? "border-success/40 bg-success/10" : "border-destructive/40 bg-destructive/10"}`}>
-              <div className={`text-sm font-bold mb-4 ${allAccepted ? "text-success" : "text-destructive"}`}>Final recommendation — per variation</div>
-              <div className="space-y-4">
+              <div className={`text-sm font-bold mb-4 ${allAccepted ? "text-success" : "text-destructive"}`}>Final recommendation</div>
+              <ul className="space-y-3">
                 {results.map(({ v, unmet, accepted }) => (
-                  <div key={v.code} className={`rounded-xl border p-4 ${accepted ? "border-success/30 bg-background" : "border-destructive/30 bg-background"}`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-mono font-bold ${accepted ? "bg-success/20 text-success" : "bg-destructive/15 text-destructive"}`}>
-                        {v.code}
+                  <li key={v.code} className="flex gap-3">
+                    <span className={`mt-2 size-2 shrink-0 rounded-full ${accepted ? "bg-success" : "bg-destructive"}`} />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm sm:text-base text-foreground leading-relaxed">
+                        <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
+                        <span className="font-semibold">{v.title}</span>
+                        <span className={`ms-2 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${accepted ? "bg-success/20 text-success" : "bg-destructive/15 text-destructive"}`}>
+                          {accepted ? "Approved" : "Rejected"}
+                        </span>
                       </div>
-                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Variation · Type {v.type}</div>
-                      <div className={`ml-auto text-xs font-bold ${accepted ? "text-success" : "text-destructive"}`}>
-                        {accepted ? "Accepted" : "Rejected"}
-                      </div>
-                    </div>
-                    <div className="text-sm font-semibold text-foreground leading-snug mb-2">{v.title}</div>
-                    {accepted ? (
-                      <p className="text-sm text-foreground/90 leading-relaxed">
-                        Based on the data submitted, this variation is approved. All eligibility conditions are fully met.
-                      </p>
-                    ) : (
-                      <>
-                        <p className="text-sm text-foreground/90 leading-relaxed mb-2">
-                          Based on the data submitted, this variation is rejected because the following condition{unmet.length > 1 ? "s were" : " was"} not met:
-                        </p>
-                        <ul className="space-y-1">
+                      {!accepted && unmet.length > 0 && (
+                        <ul className="mt-2 space-y-1 ps-4">
                           {unmet.map((c, i) => (
-                            <li key={i} className="text-sm text-foreground/85 leading-relaxed">• {c}</li>
+                            <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
                           ))}
                         </ul>
-                      </>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
