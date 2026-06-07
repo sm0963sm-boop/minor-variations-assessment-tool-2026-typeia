@@ -123,7 +123,6 @@ function Classify() {
         </div>
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-display text-3xl font-extrabold text-foreground">Classifier</h1>
-          <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
           {[0, 1, 2, 3].map(i => (
