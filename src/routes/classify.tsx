@@ -163,23 +163,38 @@ function Classify() {
         {step === 2 && picked && (
           <Panel title="3. Verify eligibility conditions" subtitle="Tick every condition that is fully met for your case.">
             <ul className="space-y-2.5 mb-6">
-              {picked.conditions.map((c, i) => (
-                <li key={i}>
-                  <label className="flex gap-3 p-3 rounded-lg bg-muted/40 border border-border cursor-pointer hover:bg-muted/60 transition">
-                    <input
-                      type="checkbox"
-                      checked={checked[i] || false}
-                      onChange={(e) => {
-                        const next = [...checked]; next[i] = e.target.checked; setChecked(next);
-                      }}
-                      className="mt-1 size-4 accent-primary"
-                    />
-                    <span className="text-sm text-foreground flex-1">
-                      <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
-                    </span>
-                  </label>
-                </li>
-              ))}
+              {picked.conditions.map((c, i) => {
+                const s = status[i] || "unmet";
+                const setS = (val: CondStatus) => {
+                  const next = [...status]; next[i] = val; setStatus(next);
+                };
+                const opts: { val: CondStatus; label: string; cls: string }[] = [
+                  { val: "met", label: "Met", cls: "bg-success/15 text-success border-success/40" },
+                  { val: "unmet", label: "Not met", cls: "bg-destructive/10 text-destructive border-destructive/40" },
+                  { val: "na", label: "N/A", cls: "bg-muted text-muted-foreground border-border" },
+                ];
+                return (
+                  <li key={i} className={`p-3 rounded-lg border ${s === "na" ? "bg-muted/20 border-border opacity-70" : "bg-muted/40 border-border"}`}>
+                    <div className="flex gap-3 items-start">
+                      <span className="text-sm text-foreground flex-1">
+                        <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {opts.map(o => (
+                        <button
+                          key={o.val}
+                          type="button"
+                          onClick={() => setS(o.val)}
+                          className={`text-xs font-bold px-2.5 py-1 rounded-md border transition ${s === o.val ? o.cls : "bg-background text-muted-foreground border-border hover:border-foreground/30"}`}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
 
             <div className="rounded-xl border border-border bg-card p-4 mb-4 grid gap-3 sm:grid-cols-2">
