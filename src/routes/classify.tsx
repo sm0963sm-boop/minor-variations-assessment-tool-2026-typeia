@@ -228,8 +228,8 @@ function Classify() {
           </Panel>
         )}
 
-        {step === 1 && category && (
-          <Panel title="2. Pick the specific variation" subtitle={`Category: ${category}`}>
+        {step === 2 && category && (
+          <Panel title="3. Pick the specific variation" subtitle={`Category: ${category}`}>
             <div className="space-y-4">
               <select
                 className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring appearance-none cursor-pointer"
@@ -247,18 +247,29 @@ function Classify() {
                 ))}
               </select>
             </div>
-            <button onClick={() => setStep(0)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
+            <button onClick={() => setStep(1)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {step === 2 && picked && (
-          <Panel title="3. Verify eligibility conditions" subtitle="Tick every condition that is fully met for your case.">
+        {step === 3 && picked && (
+          <Panel title="4. Verify eligibility conditions" subtitle="Every SFDA condition is shown. The system flags which ones likely apply based on your product context.">
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 mb-4 text-xs text-foreground">
+              <span className="font-bold">Product context:</span>{" "}
+              {DOSAGE_FORMS.find(d => d.value === dosageForm)?.label} ·{" "}
+              {sterile ? "Sterile" : "Non-sterile"}
+            </div>
             <ul className="space-y-2.5 mb-6">
               {picked.conditions.map((c, i) => {
                 const s = status[i] || "unmet";
                 const setS = (val: CondStatus) => {
                   const next = [...status]; next[i] = val; setStatus(next);
                 };
+                const ann = annotateCondition(c, dosageForm, sterile);
+                const annCfg = ann.kind === "applies"
+                  ? { icon: "✓", label: "Likely applies", cls: "bg-warning/15 text-warning border-warning/40" }
+                  : ann.kind === "not-applies"
+                  ? { icon: "⊘", label: "Likely doesn't apply", cls: "bg-muted text-muted-foreground border-border" }
+                  : { icon: "?", label: "Reviewer judgment", cls: "bg-primary/10 text-primary border-primary/30" };
                 const opts: { val: CondStatus; label: string; cls: string }[] = [
                   { val: "met", label: "Met", cls: "bg-success/15 text-success border-success/40" },
                   { val: "unmet", label: "Not met", cls: "bg-destructive/10 text-destructive border-destructive/40" },
@@ -271,6 +282,10 @@ function Classify() {
                         <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
                       </span>
                     </div>
+                    <div className={`mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-1 rounded-md border ${annCfg.cls}`}>
+                      <span>{annCfg.icon}</span><span>{annCfg.label}</span>
+                    </div>
+                    <div className="mt-1 text-[11px] text-muted-foreground italic">{ann.reason}</div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {opts.map(o => (
                         <button
@@ -316,29 +331,20 @@ function Classify() {
               </div>
             </div>
 
-            <button onClick={() => setStep(3)}
+            <button onClick={() => setStep(4)}
               className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition">
               Generate result →
             </button>
-            <button onClick={() => setStep(1)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
+            <button onClick={() => setStep(2)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {step === 3 && picked && (
+        {step === 4 && picked && (
           <div className="rounded-3xl border border-border bg-card-gradient p-6 sm:p-8 shadow-elegant">
             {allMet ? (
-              <AcceptanceView
-                picked={picked}
-                opinion={opinion}
-              />
+              <AcceptanceView picked={picked} opinion={opinion} />
             ) : (
-              <RejectionView
-                picked={picked}
-                unmet={unmet}
-                status={status}
-                opinion={opinion}
-              />
-
+              <RejectionView picked={picked} unmet={unmet} status={status} opinion={opinion} />
             )}
 
             <div className="mt-8 flex flex-wrap gap-3">
