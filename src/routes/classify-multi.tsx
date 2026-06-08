@@ -30,6 +30,16 @@ function ClassifyMulti() {
   const [checks, setChecks] = useState<ChecksMap>({});
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [] as Variation[];
+    const tokens = q.split(/\s+/).filter(Boolean);
+    return VARIATIONS.filter(v => {
+      const hay = `${v.code} ${v.title} ${v.category} ${v.type}`.toLowerCase();
+      return tokens.every(t => hay.includes(t));
+    }).slice(0, 12);
+  }, [searchQuery]);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [aiAnalysis, setAiAnalysis] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
