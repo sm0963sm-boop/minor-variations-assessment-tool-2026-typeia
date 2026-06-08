@@ -103,45 +103,10 @@ function ClassifyMulti() {
           <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
-          {[0, 1, 2, 3].map(i => (
+          {[1, 2, 3].map(i => (
             <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-border"}`} />
           ))}
         </div>
-
-        {step === 0 && (
-          <Panel title="1. Product context" subtitle="Tell the system about the product. All conditions will still be shown later; the system will only flag which ones likely apply.">
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2">Pharmaceutical dosage form</label>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {DOSAGE_FORMS.map(df => (
-                    <button key={df.value} type="button"
-                      onClick={() => { setDosageForm(df.value); if (sterile === null) setSterile(df.sterileDefault); }}
-                      className={`text-left rounded-xl border p-3 transition ${dosageForm === df.value ? "border-primary bg-primary/5 shadow-soft" : "border-border bg-card hover:border-primary/50"}`}>
-                      <div className="text-sm font-bold text-foreground">{df.label}</div>
-                      {df.sterileDefault && <div className="text-xs text-muted-foreground mt-0.5">Typically sterile</div>}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2">Is the product sterile?</label>
-                <div className="flex gap-2">
-                  {[{ val: true, label: "Yes — Sterile" }, { val: false, label: "No — Non-sterile" }].map(o => (
-                    <button key={String(o.val)} type="button" onClick={() => setSterile(o.val)}
-                      className={`flex-1 rounded-xl border px-4 py-3 text-sm font-bold transition ${sterile === o.val ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card text-foreground hover:border-primary/50"}`}>
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <button onClick={() => setStep(1)} disabled={!dosageForm || sterile === null}
-                className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition disabled:opacity-40 disabled:cursor-not-allowed">
-                Continue →
-              </button>
-            </div>
-          </Panel>
-        )}
 
         {step === 1 && (
           <Panel title="2. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
