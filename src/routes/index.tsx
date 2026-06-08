@@ -6,7 +6,7 @@ import { TypeBadge } from "@/components/TypeBadge";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Type IA classification tool — SFDA Guideline" },
+      { title: "Type IA Variation Assessment Tool" },
       { name: "description", content: "Classify Type IA / IAIN change requests on registered medicinal products per the SFDA Variation Requirements Guideline." },
     ],
   }),
@@ -36,7 +36,7 @@ function Home() {
               Aligned with the SFDA Variation Requirements Guideline v6.4
             </div>
             <h1 className="mt-5 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
-              <span className="bg-hero bg-clip-text text-transparent">Type IA classification tool</span>
+              <span className="bg-hero bg-clip-text text-transparent">Type IA Variation Assessment Tool</span>
             </h1>
             <p className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
               A guided tool grounded in the SFDA variations guideline. Determine whether your change qualifies as
