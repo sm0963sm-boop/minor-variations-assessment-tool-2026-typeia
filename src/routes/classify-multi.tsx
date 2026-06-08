@@ -689,6 +689,69 @@ function ClassifyMulti() {
                 </ul>
               </div>
 
+              {anyRejected && (
+                <div className="mt-6 rounded-2xl border-2 border-accent/40 bg-accent/5 p-5 sm:p-6">
+                  <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={16} className="text-accent" />
+                      <div className="text-sm font-bold text-accent">AI Scientific Analysis (unmet conditions)</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {aiAnalysis && (
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(aiAnalysis, "ai")}
+                          className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 px-2 py-1 text-xs font-bold text-accent hover:bg-accent/20 transition"
+                        >
+                          {copiedKey === "ai" ? <Check size={14} /> : <Copy size={14} />}
+                          {copiedKey === "ai" ? "Copied!" : "Copy"}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        disabled={aiLoading}
+                        onClick={async () => {
+                          setAiLoading(true);
+                          setAiError(null);
+                          try {
+                            const items = results
+                              .filter(r => !r.accepted)
+                              .map(r => ({ code: r.v.code, title: r.v.title, unmetConditions: r.unmet }));
+                            const res = await callAnalysis({ data: { items } });
+                            setAiAnalysis(res.analysis);
+                          } catch (e: any) {
+                            const msg = String(e?.message || e);
+                            if (msg.includes("429")) setAiError("Rate limit reached. Please try again shortly.");
+                            else if (msg.includes("402")) setAiError("AI credits exhausted. Add credits in your workspace settings.");
+                            else setAiError("Could not generate analysis. Please try again.");
+                          } finally {
+                            setAiLoading(false);
+                          }
+                        }}
+                        className="inline-flex items-center gap-2 rounded-lg bg-accent text-accent-foreground px-3 py-1.5 text-xs font-bold hover:bg-accent/90 disabled:opacity-60 transition"
+                      >
+                        {aiLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                        {aiLoading ? "Generating…" : aiAnalysis ? "Regenerate" : "Generate analysis"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!aiAnalysis && !aiLoading && !aiError && (
+                    <p className="text-sm text-muted-foreground">
+                      Generate a detailed scientific analysis for each unmet condition: meaning, reason for non-compliance, and impact on product quality (Efficacy, Safety, Stability, Bioavailability).
+                    </p>
+                  )}
+                  {aiError && (
+                    <p className="text-sm text-destructive font-medium">{aiError}</p>
+                  )}
+                  {aiAnalysis && (
+                    <div className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-p:text-foreground/90 prose-headings:font-extrabold prose-h3:text-base prose-h4:text-sm">
+                      <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="mt-8 flex flex-wrap gap-3">
                 <button
                   onClick={downloadWord}
