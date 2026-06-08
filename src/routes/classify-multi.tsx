@@ -294,6 +294,12 @@ function ClassifyMulti() {
                   <ul className="space-y-2">
                     {v.conditions.map((c, i) => {
                       const s = (checks[v.code] || [])[i] || "unmet";
+                      const ann = annotateCondition(c, dosageForm, sterile);
+                      const annCfg = ann.kind === "applies"
+                        ? { icon: "✓", label: "Likely applies", cls: "bg-warning/15 text-warning border-warning/40" }
+                        : ann.kind === "not-applies"
+                          ? { icon: "⊘", label: "Likely doesn't apply", cls: "bg-muted text-muted-foreground border-border" }
+                          : { icon: "?", label: "Reviewer judgment", cls: "bg-primary/10 text-primary border-primary/30" };
                       const opts: { val: CondStatus; label: string; cls: string }[] = [
                         { val: "met", label: "Met", cls: "bg-success/15 text-success border-success/40" },
                         { val: "unmet", label: "Not met", cls: "bg-destructive/10 text-destructive border-destructive/40" },
@@ -304,6 +310,10 @@ function ClassifyMulti() {
                           <span className="text-sm text-foreground block">
                             <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
                           </span>
+                          <div className={`mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-1 rounded-md border ${annCfg.cls}`}>
+                            <span>{annCfg.icon}</span><span>{annCfg.label}</span>
+                          </div>
+                          <div className="mt-1 text-[11px] text-muted-foreground italic">{ann.reason}</div>
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {opts.map(o => (
                               <button
