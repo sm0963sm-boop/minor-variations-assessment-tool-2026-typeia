@@ -152,7 +152,42 @@ function ClassifyMulti() {
         </div>
 
         {step === 0 && (
-          <Panel title="1. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
+          <Panel title="1. Product context" subtitle="Tell the system about the product. All conditions will still be shown later; the system will only flag which ones likely apply.">
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2">Pharmaceutical dosage form</label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {DOSAGE_FORMS.map(df => (
+                    <button key={df.value} type="button"
+                      onClick={() => { setDosageForm(df.value); if (sterile === null) setSterile(df.sterileDefault); }}
+                      className={`text-left rounded-xl border p-3 transition ${dosageForm === df.value ? "border-primary bg-primary/5 shadow-soft" : "border-border bg-card hover:border-primary/50"}`}>
+                      <div className="text-sm font-bold text-foreground">{df.label}</div>
+                      {df.sterileDefault && <div className="text-xs text-muted-foreground mt-0.5">Typically sterile</div>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2">Is the product sterile?</label>
+                <div className="flex gap-2">
+                  {[{ val: true, label: "Yes — Sterile" }, { val: false, label: "No — Non-sterile" }].map(o => (
+                    <button key={String(o.val)} type="button" onClick={() => setSterile(o.val)}
+                      className={`flex-1 rounded-xl border px-4 py-3 text-sm font-bold transition ${sterile === o.val ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card text-foreground hover:border-primary/50"}`}>
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={() => setStep(1)} disabled={!dosageForm || sterile === null}
+                className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                Continue →
+              </button>
+            </div>
+          </Panel>
+        )}
+
+        {step === 1 && (
+          <Panel title="2. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
             <div className="space-y-6">
               {CATEGORIES.map(cat => {
                 const items = VARIATIONS.filter(v => v.category === cat);
@@ -231,7 +266,7 @@ function ClassifyMulti() {
               <div className="text-sm text-muted-foreground">{selectedCodes.length} selected</div>
               <button
                 disabled={selectedCodes.length === 0}
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold disabled:opacity-50 hover:bg-primary/90 transition"
               >
                 Continue →
@@ -240,8 +275,12 @@ function ClassifyMulti() {
           </Panel>
         )}
 
-        {step === 1 && (
-          <Panel title="2. Verify conditions for each variation" subtitle="Tick every condition that is fully met.">
+        {step === 2 && (
+          <Panel title="3. Verify conditions for each variation" subtitle="Every SFDA condition is shown. The system flags which ones likely apply based on your product context.">
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 mb-4 text-xs text-foreground">
+              <span className="font-bold">Product context:</span>{" "}
+              {DOSAGE_FORMS.find(d => d.value === dosageForm)?.label} · {sterile ? "Sterile" : "Non-sterile"}
+            </div>
             <div className="space-y-5">
               {selected.map(v => (
                 <div key={v.code} className="rounded-xl border border-border bg-card p-4">
@@ -297,8 +336,8 @@ function ClassifyMulti() {
             </div>
 
             <div className="mt-5 flex items-center justify-between gap-3">
-              <button onClick={() => setStep(0)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
-              <button onClick={() => setStep(2)}
+              <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
+              <button onClick={() => setStep(3)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
                 Generate combined decision →
               </button>
@@ -306,7 +345,7 @@ function ClassifyMulti() {
           </Panel>
         )}
 
-        {step === 2 && (() => {
+        {step === 3 && (() => {
           const total = results.length;
           const approvedCount = results.filter(r => r.accepted).length;
           const rejectedCount = total - approvedCount;
