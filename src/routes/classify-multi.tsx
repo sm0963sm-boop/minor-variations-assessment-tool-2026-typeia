@@ -289,21 +289,6 @@ function ClassifyMulti() {
               ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
               : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
 
-          const reviewerLines: string[] = [];
-          if (allAccepted) {
-            reviewerLines.push(
-              "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
-            );
-          } else {
-            reviewerLines.push(
-              "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted."
-            );
-          }
-          if (opinion.trim()) {
-            reviewerLines.push("Reviewer's note:");
-            reviewerLines.push(opinion.trim());
-          }
-          const reviewerText = reviewerLines.join("\n");
 
           const finalText = results.map(({ v, unmet, accepted }) => {
             const lines: string[] = [];
