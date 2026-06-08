@@ -45,7 +45,7 @@ function Home() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/classify-multi" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-elegant hover:shadow-soft hover:-translate-y-px transition">
-                Classify changes →
+                Start →
               </Link>
               <Link to="/catalog" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-base font-medium text-foreground hover:bg-muted transition">
                 Browse the catalog
