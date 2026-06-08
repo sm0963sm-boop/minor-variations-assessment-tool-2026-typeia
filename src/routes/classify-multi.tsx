@@ -22,9 +22,7 @@ type CondStatus = "met" | "unmet" | "na";
 type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
 
 function ClassifyMulti() {
-  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
-  const [dosageForm, setDosageForm] = useState<DosageForm | null>(null);
-  const [sterile, setSterile] = useState<boolean | null>(null);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [checks, setChecks] = useState<ChecksMap>({});
   const [opinion, setOpinion] = useState("");
