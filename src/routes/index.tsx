@@ -47,12 +47,22 @@ function Home() {
             <h1 className="mt-6 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
               <span className="bg-hero bg-clip-text text-transparent">Type IA Variation Assessment Tool</span>
             </h1>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/classify-multi" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-elegant hover:shadow-soft hover:-translate-y-px transition">
-                Start →
+            <div className="mt-10">
+              <Link
+                to="/classify-multi"
+                className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary/80 px-10 py-5 text-xl font-extrabold text-primary-foreground shadow-elegant ring-2 ring-primary/30 ring-offset-4 ring-offset-background hover:shadow-soft hover:-translate-y-0.5 transition-all"
+              >
+                <span className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary to-primary/60 opacity-40 blur group-hover:opacity-60 transition" aria-hidden />
+                <span className="relative">Start</span>
+                <span className="relative text-2xl">→</span>
               </Link>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/catalog" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-base font-medium text-foreground hover:bg-muted transition">
                 Browse the catalog
+              </Link>
+              <Link to="/guidance" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-base font-medium text-foreground hover:bg-muted transition">
+                Type IA Guidance for New Assessors
               </Link>
             </div>
           </div>
