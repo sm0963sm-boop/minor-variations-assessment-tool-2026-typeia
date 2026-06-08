@@ -44,6 +44,9 @@ function Home() {
                 </div>
               </div>
             </div>
+            <h1 className="mt-6 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
+              <span className="bg-hero bg-clip-text text-transparent">Type IA Variation Assessment Tool</span>
+            </h1>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/classify-multi" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-elegant hover:shadow-soft hover:-translate-y-px transition">
                 Start →
