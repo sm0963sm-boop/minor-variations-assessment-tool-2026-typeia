@@ -86,8 +86,53 @@ Regulatory Affairs — Variations Assessment
 
 type CondStatus = "met" | "unmet" | "na";
 
+type DosageForm =
+  | "solid-oral" | "liquid-oral" | "sterile-injectable" | "ophthalmic"
+  | "topical" | "inhalation" | "suppository" | "other";
+
+const DOSAGE_FORMS: { value: DosageForm; label: string; sterileDefault: boolean }[] = [
+  { value: "solid-oral", label: "Solid Oral (Tablets / Capsules)", sterileDefault: false },
+  { value: "liquid-oral", label: "Liquid Oral (Syrup / Solution)", sterileDefault: false },
+  { value: "sterile-injectable", label: "Sterile Injectable", sterileDefault: true },
+  { value: "ophthalmic", label: "Ophthalmic / Otic", sterileDefault: true },
+  { value: "topical", label: "Topical (Cream / Ointment / Gel)", sterileDefault: false },
+  { value: "inhalation", label: "Inhalation / Nasal Spray", sterileDefault: false },
+  { value: "suppository", label: "Suppository / Pessary", sterileDefault: false },
+  { value: "other", label: "Other", sterileDefault: false },
+];
+
+type Annotation = { kind: "applies" | "not-applies" | "review"; reason: string };
+
+/** Annotates a condition based on product context. Never hides conditions. */
+function annotateCondition(text: string, form: DosageForm | null, sterile: boolean | null): Annotation {
+  const t = text.toLowerCase();
+  if (/\bsteril/.test(t)) {
+    if (sterile === true) return { kind: "applies", reason: "Product is sterile — sterility wording is in scope." };
+    if (sterile === false) return { kind: "not-applies", reason: "Product is non-sterile — sterility wording does not apply." };
+  }
+  if (/\bbiologic|biotech|vaccine\b/.test(t))
+    return { kind: "review", reason: "Mentions biological/biotech — confirm product type manually." };
+  if (/inhalation|inhaler|nebuli/.test(t)) {
+    if (form === "inhalation") return { kind: "applies", reason: "Condition targets inhalation products." };
+    if (form) return { kind: "not-applies", reason: `Condition is for inhalation products, not your ${form} form.` };
+  }
+  if (/ophthalmic|ocular|eye drop/.test(t)) {
+    if (form === "ophthalmic") return { kind: "applies", reason: "Condition targets ophthalmic products." };
+    if (form) return { kind: "not-applies", reason: `Condition is for ophthalmic products, not your ${form} form.` };
+  }
+  if (/modified[- ]release|prolonged[- ]release|extended[- ]release|controlled[- ]release/.test(t))
+    return { kind: "review", reason: "Mentions modified-release — verify against the product's release profile." };
+  if (/\b(tablet|capsule|solid dosage)\b/.test(t)) {
+    if (form === "solid-oral") return { kind: "applies", reason: "Condition targets solid oral forms." };
+    if (form) return { kind: "not-applies", reason: `Condition is for solid oral forms, not your ${form} form.` };
+  }
+  return { kind: "review", reason: "No product-context match — reviewer judgment required." };
+}
+
 function Classify() {
   const [step, setStep] = useState(0);
+  const [dosageForm, setDosageForm] = useState<DosageForm | null>(null);
+  const [sterile, setSterile] = useState<boolean | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [picked, setPicked] = useState<Variation | null>(null);
   const [status, setStatus] = useState<CondStatus[]>([]);
@@ -100,13 +145,14 @@ function Classify() {
   const inCategory = useMemo(() => VARIATIONS.filter(v => v.category === category), [category]);
 
   const reset = () => {
-    setStep(0); setCategory(null); setPicked(null); setStatus([]); setOpinion(""); setCopied(false);
+    setStep(0); setDosageForm(null); setSterile(null);
+    setCategory(null); setPicked(null); setStatus([]); setOpinion(""); setCopied(false);
   };
 
   const choose = (v: Variation) => {
     setPicked(v);
     setStatus(new Array(v.conditions.length).fill("unmet"));
-    setStep(2);
+    setStep(3);
   };
 
   const allMet = picked && status.length > 0 && status.every(s => s !== "unmet");
@@ -125,16 +171,51 @@ function Classify() {
           <h1 className="font-display text-3xl font-extrabold text-foreground">Classifier</h1>
         </div>
         <div className="flex gap-2 mb-8">
-          {[0, 1, 2, 3].map(i => (
+          {[0, 1, 2, 3, 4].map(i => (
             <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-border"}`} />
           ))}
         </div>
 
         {step === 0 && (
-          <Panel title="1. Select the change category" subtitle="What is the scope of your change request?">
+          <Panel title="1. Product context" subtitle="Tell the system about the product so it can flag which conditions actually apply later.">
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2">Pharmaceutical dosage form</label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {DOSAGE_FORMS.map(df => (
+                    <button key={df.value} type="button"
+                      onClick={() => { setDosageForm(df.value); if (sterile === null) setSterile(df.sterileDefault); }}
+                      className={`text-left rounded-xl border p-3 transition ${dosageForm === df.value ? "border-primary bg-primary/5 shadow-soft" : "border-border bg-card hover:border-primary/50"}`}>
+                      <div className="text-sm font-bold text-foreground">{df.label}</div>
+                      {df.sterileDefault && <div className="text-xs text-muted-foreground mt-0.5">Typically sterile</div>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2">Is the product sterile?</label>
+                <div className="flex gap-2">
+                  {[{ val: true, label: "Yes — Sterile" }, { val: false, label: "No — Non-sterile" }].map(o => (
+                    <button key={String(o.val)} type="button" onClick={() => setSterile(o.val)}
+                      className={`flex-1 rounded-xl border px-4 py-3 text-sm font-bold transition ${sterile === o.val ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card text-foreground hover:border-primary/50"}`}>
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={() => setStep(1)} disabled={!dosageForm || sterile === null}
+                className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                Continue →
+              </button>
+            </div>
+          </Panel>
+        )}
+
+        {step === 1 && (
+          <Panel title="2. Select the change category" subtitle="What is the scope of your change request?">
             <div className="grid gap-3 sm:grid-cols-2">
               {CATEGORIES.map(c => (
-                <button key={c} onClick={() => { setCategory(c); setStep(1); }}
+                <button key={c} onClick={() => { setCategory(c); setStep(2); }}
                   className="text-left rounded-xl border border-border bg-card hover:border-primary hover:shadow-soft p-4 transition">
                   <div className="font-bold text-foreground">{c}</div>
                   <div className="text-xs text-muted-foreground mt-1">
@@ -143,11 +224,12 @@ function Classify() {
                 </button>
               ))}
             </div>
+            <button onClick={() => setStep(0)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {step === 1 && category && (
-          <Panel title="2. Pick the specific variation" subtitle={`Category: ${category}`}>
+        {step === 2 && category && (
+          <Panel title="3. Pick the specific variation" subtitle={`Category: ${category}`}>
             <div className="space-y-4">
               <select
                 className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring appearance-none cursor-pointer"
@@ -165,18 +247,29 @@ function Classify() {
                 ))}
               </select>
             </div>
-            <button onClick={() => setStep(0)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
+            <button onClick={() => setStep(1)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {step === 2 && picked && (
-          <Panel title="3. Verify eligibility conditions" subtitle="Tick every condition that is fully met for your case.">
+        {step === 3 && picked && (
+          <Panel title="4. Verify eligibility conditions" subtitle="Every SFDA condition is shown. The system flags which ones likely apply based on your product context.">
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 mb-4 text-xs text-foreground">
+              <span className="font-bold">Product context:</span>{" "}
+              {DOSAGE_FORMS.find(d => d.value === dosageForm)?.label} ·{" "}
+              {sterile ? "Sterile" : "Non-sterile"}
+            </div>
             <ul className="space-y-2.5 mb-6">
               {picked.conditions.map((c, i) => {
                 const s = status[i] || "unmet";
                 const setS = (val: CondStatus) => {
                   const next = [...status]; next[i] = val; setStatus(next);
                 };
+                const ann = annotateCondition(c, dosageForm, sterile);
+                const annCfg = ann.kind === "applies"
+                  ? { icon: "✓", label: "Likely applies", cls: "bg-warning/15 text-warning border-warning/40" }
+                  : ann.kind === "not-applies"
+                  ? { icon: "⊘", label: "Likely doesn't apply", cls: "bg-muted text-muted-foreground border-border" }
+                  : { icon: "?", label: "Reviewer judgment", cls: "bg-primary/10 text-primary border-primary/30" };
                 const opts: { val: CondStatus; label: string; cls: string }[] = [
                   { val: "met", label: "Met", cls: "bg-success/15 text-success border-success/40" },
                   { val: "unmet", label: "Not met", cls: "bg-destructive/10 text-destructive border-destructive/40" },
@@ -189,6 +282,10 @@ function Classify() {
                         <span className="font-bold text-primary me-2">{i + 1}.</span>{c}
                       </span>
                     </div>
+                    <div className={`mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-1 rounded-md border ${annCfg.cls}`}>
+                      <span>{annCfg.icon}</span><span>{annCfg.label}</span>
+                    </div>
+                    <div className="mt-1 text-[11px] text-muted-foreground italic">{ann.reason}</div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {opts.map(o => (
                         <button
@@ -234,29 +331,20 @@ function Classify() {
               </div>
             </div>
 
-            <button onClick={() => setStep(3)}
+            <button onClick={() => setStep(4)}
               className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-bold shadow-soft hover:bg-primary/90 transition">
               Generate result →
             </button>
-            <button onClick={() => setStep(1)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
+            <button onClick={() => setStep(2)} className="mt-4 text-sm text-muted-foreground hover:text-foreground">← Back</button>
           </Panel>
         )}
 
-        {step === 3 && picked && (
+        {step === 4 && picked && (
           <div className="rounded-3xl border border-border bg-card-gradient p-6 sm:p-8 shadow-elegant">
             {allMet ? (
-              <AcceptanceView
-                picked={picked}
-                opinion={opinion}
-              />
+              <AcceptanceView picked={picked} opinion={opinion} />
             ) : (
-              <RejectionView
-                picked={picked}
-                unmet={unmet}
-                status={status}
-                opinion={opinion}
-              />
-
+              <RejectionView picked={picked} unmet={unmet} status={status} opinion={opinion} />
             )}
 
             <div className="mt-8 flex flex-wrap gap-3">
