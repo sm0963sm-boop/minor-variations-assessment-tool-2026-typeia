@@ -30,6 +30,16 @@ function ClassifyMulti() {
   const [checks, setChecks] = useState<ChecksMap>({});
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [] as Variation[];
+    const tokens = q.split(/\s+/).filter(Boolean);
+    return VARIATIONS.filter(v => {
+      const hay = `${v.code} ${v.title} ${v.category} ${v.type}`.toLowerCase();
+      return tokens.every(t => hay.includes(t));
+    }).slice(0, 12);
+  }, [searchQuery]);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [aiAnalysis, setAiAnalysis] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -117,7 +127,61 @@ function ClassifyMulti() {
         </div>
 
         {step === 1 && (
-          <Panel title="1. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
+          <Panel title="1. Select one or more variations" subtitle="Search by keywords (e.g. ‘shelf life’, ‘artwork’) or browse by category.">
+            <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-4">
+              <label className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">🔎 Smart search</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Try: change shelf life, update artwork, manufacturer name…"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-3 pr-10 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-sm"
+                    aria-label="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              {searchQuery && (
+                <div className="mt-3">
+                  {searchResults.length === 0 ? (
+                    <div className="text-sm text-muted-foreground py-4 text-center">No matching variations. Try different keywords.</div>
+                  ) : (
+                    <>
+                      <div className="text-xs text-muted-foreground mb-2">{searchResults.length} match{searchResults.length === 1 ? "" : "es"} — click to add</div>
+                      <div className="space-y-1.5 max-h-80 overflow-auto">
+                        {searchResults.map(v => {
+                          const isChecked = selectedCodes.includes(v.code);
+                          return (
+                            <button
+                              key={v.code}
+                              type="button"
+                              onClick={() => toggleSelect(v)}
+                              className={`w-full flex items-start gap-3 px-3 py-2.5 text-left rounded-lg border transition ${isChecked ? "bg-primary/10 border-primary/40" : "bg-card border-border hover:border-primary/40 hover:bg-muted/40"}`}
+                            >
+                              <input type="checkbox" checked={isChecked} readOnly className="mt-1 size-4 accent-primary pointer-events-none" />
+                              <TypeBadge type={v.type} size="sm" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs text-muted-foreground"><span className="font-mono">{v.code}</span> • {v.category}</div>
+                                <div className="font-bold text-foreground text-sm leading-snug">{v.title}</div>
+                              </div>
+                              {isChecked && <span className="text-xs text-primary font-bold shrink-0">Added</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             <div className="space-y-6">
               {CATEGORIES.map(cat => {
                 const items = VARIATIONS.filter(v => v.category === cat);
