@@ -199,6 +199,7 @@ function ClassifyMulti() {
 
         {step === 2 && (
           <Panel title="2. Verify conditions for each variation" subtitle="Mark each condition as Met / Not met / N/A.">
+
             <div className="space-y-5">
               {selected.map(v => (
                 <div key={v.code} className="rounded-xl border border-border bg-card p-4">
