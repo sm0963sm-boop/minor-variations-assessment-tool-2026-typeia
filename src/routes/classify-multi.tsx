@@ -11,7 +11,7 @@ const { saveAs } = fileSaver;
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
     meta: [
-      { title: "Final report — Combined decision" },
+      { title: "Type IA Variation Assessment Tool" },
       { name: "description", content: "Classify multiple Type IA / IAIN variations at once and get a single combined final decision." },
     ],
   }),
