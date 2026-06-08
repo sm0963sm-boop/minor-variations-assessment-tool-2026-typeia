@@ -26,15 +26,27 @@ function Home() {
         <div className="absolute inset-0 bg-hero opacity-[0.07]" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 relative">
           <div className="max-w-3xl">
-            <p className="text-sm text-muted-foreground">
-              This is a guided decision-support tool based on the SFDA Guidelines for Variation Requirements Version 6.4.
-            </p>
-            <h1 className="mt-4 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
+            <div className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50/80 p-5 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-emerald-900 font-medium leading-relaxed">
+                    This is a guided decision-support tool based on the SFDA Guidelines for Variation Requirements Version 6.4.
+                  </p>
+                  <div className="h-px bg-emerald-200/60" />
+                  <p className="text-sm text-emerald-800/90 leading-relaxed">
+                    This tool is intended to support the evaluation process; however, the overall assessment and final decision remain the sole responsibility of the assessor.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <h1 className="mt-6 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
               <span className="bg-hero bg-clip-text text-transparent">Type IA Variation Assessment Tool</span>
             </h1>
-            <p className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
-              This tool is intended to support the evaluation process; however, the overall assessment and final decision remain the sole responsibility of the assessor.
-            </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/classify-multi" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-elegant hover:shadow-soft hover:-translate-y-px transition">
                 Start →
