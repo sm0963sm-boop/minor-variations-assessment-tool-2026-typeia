@@ -495,7 +495,7 @@ function ClassifyMulti() {
             // Executive summary
             const summaryRows: [string, string][] = [
               ["Total variations submitted", String(selected.length)],
-              ...Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)]),
+              ...(Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)]) as [string, string][]),
               ["Approved", String(approvedCount)],
               ["Rejected", String(rejectedCount)],
               ["Overall outcome", allAccepted ? "All approved" : rejectedCount === selected.length ? "All rejected" : "Partially approved"],
