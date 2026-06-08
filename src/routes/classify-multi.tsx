@@ -99,7 +99,7 @@ function ClassifyMulti() {
           </p>
         </div>
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-display text-3xl font-extrabold text-foreground">Final report</h1>
+          <h1 className="font-display text-3xl font-extrabold text-foreground">Type IA Variation Assessment Tool</h1>
           <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
