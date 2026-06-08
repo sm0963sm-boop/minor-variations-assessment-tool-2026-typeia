@@ -21,47 +21,6 @@ export const Route = createFileRoute("/classify-multi")({
 type CondStatus = "met" | "unmet" | "na";
 type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
 
-type DosageForm =
-  | "solid-oral" | "liquid-oral" | "sterile-injectable" | "ophthalmic"
-  | "topical" | "inhalation" | "suppository" | "other";
-
-const DOSAGE_FORMS: { value: DosageForm; label: string; sterileDefault: boolean }[] = [
-  { value: "solid-oral", label: "Solid Oral (Tablets / Capsules)", sterileDefault: false },
-  { value: "liquid-oral", label: "Liquid Oral (Syrup / Solution)", sterileDefault: false },
-  { value: "sterile-injectable", label: "Sterile Injectable", sterileDefault: true },
-  { value: "ophthalmic", label: "Ophthalmic / Otic", sterileDefault: true },
-  { value: "topical", label: "Topical (Cream / Ointment / Gel)", sterileDefault: false },
-  { value: "inhalation", label: "Inhalation / Nasal Spray", sterileDefault: false },
-  { value: "suppository", label: "Suppository / Pessary", sterileDefault: false },
-  { value: "other", label: "Other", sterileDefault: false },
-];
-
-type Annotation = { kind: "applies" | "not-applies" | "review"; reason: string };
-
-function annotateCondition(text: string, form: DosageForm | null, sterile: boolean | null): Annotation {
-  const t = text.toLowerCase();
-  if (/\bsteril/.test(t)) {
-    if (sterile === true) return { kind: "applies", reason: "Product is sterile — this condition is in scope." };
-    if (sterile === false) return { kind: "not-applies", reason: "Product is non-sterile — sterility wording likely does not apply." };
-  }
-  if (/inhalation|inhaler|nebuli/.test(t)) {
-    if (form === "inhalation") return { kind: "applies", reason: "Condition targets inhalation products." };
-    if (form) return { kind: "not-applies", reason: "Condition targets inhalation products, not the selected dosage form." };
-  }
-  if (/ophthalmic|ocular|eye drop/.test(t)) {
-    if (form === "ophthalmic") return { kind: "applies", reason: "Condition targets ophthalmic products." };
-    if (form) return { kind: "not-applies", reason: "Condition targets ophthalmic products, not the selected dosage form." };
-  }
-  if (/modified[- ]release|prolonged[- ]release|extended[- ]release|controlled[- ]release/.test(t)) {
-    return { kind: "review", reason: "Mentions release profile — confirm manually against the product." };
-  }
-  if (/\b(tablet|capsule|solid dosage)\b/.test(t)) {
-    if (form === "solid-oral") return { kind: "applies", reason: "Condition targets solid oral forms." };
-    if (form) return { kind: "not-applies", reason: "Condition targets solid oral forms, not the selected dosage form." };
-  }
-  return { kind: "review", reason: "No automatic product-context match — reviewer judgment required." };
-}
-
 function ClassifyMulti() {
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [dosageForm, setDosageForm] = useState<DosageForm | null>(null);
