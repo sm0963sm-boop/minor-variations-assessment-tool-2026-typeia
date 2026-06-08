@@ -9,7 +9,7 @@ export function Header() {
             IA
           </div>
           <div className="leading-tight">
-            <div className="font-display font-bold text-foreground">Type IA classification tool</div>
+            <div className="font-display font-bold text-foreground">Type IA Variation Assessment Tool</div>
             <div className="text-[11px] text-muted-foreground">SFDA — Variations Guideline</div>
           </div>
         </Link>

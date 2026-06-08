@@ -560,7 +560,7 @@ function ClassifyMulti() {
             });
 
             const doc = new Document({
-              creator: "Variation Classifier",
+              creator: "Type IA Variation Assessment Tool",
               title: "Variation Assessment Report",
               styles: {
                 default: { document: { run: { font: "Calibri", size: 22 } } },

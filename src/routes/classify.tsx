@@ -7,7 +7,7 @@ import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variati
 export const Route = createFileRoute("/classify")({
   head: () => ({
     meta: [
-      { title: "Variation Classifier — Interactive" },
+      { title: "Type IA Variation Assessment Tool" },
       { name: "description", content: "Guided tool to determine the variation type per SFDA, with auto-generated rejection drafts for unmet conditions." },
     ],
   }),

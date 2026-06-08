@@ -55,13 +55,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Type IA classification tool — SFDA Guideline" },
-      { name: "description", content: "Type IA classification tool for variations (IA / IAIN) under the SFDA Variation Requirements Guideline." },
-      { property: "og:title", content: "Type IA classification tool — SFDA" },
+      { title: "Type IA Variation Assessment Tool" },
+      { name: "description", content: "Type IA Variation Assessment Tool for variations (IA / IAIN) under the SFDA Variation Requirements Guideline." },
+      { property: "og:title", content: "Type IA Variation Assessment Tool" },
       { property: "og:description", content: "Classify your pharmaceutical change request fast and generate a rejection draft when conditions are not met." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Type IA classification tool — SFDA" },
+      { name: "twitter:title", content: "Type IA Variation Assessment Tool" },
       { name: "twitter:description", content: "Classify your pharmaceutical change request fast and generate a rejection draft when conditions are not met." },
     ],
     links: [
