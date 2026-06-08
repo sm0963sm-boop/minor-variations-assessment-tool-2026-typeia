@@ -492,6 +492,39 @@ function ClassifyMulti() {
             children.push(variationsTable);
             children.push(spacer());
 
+            // Executive summary
+            const summaryRows: [string, string][] = [
+              ["Total variations submitted", String(selected.length)],
+              ...(Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)]) as [string, string][]),
+              ["Approved", String(approvedCount)],
+              ["Rejected", String(rejectedCount)],
+              ["Overall outcome", allAccepted ? "All approved" : rejectedCount === selected.length ? "All rejected" : "Partially approved"],
+            ];
+            const summaryTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [4680, 4680],
+              rows: summaryRows.map(([label, value]) => new TableRow({
+                children: [
+                  new TableCell({
+                    borders: varBorders,
+                    width: { size: 4680, type: WidthType.DXA },
+                    shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                  }),
+                  new TableCell({
+                    borders: varBorders,
+                    width: { size: 4680, type: WidthType.DXA },
+                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: value, font: "Calibri", size: 22, color: value === "All approved" ? SUCCESS_BORDER : value === "All rejected" ? DANGER_BORDER : BRAND })] })],
+                  }),
+                ],
+              })),
+            });
+            children.push(para("Executive summary", { bold: true, color: BRAND }));
+            children.push(summaryTable);
+            children.push(spacer());
+
             children.push(h1("3. Reviewer opinion"));
             children.push(opinionCallout);
             if (opinion.trim()) {
