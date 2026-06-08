@@ -26,17 +26,14 @@ function Home() {
         <div className="absolute inset-0 bg-hero opacity-[0.07]" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 relative">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs text-primary font-medium">
-              <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-              Aligned with the SFDA Variation Requirements Guideline v6.4
-            </div>
-            <h1 className="mt-5 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
+            <p className="text-sm text-muted-foreground">
+              This is a guided decision-support tool based on the SFDA Guidelines for Variation Requirements Version 6.4.
+            </p>
+            <h1 className="mt-4 font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
               <span className="bg-hero bg-clip-text text-transparent">Type IA Variation Assessment Tool</span>
             </h1>
             <p className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
-              A guided tool grounded in the SFDA variations guideline. Determine whether your change qualifies as
-              <span className="font-bold text-foreground"> IA</span> or
-              <span className="font-bold text-foreground"> IAIN</span>, capture the reviewer's opinion, and issue a final recommendation.
+              This tool is intended to support the evaluation process; however, the overall assessment and final decision remain the sole responsibility of the assessor.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/classify-multi" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-base font-bold text-primary-foreground shadow-elegant hover:shadow-soft hover:-translate-y-px transition">
