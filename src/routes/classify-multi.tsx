@@ -289,21 +289,6 @@ function ClassifyMulti() {
               ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
               : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
 
-          const reviewerLines: string[] = [];
-          if (allAccepted) {
-            reviewerLines.push(
-              "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
-            );
-          } else {
-            reviewerLines.push(
-              "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted."
-            );
-          }
-          if (opinion.trim()) {
-            reviewerLines.push("Reviewer's note:");
-            reviewerLines.push(opinion.trim());
-          }
-          const reviewerText = reviewerLines.join("\n");
 
           const finalText = results.map(({ v, unmet, accepted }) => {
             const lines: string[] = [];
@@ -622,79 +607,12 @@ function ClassifyMulti() {
 
           return (
             <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
-              <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-sm font-bold text-primary">Reviewer opinion</div>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(reviewerText, "reviewer")}
-                    className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
-                  >
-                    {copiedKey === "reviewer" ? <Check size={14} /> : <Copy size={14} />}
-                    {copiedKey === "reviewer" ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-                <div className="space-y-3 text-sm sm:text-base text-foreground leading-relaxed">
-                  {allAccepted ? (
-                    <p className="text-foreground/90 whitespace-pre-wrap">
-                      The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended.
-                    </p>
-                  ) : (
-                    <p className="text-foreground/90 whitespace-pre-wrap">
-                      The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.
-                    </p>
-                  )}
-                  {opinion.trim() && (
-                    <div className="pt-2 border-t border-primary/20">
-                      <div className="font-bold mb-1">Reviewer's note:</div>
-                      <p className="text-foreground/90 whitespace-pre-wrap">{opinion.trim()}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-sm font-bold text-primary">Final recommendation</div>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(finalText, "final")}
-                    className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
-                  >
-                    {copiedKey === "final" ? <Check size={14} /> : <Copy size={14} />}
-                    {copiedKey === "final" ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-                <ul className="space-y-3">
-                  {results.map(({ v, unmet, accepted }) => (
-                    <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
-                      <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
-                      <span className="font-semibold">{v.title}</span>
-                      {accepted ? (
-                        <span className="ms-1 font-bold text-success">is approved</span>
-                      ) : (
-                        <span className="ms-1 font-bold text-destructive">
-                          is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
-                        </span>
-                      )}
-                      {!accepted && unmet.length > 0 && (
-                        <ul className="mt-2 space-y-1 ps-5">
-                          {unmet.map((c, i) => (
-                            <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
               {anyRejected && (
-                <div className="mt-6 rounded-2xl border-2 border-accent/40 bg-accent/5 p-5 sm:p-6">
+                <div className="rounded-2xl border-2 border-accent/40 bg-accent/5 p-5 sm:p-6">
                   <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                     <div className="flex items-center gap-2">
                       <Sparkles size={16} className="text-accent" />
-                      <div className="text-sm font-bold text-accent">AI Scientific Analysis (unmet conditions)</div>
+                      <div className="text-sm font-bold text-accent">Assessor Opinion</div>
                     </div>
                     <div className="flex items-center gap-2">
                       {aiAnalysis && (
@@ -751,6 +669,42 @@ function ClassifyMulti() {
                   )}
                 </div>
               )}
+
+              <div className={`${anyRejected ? "mt-6" : ""} rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-sm font-bold text-primary">Final recommendation</div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(finalText, "final")}
+                    className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+                  >
+                    {copiedKey === "final" ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedKey === "final" ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <ul className="space-y-3">
+                  {results.map(({ v, unmet, accepted }) => (
+                    <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
+                      <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
+                      <span className="font-semibold">{v.title}</span>
+                      {accepted ? (
+                        <span className="ms-1 font-bold text-success">is approved</span>
+                      ) : (
+                        <span className="ms-1 font-bold text-destructive">
+                          is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
+                        </span>
+                      )}
+                      {!accepted && unmet.length > 0 && (
+                        <ul className="mt-2 space-y-1 ps-5">
+                          {unmet.map((c, i) => (
+                            <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <button
