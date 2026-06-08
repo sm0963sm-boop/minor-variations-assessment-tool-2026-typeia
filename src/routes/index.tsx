@@ -84,16 +84,81 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16 border-t border-border/60">
-        <div className="grid gap-8 sm:grid-cols-3">
+        <div className="text-center mb-12">
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground">How it works</h2>
+          <p className="mt-3 text-muted-foreground">A guided four-step assessment workflow</p>
+        </div>
+
+        <div className="relative grid gap-6 md:grid-cols-4">
           {[
-            { t: "Step-by-step", d: "Answer guided questions to identify the exact Type IA classification." },
-            { t: "Reviewer opinion", d: "Capture the reviewer's technical opinion alongside the system output." },
-            { t: "Final recommendation", d: "Issue a clear final recommendation: accept, reject, or reclassify." },
-          ].map((f) => (
-            <div key={f.t} className="rounded-xl p-6 bg-card/50 border border-border/40">
-              <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold mb-3">✓</div>
-              <h3 className="font-display font-bold text-foreground">{f.t}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
+            {
+              n: 1,
+              t: "Select Variation",
+              d: "Pick one or more Type IA / IAIN variations from the SFDA catalog.",
+              color: "from-sky-500 to-sky-600",
+              ring: "ring-sky-200",
+              icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+              ),
+            },
+            {
+              n: 2,
+              t: "Check Conditions",
+              d: "Answer guided yes/no questions for each applicable condition.",
+              color: "from-violet-500 to-violet-600",
+              ring: "ring-violet-200",
+              icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              ),
+            },
+            {
+              n: 3,
+              t: "Assessor Opinion",
+              d: "AI generates a scientific explanation of any unmet conditions and their impact.",
+              color: "from-blue-500 to-indigo-600",
+              ring: "ring-blue-200",
+              icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 7a5 5 0 015 5c0 1.657-.8 3.13-2.04 4.05a2.5 2.5 0 00-.96 1.95H10a2.5 2.5 0 00-.96-1.95A4.992 4.992 0 017 12a5 5 0 015-5z" />
+              ),
+            },
+            {
+              n: 4,
+              t: "Final Recommendation",
+              d: "Receive a clear Accept or Reject outcome based on the conditions met.",
+              color: "from-emerald-500 to-emerald-600",
+              ring: "ring-emerald-200",
+              icon: (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              ),
+            },
+          ].map((s, i, arr) => (
+            <div key={s.n} className="relative">
+              <div className="relative h-full rounded-2xl border border-border bg-card p-6 shadow-soft hover:shadow-elegant transition">
+                <div className={`absolute -top-4 left-6 size-8 rounded-full bg-gradient-to-br ${s.color} text-white text-sm font-bold flex items-center justify-center shadow-md ring-4 ring-background`}>
+                  {s.n}
+                </div>
+                <div className={`mt-2 size-12 rounded-xl bg-gradient-to-br ${s.color} text-white flex items-center justify-center shadow-md ring-4 ${s.ring}`}>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {s.icon}
+                  </svg>
+                </div>
+                <h3 className="mt-4 font-display font-bold text-foreground">{s.t}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.d}</p>
+              </div>
+              {i < arr.length - 1 && (
+                <>
+                  <div className="hidden md:flex absolute top-1/2 -right-3 z-10 size-6 -translate-y-1/2 rounded-full bg-background border border-border items-center justify-center text-muted-foreground">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                  <div className="md:hidden flex justify-center py-2 text-muted-foreground">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
