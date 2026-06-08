@@ -76,7 +76,7 @@ function ClassifyMulti() {
   };
 
   const reset = () => {
-    setStep(0); setDosageForm(null); setSterile(null); setSelectedCodes([]); setChecks({}); setOpinion("");
+    setStep(1); setSelectedCodes([]); setChecks({}); setOpinion("");
   };
 
   // Build per-variation status
