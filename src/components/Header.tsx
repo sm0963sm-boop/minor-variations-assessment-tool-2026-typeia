@@ -13,9 +13,8 @@ export function Header() {
             <div className="text-[11px] text-muted-foreground">SFDA — Variations Guideline</div>
           </div>
         </Link>
-        <nav className="hidden sm:flex items-center gap-1 text-sm">
+        <nav className="flex items-center gap-1 text-sm">
           <Link to="/" className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition">Home</Link>
-          <Link to="/classify" className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition">Classifier</Link>
           <Link to="/catalog" className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition">Catalog</Link>
         </nav>
       </div>

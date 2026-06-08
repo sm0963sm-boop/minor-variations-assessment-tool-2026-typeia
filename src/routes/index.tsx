@@ -26,11 +26,6 @@ function Home() {
         <div className="absolute inset-0 bg-hero opacity-[0.07]" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 relative">
           <div className="max-w-3xl">
-            <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 mb-6">
-              <p className="text-sm text-foreground leading-relaxed">
-                <span className="font-bold text-warning">Note:</span> This tool assists the reviewer in evaluating Type IA / IAIN variation requests. It does not replace the full independent assessment required by the reviewer.
-              </p>
-            </div>
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs text-primary font-medium">
               <span className="size-1.5 rounded-full bg-primary animate-pulse" />
               Aligned with the SFDA Variation Requirements Guideline v6.4
