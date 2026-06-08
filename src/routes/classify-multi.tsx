@@ -745,7 +745,7 @@ function ClassifyMulti() {
                     <p className="text-sm text-destructive font-medium">{aiError}</p>
                   )}
                   {aiAnalysis && (
-                    <div className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-p:text-foreground/90 prose-headings:font-extrabold prose-h3:text-base prose-h4:text-sm">
+                    <div className="text-sm text-foreground leading-relaxed space-y-2 [&_h3]:text-base [&_h3]:font-extrabold [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-primary [&_h4]:text-sm [&_h4]:font-bold [&_h4]:mt-3 [&_h4]:mb-1 [&_h4]:text-foreground [&_p]:mb-2 [&_strong]:font-bold [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:ps-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:ps-5">
                       <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
                     </div>
                   )}
