@@ -109,7 +109,7 @@ function ClassifyMulti() {
         </div>
 
         {step === 1 && (
-          <Panel title="2. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
+          <Panel title="1. Select one or more variations" subtitle="Pick a variation from each category dropdown, then add it to the selection.">
             <div className="space-y-6">
               {CATEGORIES.map(cat => {
                 const items = VARIATIONS.filter(v => v.category === cat);
