@@ -6,9 +6,11 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown, Sparkles, Loader2 } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat, ImageRun } from "docx";
 import fileSaver from "file-saver";
 import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
+import sfdaHeader from "@/assets/sfda-header.png.asset.json";
+import sfdaFooter from "@/assets/sfda-footer.png.asset.json";
 const { saveAs } = fileSaver;
 
 export const Route = createFileRoute("/classify-multi")({
@@ -550,39 +552,7 @@ function ClassifyMulti() {
             children.push(variationsTable);
             children.push(spacer());
 
-            // Executive summary
-            const summaryRows: [string, string][] = [
-              ["Total variations submitted", String(selected.length)],
-              ...(Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)]) as [string, string][]),
-              ["Approved", String(approvedCount)],
-              ["Rejected", String(rejectedCount)],
-              ["Overall outcome", allAccepted ? "All approved" : rejectedCount === selected.length ? "All rejected" : "Partially approved"],
-            ];
-            const summaryTable = new Table({
-              width: { size: 9360, type: WidthType.DXA },
-              columnWidths: [4680, 4680],
-              rows: summaryRows.map(([label, value]) => new TableRow({
-                children: [
-                  new TableCell({
-                    borders: varBorders,
-                    width: { size: 4680, type: WidthType.DXA },
-                    shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
-                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
-                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
-                  }),
-                  new TableCell({
-                    borders: varBorders,
-                    width: { size: 4680, type: WidthType.DXA },
-                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
-                    children: [new Paragraph({ children: [new TextRun({ text: value, font: "Calibri", size: 22, color: value === "All approved" ? SUCCESS_BORDER : value === "All rejected" ? DANGER_BORDER : BRAND })] })],
-                  }),
-                ],
-              })),
-            });
-            children.push(para("Executive summary", { bold: true, color: BRAND }));
-            children.push(summaryTable);
-            children.push(spacer());
-
+            // Reviewer opinion — mirrors the "Assessor Opinion" box in the last step
             children.push(h1("3. Reviewer opinion"));
             children.push(opinionCallout);
             if (opinion.trim()) {
@@ -590,32 +560,52 @@ function ClassifyMulti() {
               children.push(para("Reviewer's note", { bold: true, color: BRAND }));
               opinion.trim().split("\n").forEach(l => children.push(para(l)));
             }
+            if (aiAnalysis.trim()) {
+              children.push(spacer());
+              children.push(para("Scientific analysis", { bold: true, color: BRAND }));
+              // Render AI markdown as plain paragraphs (strip markdown markers, keep structure)
+              aiAnalysis.split("\n").forEach(rawLine => {
+                const line = rawLine.replace(/\r/g, "");
+                if (!line.trim()) { children.push(spacer()); return; }
+                const h3 = line.match(/^###\s+(.*)$/);
+                const h4 = line.match(/^####\s+(.*)$/);
+                const h2 = line.match(/^##\s+(.*)$/);
+                const li = line.match(/^\s*[-*]\s+(.*)$/);
+                const oli = line.match(/^\s*\d+\.\s+(.*)$/);
+                if (h2) { children.push(para(h2[1].replace(/\*\*/g, ""), { bold: true, color: BRAND })); return; }
+                if (h3) { children.push(para(h3[1].replace(/\*\*/g, ""), { bold: true, color: ACCENT })); return; }
+                if (h4) { children.push(para(h4[1].replace(/\*\*/g, ""), { bold: true })); return; }
+                if (li || oli) { children.push(bullet((li || oli)![1].replace(/\*\*/g, ""))); return; }
+                children.push(para(line.replace(/\*\*/g, "")));
+              });
+            }
             children.push(spacer());
 
+            // Final recommendation — exact mirror of the UI box in the last step
             children.push(h1("4. Final recommendation"));
-            children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
-            children.push(spacer());
-            results.forEach(({ v, unmet, accepted }, idx) => {
+            results.forEach(({ v, unmet, accepted }) => {
               const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
-              const statusLabel = accepted ? "APPROVED" : "REJECTED";
               children.push(new Paragraph({
-                spacing: { before: 120, after: 60 },
+                spacing: { before: 160, after: 80, line: 300 },
                 children: [
-                  new TextRun({ text: `${idx + 1}. ${v.code} `, bold: true, color: BRAND, font: "Calibri", size: 24 }),
-                  new TextRun({ text: v.title, bold: true, font: "Calibri", size: 24 }),
-                ],
-              }));
-              children.push(new Paragraph({
-                spacing: { after: 80 },
-                children: [
-                  new TextRun({ text: statusLabel, bold: true, color: statusColor, font: "Calibri", size: 20 }),
-                  new TextRun({ text: accepted
-                    ? "  —  All required conditions are met."
-                    : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`, font: "Calibri", size: 22 }),
+                  new TextRun({ text: `${v.code}  `, bold: true, font: "Consolas", size: 20, color: MUTED }),
+                  new TextRun({ text: v.title, bold: true, font: "Calibri", size: 22 }),
+                  new TextRun({
+                    text: accepted
+                      ? "  is approved"
+                      : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`,
+                    bold: true, color: statusColor, font: "Calibri", size: 22,
+                  }),
                 ],
               }));
               if (!accepted) unmet.forEach(c => children.push(bullet(c)));
             });
+
+            // Fetch SFDA banners for header/footer
+            const [headerBytes, footerBytes] = await Promise.all([
+              fetch(sfdaHeader.url).then(r => r.arrayBuffer()),
+              fetch(sfdaFooter.url).then(r => r.arrayBuffer()),
+            ]);
 
             const doc = new Document({
               creator: "Type IA Variation Assessment Tool",
@@ -636,29 +626,44 @@ function ClassifyMulti() {
                 properties: {
                   page: {
                     size: { width: 12240, height: 15840 },
-                    margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+                    margin: { top: 2000, right: 1440, bottom: 2000, left: 1440 },
                   },
                 },
                 headers: {
                   default: new DocHeader({
                     children: [new Paragraph({
-                      alignment: AlignmentType.RIGHT,
-                      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT, space: 4 } },
-                      children: [new TextRun({ text: "Variation Assessment Report", italics: true, color: MUTED, font: "Calibri", size: 18 })],
+                      alignment: AlignmentType.CENTER,
+                      children: [new ImageRun({
+                        type: "png",
+                        data: new Uint8Array(headerBytes),
+                        transformation: { width: 612, height: 80 },
+                        altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-header" },
+                      })],
                     })],
                   }),
                 },
                 footers: {
                   default: new DocFooter({
-                    children: [new Paragraph({
-                      alignment: AlignmentType.CENTER,
-                      children: [
-                        new TextRun({ text: "Page ", color: MUTED, font: "Calibri", size: 18 }),
-                        new TextRun({ children: [PageNumber.CURRENT], color: MUTED, font: "Calibri", size: 18 }),
-                        new TextRun({ text: " of ", color: MUTED, font: "Calibri", size: 18 }),
-                        new TextRun({ children: [PageNumber.TOTAL_PAGES], color: MUTED, font: "Calibri", size: 18 }),
-                      ],
-                    })],
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [new ImageRun({
+                          type: "png",
+                          data: new Uint8Array(footerBytes),
+                          transformation: { width: 612, height: 90 },
+                          altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-footer" },
+                        })],
+                      }),
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: "Page ", color: MUTED, font: "Calibri", size: 18 }),
+                          new TextRun({ children: [PageNumber.CURRENT], color: MUTED, font: "Calibri", size: 18 }),
+                          new TextRun({ text: " of ", color: MUTED, font: "Calibri", size: 18 }),
+                          new TextRun({ children: [PageNumber.TOTAL_PAGES], color: MUTED, font: "Calibri", size: 18 }),
+                        ],
+                      }),
+                    ],
                   }),
                 },
                 children,
