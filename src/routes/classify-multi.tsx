@@ -6,9 +6,11 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown, Sparkles, Loader2 } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat, ImageRun } from "docx";
 import fileSaver from "file-saver";
 import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
+import sfdaHeader from "@/assets/sfda-header.png.asset.json";
+import sfdaFooter from "@/assets/sfda-footer.png.asset.json";
 const { saveAs } = fileSaver;
 
 export const Route = createFileRoute("/classify-multi")({
