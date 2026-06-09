@@ -624,9 +624,10 @@ function ClassifyMulti() {
                     size: { width: 12240, height: 15840 },
                     margin: { top: 2000, right: 1440, bottom: 2000, left: 1440 },
                   },
+                  titlePage: true,
                 },
                 headers: {
-                  default: new DocHeader({
+                  first: new DocHeader({
                     children: [new Paragraph({
                       alignment: AlignmentType.CENTER,
                       children: [new ImageRun({
@@ -636,6 +637,9 @@ function ClassifyMulti() {
                         altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-header" },
                       })],
                     })],
+                  }),
+                  default: new DocHeader({
+                    children: [new Paragraph({ children: [new TextRun({ text: "" })] })],
                   }),
                 },
                 footers: {
