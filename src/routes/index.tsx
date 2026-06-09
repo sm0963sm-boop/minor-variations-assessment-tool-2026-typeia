@@ -67,50 +67,47 @@ function Home() {
             </div>
           </div>
 
-          {/* Creative Workflow — journey with connected orbs */}
+          {/* Editorial Workflow — bold typographic timeline */}
           <div className="mt-12">
-            <div className="flex items-baseline justify-between mb-6">
-              <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-                Workflow
-                <span className="ml-3 text-xs font-normal text-muted-foreground tracking-widest uppercase">4 steps</span>
-              </h2>
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                <span className="size-1.5 rounded-full bg-sky-500" />
-                <span className="size-1.5 rounded-full bg-violet-500" />
-                <span className="size-1.5 rounded-full bg-indigo-500" />
-                <span className="size-1.5 rounded-full bg-emerald-500" />
-                Guided flow
-              </span>
+            <div className="flex items-end justify-between mb-6 border-b border-border/60 pb-3">
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">How it works</p>
+                <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">The Workflow</h2>
+              </div>
+              <span className="hidden sm:block font-mono text-[11px] text-muted-foreground">01 — 04</span>
             </div>
 
-            <div className="relative rounded-2xl border border-border/70 bg-gradient-to-br from-card via-card to-muted/30 p-6 sm:p-8 shadow-soft overflow-hidden">
-              {/* decorative blobs */}
-              <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 rounded-full bg-sky-400/10 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 -right-20 w-80 h-80 rounded-full bg-emerald-400/10 blur-3xl" />
+            <div className="relative">
+              {/* dashed timeline */}
+              <div className="hidden lg:block absolute top-10 left-0 right-0 h-px border-t border-dashed border-border" />
 
-              {/* desktop connector line */}
-              <div className="hidden lg:block absolute left-10 right-10 top-[88px] h-[2px] bg-gradient-to-r from-sky-400 via-violet-400 to-emerald-400 opacity-60" />
-
-              <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
                 {[
-                  { n: 1, t: "Select Variation", d: "Pick variations from the SFDA catalog.", grad: "from-sky-400 to-sky-600", glow: "shadow-[0_0_30px_-5px_rgba(56,189,248,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /> },
-                  { n: 2, t: "Check Conditions", d: "Answer yes/no questions.", grad: "from-violet-400 to-violet-600", glow: "shadow-[0_0_30px_-5px_rgba(167,139,250,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> },
-                  { n: 3, t: "Assessor Opinion", d: "AI analysis of unmet conditions.", grad: "from-blue-400 to-indigo-600", glow: "shadow-[0_0_30px_-5px_rgba(99,102,241,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 7a5 5 0 015 5c0 1.657-.8 3.13-2.04 4.05a2.5 2.5 0 00-.96 1.95H10a2.5 2.5 0 00-.96-1.95A4.992 4.992 0 017 12a5 5 0 015-5z" /> },
-                  { n: 4, t: "Final Recommendation", d: "Accept or Reject outcome.", grad: "from-emerald-400 to-emerald-600", glow: "shadow-[0_0_30px_-5px_rgba(52,211,153,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /> },
+                  { n: "01", t: "Select Variation",       d: "Pick variations from the SFDA catalog.", accent: "text-sky-500",     bar: "bg-sky-500" },
+                  { n: "02", t: "Check Conditions",       d: "Answer yes/no questions.",               accent: "text-violet-500",  bar: "bg-violet-500" },
+                  { n: "03", t: "Assessor Opinion",       d: "AI analysis of unmet conditions.",       accent: "text-indigo-500",  bar: "bg-indigo-500" },
+                  { n: "04", t: "Final Recommendation",   d: "Accept or Reject outcome.",              accent: "text-emerald-500", bar: "bg-emerald-500" },
                 ].map((s) => (
-                  <div key={s.n} className="group relative flex flex-col items-center text-center">
-                    {/* orb */}
-                    <div className="relative">
-                      <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${s.grad} blur-xl opacity-40 group-hover:opacity-70 transition`} />
-                      <div className={`relative size-16 rounded-full bg-gradient-to-br ${s.grad} ${s.glow} flex items-center justify-center ring-4 ring-background group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300`}>
-                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{s.icon}</svg>
-                      </div>
-                      <div className="absolute -top-1 -right-1 size-6 rounded-full bg-background border border-border text-[11px] font-bold text-foreground flex items-center justify-center shadow-sm">
+                  <div key={s.n} className="group relative">
+                    {/* node on timeline */}
+                    <div className="hidden lg:flex absolute -top-[5px] left-0 size-[11px] rounded-full bg-background border-2 border-foreground" />
+
+                    <div className="relative pt-6 lg:pt-10">
+                      {/* huge ghost numeral */}
+                      <div className={`font-display font-black text-[5rem] leading-none ${s.accent} opacity-15 group-hover:opacity-30 transition select-none`}>
                         {s.n}
                       </div>
+                      <div className={`mt-3 h-[3px] w-10 ${s.bar} group-hover:w-20 transition-all duration-300`} />
+                      <h3 className="mt-3 font-display font-bold text-base text-foreground tracking-tight">
+                        {s.t}
+                      </h3>
+                      <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+                        {s.d}
+                      </p>
+                      <p className={`mt-2 font-mono text-[10px] uppercase tracking-widest ${s.accent}`}>
+                        Step {s.n}
+                      </p>
                     </div>
-                    <h3 className="mt-4 font-display font-bold text-sm text-foreground tracking-tight">{s.t}</h3>
-                    <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed max-w-[14rem]">{s.d}</p>
                   </div>
                 ))}
               </div>
