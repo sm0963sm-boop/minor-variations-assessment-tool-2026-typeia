@@ -67,81 +67,53 @@ function Home() {
             </div>
           </div>
 
-          {/* Compact Workflow — near the title */}
+          {/* Creative Workflow — journey with connected orbs */}
           <div className="mt-12">
-            <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground mb-5">Workflow</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  n: 1,
-                  t: "Select Variation",
-                  d: "Pick variations from the SFDA catalog.",
-                  color: "from-sky-500 to-sky-600",
-                  ring: "ring-sky-200",
-                  icon: (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-                  ),
-                },
-                {
-                  n: 2,
-                  t: "Check Conditions",
-                  d: "Answer yes/no questions.",
-                  color: "from-violet-500 to-violet-600",
-                  ring: "ring-violet-200",
-                  icon: (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  ),
-                },
-                {
-                  n: 3,
-                  t: "Assessor Opinion",
-                  d: "AI analysis of unmet conditions.",
-                  color: "from-blue-500 to-indigo-600",
-                  ring: "ring-blue-200",
-                  icon: (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 7a5 5 0 015 5c0 1.657-.8 3.13-2.04 4.05a2.5 2.5 0 00-.96 1.95H10a2.5 2.5 0 00-.96-1.95A4.992 4.992 0 017 12a5 5 0 015-5z" />
-                  ),
-                },
-                {
-                  n: 4,
-                  t: "Final Recommendation",
-                  d: "Accept or Reject outcome.",
-                  color: "from-emerald-500 to-emerald-600",
-                  ring: "ring-emerald-200",
-                  icon: (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  ),
-                },
-              ].map((s, i, arr) => (
-                <div key={s.n} className="relative">
-                  <div className="relative h-full rounded-xl border border-border bg-card p-4 shadow-soft hover:shadow-elegant transition">
-                    <div className={`absolute -top-3 left-4 size-6 rounded-full bg-gradient-to-br ${s.color} text-white text-xs font-bold flex items-center justify-center shadow-md ring-4 ring-background`}>
-                      {s.n}
+            <div className="flex items-baseline justify-between mb-6">
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                Workflow
+                <span className="ml-3 text-xs font-normal text-muted-foreground tracking-widest uppercase">4 steps</span>
+              </h2>
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                <span className="size-1.5 rounded-full bg-sky-500" />
+                <span className="size-1.5 rounded-full bg-violet-500" />
+                <span className="size-1.5 rounded-full bg-indigo-500" />
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                Guided flow
+              </span>
+            </div>
+
+            <div className="relative rounded-2xl border border-border/70 bg-gradient-to-br from-card via-card to-muted/30 p-6 sm:p-8 shadow-soft overflow-hidden">
+              {/* decorative blobs */}
+              <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 rounded-full bg-sky-400/10 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -right-20 w-80 h-80 rounded-full bg-emerald-400/10 blur-3xl" />
+
+              {/* desktop connector line */}
+              <div className="hidden lg:block absolute left-10 right-10 top-[88px] h-[2px] bg-gradient-to-r from-sky-400 via-violet-400 to-emerald-400 opacity-60" />
+
+              <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+                {[
+                  { n: 1, t: "Select Variation", d: "Pick variations from the SFDA catalog.", grad: "from-sky-400 to-sky-600", glow: "shadow-[0_0_30px_-5px_rgba(56,189,248,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /> },
+                  { n: 2, t: "Check Conditions", d: "Answer yes/no questions.", grad: "from-violet-400 to-violet-600", glow: "shadow-[0_0_30px_-5px_rgba(167,139,250,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> },
+                  { n: 3, t: "Assessor Opinion", d: "AI analysis of unmet conditions.", grad: "from-blue-400 to-indigo-600", glow: "shadow-[0_0_30px_-5px_rgba(99,102,241,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 7a5 5 0 015 5c0 1.657-.8 3.13-2.04 4.05a2.5 2.5 0 00-.96 1.95H10a2.5 2.5 0 00-.96-1.95A4.992 4.992 0 017 12a5 5 0 015-5z" /> },
+                  { n: 4, t: "Final Recommendation", d: "Accept or Reject outcome.", grad: "from-emerald-400 to-emerald-600", glow: "shadow-[0_0_30px_-5px_rgba(52,211,153,0.55)]", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /> },
+                ].map((s) => (
+                  <div key={s.n} className="group relative flex flex-col items-center text-center">
+                    {/* orb */}
+                    <div className="relative">
+                      <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${s.grad} blur-xl opacity-40 group-hover:opacity-70 transition`} />
+                      <div className={`relative size-16 rounded-full bg-gradient-to-br ${s.grad} ${s.glow} flex items-center justify-center ring-4 ring-background group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300`}>
+                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">{s.icon}</svg>
+                      </div>
+                      <div className="absolute -top-1 -right-1 size-6 rounded-full bg-background border border-border text-[11px] font-bold text-foreground flex items-center justify-center shadow-sm">
+                        {s.n}
+                      </div>
                     </div>
-                    <div className={`mt-2 size-9 rounded-lg bg-gradient-to-br ${s.color} text-white flex items-center justify-center shadow-sm ring-2 ${s.ring}`}>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        {s.icon}
-                      </svg>
-                    </div>
-                    <h3 className="mt-3 font-display font-bold text-sm text-foreground">{s.t}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{s.d}</p>
+                    <h3 className="mt-4 font-display font-bold text-sm text-foreground tracking-tight">{s.t}</h3>
+                    <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed max-w-[14rem]">{s.d}</p>
                   </div>
-                  {i < arr.length - 1 && (
-                    <>
-                      <div className="hidden lg:flex absolute top-1/2 -right-2 z-10 size-5 -translate-y-1/2 rounded-full bg-background border border-border items-center justify-center text-muted-foreground">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                      <div className="lg:hidden flex justify-center py-1 text-muted-foreground">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
