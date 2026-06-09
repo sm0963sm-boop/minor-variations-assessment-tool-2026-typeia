@@ -597,11 +597,8 @@ function ClassifyMulti() {
               if (!accepted) unmet.forEach(c => children.push(bullet(c)));
             });
 
-            // Fetch SFDA banners for header/footer
-            const [headerBytes, footerBytes] = await Promise.all([
-              fetch(sfdaHeader.url).then(r => r.arrayBuffer()),
-              fetch(sfdaFooter.url).then(r => r.arrayBuffer()),
-            ]);
+            // Fetch SFDA footer banner
+            const footerBytes = await fetch(sfdaFooter.url).then(r => r.arrayBuffer());
 
             const doc = new Document({
               creator: "Type IA Variation Assessment Tool",
@@ -622,28 +619,10 @@ function ClassifyMulti() {
                 properties: {
                   page: {
                     size: { width: 12240, height: 15840 },
-                    margin: { top: 2200, right: 1440, bottom: 2000, left: 1440, header: 0, footer: 720 },
+                    margin: { top: 1440, right: 1440, bottom: 2000, left: 1440, header: 0, footer: 720 },
                   },
-                  titlePage: true,
                 },
-                headers: {
-                  first: new DocHeader({
-                    children: [new Paragraph({
-                      alignment: AlignmentType.CENTER,
-                      indent: { left: -1440, right: -1440 },
-                      spacing: { before: 0, after: 0 },
-                      children: [new ImageRun({
-                        type: "png",
-                        data: new Uint8Array(headerBytes),
-                        transformation: { width: 612, height: 130 },
-                        altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-header" },
-                      })],
-                    })],
-                  }),
-                  default: new DocHeader({
-                    children: [new Paragraph({ children: [new TextRun({ text: "" })] })],
-                  }),
-                },
+
                 footers: {
                   default: new DocFooter({
                     children: [
