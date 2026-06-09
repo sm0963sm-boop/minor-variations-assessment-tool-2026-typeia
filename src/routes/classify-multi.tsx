@@ -9,7 +9,7 @@ import { Copy, Check, FileDown, Sparkles, Loader2 } from "lucide-react";
 import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat, ImageRun } from "docx";
 import fileSaver from "file-saver";
 import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
-import sfdaHeader from "@/assets/sfda-header.png.asset.json";
+import sfdaHeader from "@/assets/sfda-header-v2.png.asset.json";
 import sfdaFooter from "@/assets/sfda-footer.png.asset.json";
 const { saveAs } = fileSaver;
 
@@ -622,7 +622,7 @@ function ClassifyMulti() {
                 properties: {
                   page: {
                     size: { width: 12240, height: 15840 },
-                    margin: { top: 2000, right: 1440, bottom: 2000, left: 1440 },
+                    margin: { top: 2200, right: 1440, bottom: 2000, left: 1440, header: 0, footer: 720 },
                   },
                   titlePage: true,
                 },
@@ -630,10 +630,12 @@ function ClassifyMulti() {
                   first: new DocHeader({
                     children: [new Paragraph({
                       alignment: AlignmentType.CENTER,
+                      indent: { left: -1440, right: -1440 },
+                      spacing: { before: 0, after: 0 },
                       children: [new ImageRun({
                         type: "png",
                         data: new Uint8Array(headerBytes),
-                        transformation: { width: 612, height: 80 },
+                        transformation: { width: 612, height: 130 },
                         altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-header" },
                       })],
                     })],
