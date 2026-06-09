@@ -59,7 +59,7 @@ function Home() {
                     This is a guided decision-support tool based on the SFDA Guidelines for Variation Requirements Version 6.4.
                   </p>
                   <div className="h-px bg-emerald-200/70" />
-                  <p className="text-sm sm:text-base text-emerald-800/90 leading-relaxed">
+                  <p className="text-sm sm:text-base text-red-400 leading-relaxed">
                     This tool is intended to support the evaluation process; however, the overall assessment and final decision remain the sole responsibility of the assessor.
                   </p>
                 </div>
