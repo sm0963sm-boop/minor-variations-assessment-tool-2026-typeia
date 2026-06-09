@@ -10,7 +10,7 @@ import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, Ta
 
 import fileSaver from "file-saver";
 import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
-import sfdaHeader from "@/assets/sfda-header-v2.png.asset.json";
+
 import sfdaFooter from "@/assets/sfda-footer.png.asset.json";
 const { saveAs } = fileSaver;
 
