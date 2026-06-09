@@ -552,18 +552,14 @@ function ClassifyMulti() {
             children.push(variationsTable);
             children.push(spacer());
 
-            // Reviewer opinion — mirrors the "Assessor Opinion" box in the last step
-            children.push(h1("3. Reviewer opinion"));
-            children.push(opinionCallout);
+            // Assessor opinion — scientific analysis only (no red callout box)
+            children.push(h1("3. Assessor opinion"));
             if (opinion.trim()) {
-              children.push(spacer());
               children.push(para("Reviewer's note", { bold: true, color: BRAND }));
               opinion.trim().split("\n").forEach(l => children.push(para(l)));
+              children.push(spacer());
             }
             if (aiAnalysis.trim()) {
-              children.push(spacer());
-              children.push(para("Scientific analysis", { bold: true, color: BRAND }));
-              // Render AI markdown as plain paragraphs (strip markdown markers, keep structure)
               aiAnalysis.split("\n").forEach(rawLine => {
                 const line = rawLine.replace(/\r/g, "");
                 if (!line.trim()) { children.push(spacer()); return; }
@@ -628,9 +624,10 @@ function ClassifyMulti() {
                     size: { width: 12240, height: 15840 },
                     margin: { top: 2000, right: 1440, bottom: 2000, left: 1440 },
                   },
+                  titlePage: true,
                 },
                 headers: {
-                  default: new DocHeader({
+                  first: new DocHeader({
                     children: [new Paragraph({
                       alignment: AlignmentType.CENTER,
                       children: [new ImageRun({
@@ -640,6 +637,9 @@ function ClassifyMulti() {
                         altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-header" },
                       })],
                     })],
+                  }),
+                  default: new DocHeader({
+                    children: [new Paragraph({ children: [new TextRun({ text: "" })] })],
                   }),
                 },
                 footers: {
