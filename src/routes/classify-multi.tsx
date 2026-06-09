@@ -6,12 +6,11 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown, Sparkles, Loader2 } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Footer as DocFooter, LevelFormat, ImageRun } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Footer as DocFooter, LevelFormat } from "docx";
 
 import fileSaver from "file-saver";
 import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
 
-import sfdaFooter from "@/assets/sfda-footer.png.asset.json";
 const { saveAs } = fileSaver;
 
 export const Route = createFileRoute("/classify-multi")({
@@ -598,9 +597,6 @@ function ClassifyMulti() {
               if (!accepted) unmet.forEach(c => children.push(bullet(c)));
             });
 
-            // Fetch SFDA footer banner
-            const footerBytes = await fetch(sfdaFooter.url).then(r => r.arrayBuffer());
-
             const doc = new Document({
               creator: "Type IA Variation Assessment Tool",
               title: "Variation Assessment Report",
@@ -620,22 +616,13 @@ function ClassifyMulti() {
                 properties: {
                   page: {
                     size: { width: 12240, height: 15840 },
-                    margin: { top: 1440, right: 1440, bottom: 2000, left: 1440, header: 0, footer: 720 },
+                    margin: { top: 1440, right: 1440, bottom: 1440, left: 1440, header: 0, footer: 720 },
                   },
                 },
 
                 footers: {
                   default: new DocFooter({
                     children: [
-                      new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [new ImageRun({
-                          type: "png",
-                          data: new Uint8Array(footerBytes),
-                          transformation: { width: 612, height: 90 },
-                          altText: { title: "SFDA", description: "Saudi Food & Drug Authority", name: "sfda-footer" },
-                        })],
-                      }),
                       new Paragraph({
                         alignment: AlignmentType.CENTER,
                         children: [
