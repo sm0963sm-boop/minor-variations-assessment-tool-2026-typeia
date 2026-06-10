@@ -645,68 +645,72 @@ function ClassifyMulti() {
 
           return (
             <>
-            {anyRejected && (
-              <div className="mb-6 rounded-3xl border-2 border-info bg-info/15 p-6 sm:p-8 shadow-elegant">
-                <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={18} className="text-info" />
-                    <div className="text-base font-extrabold text-info uppercase tracking-wide">Assessor Opinion</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {aiAnalysis && (
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(aiAnalysis, "ai")}
-                        className="inline-flex items-center gap-1 rounded-lg border border-info/40 bg-info/10 px-2 py-1 text-xs font-bold text-info hover:bg-info/20 transition"
-                      >
-                        {copiedKey === "ai" ? <Check size={14} /> : <Copy size={14} />}
-                        {copiedKey === "ai" ? "Copied!" : "Copy"}
-                      </button>
-                    )}
+            <div className="mb-6 rounded-3xl border-2 border-info bg-info/15 p-6 sm:p-8 shadow-elegant">
+              <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={18} className="text-info" />
+                  <div className="text-base font-extrabold text-info uppercase tracking-wide">Assessor Opinion</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {aiAnalysis && (
                     <button
                       type="button"
-                      disabled={aiLoading}
-                      onClick={async () => {
-                        setAiLoading(true);
-                        setAiError(null);
-                        try {
-                          const items = results
-                            .filter(r => !r.accepted)
-                            .map(r => ({ code: r.v.code, title: r.v.title, unmetConditions: r.unmet }));
-                          const res = await callAnalysis({ data: { items } });
-                          setAiAnalysis(res.analysis);
-                        } catch (e: any) {
-                          const msg = String(e?.message || e);
-                          if (msg.includes("429")) setAiError("Rate limit reached. Please try again shortly.");
-                          else if (msg.includes("402")) setAiError("AI credits exhausted. Add credits in your workspace settings.");
-                          else setAiError("Could not generate analysis. Please try again.");
-                        } finally {
-                          setAiLoading(false);
-                        }
-                      }}
-                      className="inline-flex items-center gap-2 rounded-lg bg-info text-white px-3 py-1.5 text-xs font-bold hover:opacity-90 disabled:opacity-60 transition"
+                      onClick={() => handleCopy(aiAnalysis, "ai")}
+                      className="inline-flex items-center gap-1 rounded-lg border border-info/40 bg-info/10 px-2 py-1 text-xs font-bold text-info hover:bg-info/20 transition"
                     >
-                      {aiLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                      {aiLoading ? "Generating…" : aiAnalysis ? "Regenerate" : "Generate analysis"}
+                      {copiedKey === "ai" ? <Check size={14} /> : <Copy size={14} />}
+                      {copiedKey === "ai" ? "Copied!" : "Copy"}
                     </button>
-                  </div>
+                  )}
+                  <button
+                    type="button"
+                    disabled={aiLoading}
+                    onClick={async () => {
+                      setAiLoading(true);
+                      setAiError(null);
+                      try {
+                        const items = results.map(r => ({
+                          code: r.v.code,
+                          title: r.v.title,
+                          accepted: r.accepted,
+                          unmetConditions: r.unmet,
+                          metConditions: r.v.conditions.filter(c => !r.unmet.includes(c)),
+                        }));
+                        const res = await callAnalysis({ data: { items } });
+                        setAiAnalysis(res.analysis);
+                      } catch (e: any) {
+                        const msg = String(e?.message || e);
+                        if (msg.includes("429")) setAiError("Rate limit reached. Please try again shortly.");
+                        else if (msg.includes("402")) setAiError("AI credits exhausted. Add credits in your workspace settings.");
+                        else setAiError("Could not generate analysis. Please try again.");
+                      } finally {
+                        setAiLoading(false);
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 rounded-lg bg-info text-white px-3 py-1.5 text-xs font-bold hover:opacity-90 disabled:opacity-60 transition"
+                  >
+                    {aiLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                    {aiLoading ? "Generating…" : aiAnalysis ? "Regenerate" : "Generate analysis"}
+                  </button>
                 </div>
-
-                {!aiAnalysis && !aiLoading && !aiError && (
-                  <p className="text-sm text-foreground/80">
-                    Generate a detailed scientific analysis for each unmet condition: meaning, reason for non-compliance, and impact on product quality (Efficacy, Safety, Stability, Bioavailability).
-                  </p>
-                )}
-                {aiError && (
-                  <p className="text-sm text-destructive font-medium">{aiError}</p>
-                )}
-                {aiAnalysis && (
-                  <div className="rounded-xl bg-background/70 p-4 text-sm text-foreground leading-relaxed space-y-2 [&_h3]:text-base [&_h3]:font-extrabold [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-info [&_h4]:text-sm [&_h4]:font-bold [&_h4]:mt-3 [&_h4]:mb-1 [&_h4]:text-foreground [&_p]:mb-2 [&_strong]:font-bold [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:ps-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:ps-5">
-                    <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
-                  </div>
-                )}
               </div>
-            )}
+
+              {!aiAnalysis && !aiLoading && !aiError && (
+                <p className="text-sm text-foreground/80">
+                  {allAccepted
+                    ? "Generate a scientific justification for the accepted variations: why each change is acceptable as a minor (Type IA) variation, and its (minimal) impact on Efficacy, Safety, Stability, and Bioavailability."
+                    : "Generate a detailed scientific analysis for each unmet condition: meaning, reason for non-compliance, and impact on product quality (Efficacy, Safety, Stability, Bioavailability)."}
+                </p>
+              )}
+              {aiError && (
+                <p className="text-sm text-destructive font-medium">{aiError}</p>
+              )}
+              {aiAnalysis && (
+                <div className="rounded-xl bg-background/70 p-4 text-sm text-foreground leading-relaxed space-y-2 [&_h3]:text-base [&_h3]:font-extrabold [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-info [&_h4]:text-sm [&_h4]:font-bold [&_h4]:mt-3 [&_h4]:mb-1 [&_h4]:text-foreground [&_p]:mb-2 [&_strong]:font-bold [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:ps-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:ps-5">
+                  <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
+                </div>
+              )}
+            </div>
 
             <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
               <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
