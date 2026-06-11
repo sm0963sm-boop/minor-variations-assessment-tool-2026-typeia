@@ -16,8 +16,8 @@ const { saveAs } = fileSaver;
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
     meta: [
-      { title: "Type IA Variation Assessment Tool" },
-      { name: "description", content: "Classify multiple Type IA / IAIN variations at once and get a single combined final decision." },
+      { title: "Minor Variations Assessment Tool" },
+      { name: "description", content: "Assess multiple Type IA / IAIN / IB minor variations at once and get a per-variation final decision." },
     ],
   }),
   component: ClassifyMulti,
@@ -120,6 +120,8 @@ function ClassifyMulti() {
     return { v, unmet, status: arr, accepted: unmet.length === 0, missingDocs };
   });
 
+  // IB variations have no conditions → treated as auto-accepted; decision is based on documentation only.
+  const hasConditionVars = selected.some(v => v.conditions.length > 0);
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
   const anyAccepted = results.some(r => r.accepted);
   const anyRejected = results.some(r => !r.accepted);
@@ -136,11 +138,11 @@ function ClassifyMulti() {
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10">
         <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 mb-8">
           <p className="text-sm text-foreground leading-relaxed">
-            <span className="font-bold text-warning">Note:</span> This tool assists the reviewer in evaluating Type IA / IAIN variation requests. It does not replace the full independent assessment required by the reviewer.
+            <span className="font-bold text-warning">Note:</span> This tool assists the reviewer in evaluating Type IA / IAIN / IB minor variation requests. It does not replace the full independent assessment required by the reviewer.
           </p>
         </div>
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-display text-3xl font-extrabold text-foreground">Type IA Variation Assessment Tool</h1>
+          <h1 className="font-display text-3xl font-extrabold text-foreground">Minor Variations Assessment Tool</h1>
           <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
