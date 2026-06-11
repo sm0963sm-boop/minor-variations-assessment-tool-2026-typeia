@@ -840,20 +840,8 @@ function ClassifyMulti() {
               : decisionStatus === "SUSPENDED" ? "border-border bg-background"
               : "border-destructive/30 bg-destructive/5"
             }`}>
-              <div className={`mb-5 rounded-2xl border-2 p-4 ${
-                decisionStatus === "APPROVED" ? "border-success/50 bg-success/10"
-                : decisionStatus === "SUSPENDED" ? "border-border bg-muted/30"
-                : "border-destructive/50 bg-destructive/10"
-              }`}>
-                <div className={`text-xl font-extrabold ${
-                  decisionStatus === "APPROVED" ? "text-success"
-                  : decisionStatus === "SUSPENDED" ? "text-foreground"
-                  : "text-destructive"
-                }`}>
-                  {decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED"}
-                </div>
-                <p className="mt-2 text-sm text-foreground/80 leading-relaxed">{overall}</p>
-              </div>
+
+
 
 
               <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
