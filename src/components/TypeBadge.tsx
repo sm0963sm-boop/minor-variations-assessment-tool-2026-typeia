@@ -3,11 +3,13 @@ import type { VariationType } from "@/lib/variations-data";
 const STYLES: Record<VariationType, string> = {
   IA: "bg-success/15 text-success-foreground border-success/30",
   IAIN: "bg-info/15 text-info-foreground border-info/30",
+  IB: "bg-warning/15 text-warning-foreground border-warning/40",
 };
 
 const COLORS: Record<VariationType, string> = {
   IA: "bg-[color:var(--success)]",
   IAIN: "bg-[color:var(--info)]",
+  IB: "bg-[color:var(--warning)]",
 };
 
 export function TypeBadge({ type, size = "md" }: { type: VariationType; size?: "sm" | "md" | "lg" }) {
