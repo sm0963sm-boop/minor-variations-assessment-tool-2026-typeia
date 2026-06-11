@@ -31,6 +31,9 @@ function Home() {
               <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
                 <span className="bg-hero bg-clip-text text-transparent">Minor Variations Assessment Tool</span>
               </h1>
+              <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
+                This tool was developed by the Generic Products Directorate to support the scientific assessment process
+              </p>
               <div className="mt-8">
                 <Link
                   to="/classify-multi"
@@ -39,14 +42,6 @@ function Home() {
                   <span className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary to-primary/60 opacity-40 blur group-hover:opacity-60 transition" aria-hidden />
                   <span className="relative">Start</span>
                   <span className="relative text-2xl">→</span>
-                </Link>
-              </div>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link to="/catalog" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-base font-medium text-foreground hover:bg-muted transition">
-                  Browse the catalog
-                </Link>
-                <Link to="/guidance" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-base font-medium text-foreground hover:bg-muted transition">
-                  Type IA Guidance for New Assessors
                 </Link>
               </div>
               <div className="mt-8 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100/40 p-6 shadow-soft">
