@@ -881,9 +881,10 @@ function ClassifyMulti() {
                         <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
                         <span className="font-semibold">{v.title}</span>
                         {isSuspendedItem ? (
-                          <span className="ms-1 font-bold text-warning">
+                          <span className="ms-1 font-bold text-foreground">
                             is suspended — the following required document(s) are not submitted:
                           </span>
+
                         ) : accepted ? (
                           <span className="ms-1 font-bold text-success">is approved</span>
                         ) : (
