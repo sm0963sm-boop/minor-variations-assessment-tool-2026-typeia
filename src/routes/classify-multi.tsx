@@ -702,15 +702,14 @@ function ClassifyMulti() {
             children.push(h1("4. Final recommendation"));
             children.push(opinionCallout);
             children.push(spacer());
-            results.forEach(({ v, unmet, accepted, missingDocs }) => {
-              const isSuspendedItem = decisionStatus === "SUSPENDED" && accepted && missingDocs.length > 0;
-              const statusColor = isSuspendedItem
-                ? WARN_BORDER
-                : accepted ? SUCCESS_BORDER : DANGER_BORDER;
-              const statusText = isSuspendedItem
-                ? `  is suspended — please provide the following required document(s):`
-                : accepted
-                  ? "  is approved"
+            results.forEach((r) => {
+              const { v, unmet, missingDocs } = r;
+              const s = itemStatusOf(r);
+              const statusColor = s === "APPROVED" ? SUCCESS_BORDER : s === "SUSPENDED" ? WARN_BORDER : DANGER_BORDER;
+              const statusText = s === "APPROVED"
+                ? "  is approved"
+                : s === "SUSPENDED"
+                  ? "  is suspended — please provide the following required document(s):"
                   : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
               children.push(new Paragraph({
                 spacing: { before: 160, after: 80, line: 300 },
@@ -720,9 +719,9 @@ function ClassifyMulti() {
                   new TextRun({ text: statusText, bold: true, color: statusColor, font: "Calibri", size: 22 }),
                 ],
               }));
-              if (isSuspendedItem) {
+              if (s === "SUSPENDED") {
                 missingDocs.forEach(d => children.push(bullet(d)));
-              } else if (!accepted) {
+              } else if (s === "REJECTED") {
                 unmet.forEach(c => children.push(bullet(c)));
               }
             });
