@@ -534,12 +534,16 @@ function ClassifyMulti() {
             });
 
             // Opinion callout box (single-cell shaded table)
-            const calloutFill = allAccepted ? SUCCESS_BG : DANGER_BG;
-            const calloutBorderColor = allAccepted ? SUCCESS_BORDER : DANGER_BORDER;
+            const calloutFill = decisionStatus === "APPROVED" ? SUCCESS_BG : decisionStatus === "SUSPENDED" ? WARN_BG : DANGER_BG;
+            const calloutBorderColor = decisionStatus === "APPROVED" ? SUCCESS_BORDER : decisionStatus === "SUSPENDED" ? WARN_BORDER : DANGER_BORDER;
             const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
-            const opinionText = allAccepted
-              ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
-              : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED";
+            const opinionText =
+              decisionStatus === "APPROVED"
+                ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
+                : decisionStatus === "SUSPENDED"
+                  ? "All applicable conditions for the proposed Type IA variation(s) have been met; however, one or more required documents have not been submitted. The request is therefore placed on Suspension pending submission of the missing documentation listed below."
+                  : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
             const opinionCallout = new Table({
               width: { size: 9360, type: WidthType.DXA },
               columnWidths: [9360],
@@ -552,7 +556,7 @@ function ClassifyMulti() {
                   children: [
                     new Paragraph({
                       spacing: { after: 80 },
-                      children: [new TextRun({ text: allAccepted ? "APPROVED" : "NOT ACCEPTED", bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
+                      children: [new TextRun({ text: calloutLabel, bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
                     }),
                     new Paragraph({
                       spacing: { line: 300 },
