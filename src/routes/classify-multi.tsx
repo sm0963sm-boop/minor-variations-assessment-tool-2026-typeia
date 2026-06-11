@@ -677,24 +677,33 @@ function ClassifyMulti() {
             }
             children.push(spacer());
 
-            // Final recommendation — exact mirror of the UI box in the last step
+            // Final recommendation — mirrors the UI box in the last step
             children.push(h1("4. Final recommendation"));
-            results.forEach(({ v, unmet, accepted }) => {
-              const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
+            children.push(opinionCallout);
+            children.push(spacer());
+            results.forEach(({ v, unmet, accepted, missingDocs }) => {
+              const isSuspendedItem = decisionStatus === "SUSPENDED" && accepted && missingDocs.length > 0;
+              const statusColor = isSuspendedItem
+                ? WARN_BORDER
+                : accepted ? SUCCESS_BORDER : DANGER_BORDER;
+              const statusText = isSuspendedItem
+                ? `  is suspended — the following required document(s) are not submitted:`
+                : accepted
+                  ? "  is approved"
+                  : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
               children.push(new Paragraph({
                 spacing: { before: 160, after: 80, line: 300 },
                 children: [
                   new TextRun({ text: `${v.code}  `, bold: true, font: "Consolas", size: 20, color: MUTED }),
                   new TextRun({ text: v.title, bold: true, font: "Calibri", size: 22 }),
-                  new TextRun({
-                    text: accepted
-                      ? "  is approved"
-                      : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`,
-                    bold: true, color: statusColor, font: "Calibri", size: 22,
-                  }),
+                  new TextRun({ text: statusText, bold: true, color: statusColor, font: "Calibri", size: 22 }),
                 ],
               }));
-              if (!accepted) unmet.forEach(c => children.push(bullet(c)));
+              if (isSuspendedItem) {
+                missingDocs.forEach(d => children.push(bullet(d)));
+              } else if (!accepted) {
+                unmet.forEach(c => children.push(bullet(c)));
+              }
             });
 
             const doc = new Document({
