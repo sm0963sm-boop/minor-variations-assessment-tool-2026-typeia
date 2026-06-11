@@ -845,11 +845,6 @@ function ClassifyMulti() {
                 : decisionStatus === "SUSPENDED" ? "border-border bg-muted/30"
                 : "border-destructive/50 bg-destructive/10"
               }`}>
-                <div className={`text-xs font-extrabold uppercase tracking-widest mb-1 ${
-                  decisionStatus === "APPROVED" ? "text-success"
-                  : decisionStatus === "SUSPENDED" ? "text-foreground"
-                  : "text-destructive"
-                }`}>Final decision</div>
                 <div className={`text-xl font-extrabold ${
                   decisionStatus === "APPROVED" ? "text-success"
                   : decisionStatus === "SUSPENDED" ? "text-foreground"
