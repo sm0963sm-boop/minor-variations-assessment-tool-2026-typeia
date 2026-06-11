@@ -100,7 +100,7 @@ function ClassifyMulti() {
     setChecks({ ...checks, [code]: arr });
   };
 
-  const setDocSubmitted = (code: string, idx: number, val: boolean) => {
+  const setDocStatus = (code: string, idx: number, val: DocStatus) => {
     const arr = [...(docsSubmitted[code] || [])];
     arr[idx] = val;
     setDocsSubmitted({ ...docsSubmitted, [code]: arr });
