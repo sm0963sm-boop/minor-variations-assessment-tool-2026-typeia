@@ -145,7 +145,7 @@ function ClassifyMulti() {
         </div>
         <div className="flex gap-2 mb-8">
           {Array.from({ length: totalSteps }, (_, idx) => idx + 1).map(i => {
-            const displayStep = allAccepted ? step : (step === 4 ? 3 : step);
+            const displayStep = anyAccepted ? step : (step === 4 ? 3 : step);
             return (
               <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= displayStep ? "bg-primary" : "bg-border"}`} />
             );
