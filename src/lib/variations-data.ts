@@ -1941,5 +1941,810 @@ export const VARIATIONS: Variation[] = [
     "documents": [
       "1) Updated relevant sections and annexes of the PMF dossier, including detailed description of the new conditions, confirmation of validation and the name of the blood establishment(s) where the change takes place."
     ]
+  },
+  {
+    "code": "1.b",
+    "title": "Transfer the product to new marketing authorization holder (different legal entity)",
+    "category": "Administrative",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) A formal document from a relevant official body (e.g. chamber of commerce, national drug regulatory authority…etc) in which the new name or new address is mentioned.",
+      "2) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "3) Copy of the agreement",
+      "4) Certificate of a Pharmaceutical Product (CPP)",
+      "5) A recent and official price certificate by the company and legalized by the Saudi Embassy in the country of origin."
+    ]
+  },
+  {
+    "code": "3",
+    "title": "Change in the (invented) name of the medicinal product",
+    "category": "Administrative",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) A formal document from the national drug regulatory authority in which the new name is approved, if applicable.",
+      "2) Replacement of the relevant pages of the dossier that are affected by the variation."
+    ]
+  },
+  {
+    "code": "9.g",
+    "title": "Addition of an alternative sterilization site for the active substance using a pharmacopeial method",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) A declaration from the marketing authorization holder that the synthetic route (or in case of herbal products, where appropriate the method of preparation, geographical source, production of herbal drug and manufacturing route) quality control procedures and specifications of the active substance and of the starting material/reagent/intermediate in the manufacturing process of the active substance (if applicable) are the same as those already approved.",
+      "4) Batch analysis data (in a comparative tabular format) for at least two batches (minimum pilot scale) of the active substance from the current and proposed manufacturers/sites.",
+      "5) The submitted documents should clearly outline the “present” and “proposed” manufacturers.",
+      "8) Proof that the proposed site is appropriately authorized for the pharmaceutical form or product or manufacturing operation concerned."
+    ]
+  },
+  {
+    "code": "9.k",
+    "title": "New storage site of Master Cell Bank and/or Working Cell Banks",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "5) The submitted documents should clearly outline the “present” and “proposed” manufacturers."
+    ]
+  },
+  {
+    "code": "10.e",
+    "title": "Minor change to the restricted part of drug master file (DMF)",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the finished product dossier and drug master file (DMF) (where applicable), including a direct comparison of the present process and the new process.",
+      "2) Batch analysis data (in comparative tabular format) of at least two batches (minimum pilot scale) manufactured according to the currently approved and proposed process.",
+      "3) Copy of approved specifications of the active substance.",
+      "4) A declaration from the marketing authorization holder or the DMF Holder, where applicable, that there is no change in qualitative and quantitative impurity profile or in physico-chemical properties, that the synthetic route remains the same and that the specifications of the active substance or intermediates are unchanged. Note: for 10.b), for chemical active substances, this refers to substantial changes to the synthetic route or manufacturing conditions which may have a potential to change important quality characteristics of the active substance, such as qualitative and/or quantitative impurity profile requiring qualification, or physico-chemical properties impacting on bioavailability."
+    ]
+  },
+  {
+    "code": "11.d",
+    "title": "More than 10-fold increase compared to the originally approved batch size",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) The batch numbers of the tested batches having the proposed batch size.",
+      "3) Batch analysis data (in a comparative tabulated format) on a minimum of one production batch manufactured to both the currently approved and the proposed sizes. Batch data on the next two full production batches should be made available upon request and reported by the marketing authorization holder if outside specification (with proposed action).",
+      "4) Copy of approved specifications of the active substance (and of the intermediate, if applicable)."
+    ]
+  },
+  {
+    "code": "11.e",
+    "title": "The scale for a biological/immunological active substance is increased/decreased without process change (e.g. duplication of line)",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) The batch numbers of the tested batches having the proposed batch size.",
+      "3) Batch analysis data (in a comparative tabulated format) on a minimum of one production batch manufactured to both the currently approved and the proposed sizes. Batch data on the next two full production batches should be made available upon request and reported by the marketing authorization holder if outside specification (with proposed action).",
+      "4) Copy of approved specifications of the active substance (and of the intermediate, if applicable)."
+    ]
+  },
+  {
+    "code": "12.e",
+    "title": "Addition or replacement of an in-process test as a result of a safety or quality issue",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed in-process tests.",
+      "3) Details of any new Non pharmacopoeial analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biologicals, unless otherwise justified) of the active substance for all specification parameters",
+      "6) Justification for the new in-process test and limits."
+    ]
+  },
+  {
+    "code": "14.f",
+    "title": "Addition or replacement (excluding biological or immunological method) of a specification parameter as a result of a safety or quality issue",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biologicals, unless otherwise justified) of the relevant substance for all specification parameters.",
+      "5) Where appropriate, comparative dissolution profile data for the finished product on at least one pilot batch containing the active substance complying with the current and proposed specification. For herbal products, comparative disintegration data may be acceptable.",
+      "7) Justification of the new specification parameter and the limits."
+    ]
+  },
+  {
+    "code": "14.h",
+    "title": "Change in specification from in-house to a non-official pharmacopoeia or to another official pharmacopoeia",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biologicals, unless otherwise justified) of the relevant substance for all specification parameters.",
+      "5) Where appropriate, comparative dissolution profile data for the finished product on at least one pilot batch containing the active substance complying with the current and proposed specification. For herbal products, comparative disintegration data may be acceptable.",
+      "7) Justification of the new specification parameter and the limits."
+    ]
+  },
+  {
+    "code": "15.c",
+    "title": "Other changes to a test procedure (including replacement or addition) for the active substance or a starting material/reagent/intermediate",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation, which includes a description of the analytical methodology, a summary of validation data, revised specifications for impurities (if applicable).",
+      "2) Comparative validation results, or if justified comparative analysis results showing that the current test and the proposed one are equivalent. This requirement is not applicable in case of an addition of a new test procedure. c) Container closure system"
+    ]
+  },
+  {
+    "code": "16.c",
+    "title": "Liquid active substances (non-sterile) — change in shelf-life or storage conditions",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Appropriate data on the new packaging (comparative data on permeability e.g. for O2, CO2 moisture), including a confirmation that the material complies with relevant pharmacopeial requirements.",
+      "3) Proof must be provided that no interaction between the content and the packaging material occurs (e.g. no migration of components of the proposed material into the content and no loss of components of the product into the pack).",
+      "4) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months.",
+      "5) A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action(s).",
+      "6) Comparison of the current and proposed immediate packaging specifications, if applicable."
+    ]
+  },
+  {
+    "code": "17.c",
+    "title": "Addition or replacement of a specification parameter for the container closure system as a result of a safety or quality issue",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two batches of the immediate packaging for all specification parameters.",
+      "6) Justification of the new specification parameter and the limits. Change in test procedure for the immediate             Conditions        Documentation to       Procedure 18. packaging of the active substance                      to be fulfilled   be supplied            type"
+    ]
+  },
+  {
+    "code": "4",
+    "title": "Extension or introduction of a re-test period/storage period supported by real time data",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation. These must contain the results of appropriate recent real-time stability studies conducted in accordance with the SFDA stability guidelines on at least two pilot or production-scale batches (three production batches for biological medicinal products) of the active substance in the authorized packaging material, covering the duration of the requested re-test period or requested storage conditions.",
+      "2) Confirmation that stability studies have been done to the currently approved protocol. The studies must show that the agreed relevant specifications are still met.",
+      "3) Copy of approved specifications of the active substance."
+    ]
+  },
+  {
+    "code": "3.2",
+    "title": "Change in storage conditions of the active substance",
+    "category": "Quality - Active Substance",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation. These must contain the results of appropriate recent real-time stability studies conducted in accordance with the SFDA stability guidelines on at least two pilot or production-scale batches (three production batches for biological medicinal products) of the active substance in the authorized packaging material, covering the duration of the requested re-test period or requested storage conditions.",
+      "2) Confirmation that stability studies have been done to the currently approved protocol. The studies must show that the agreed relevant specifications are still met.",
+      "3) Copy of approved specifications of the active substance."
+    ]
+  },
+  {
+    "code": "20.b",
+    "title": "Changes in scoring/break lines intended to divide into equal doses",
+    "category": "Container Closure System",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation including a detailed drawing or written description of the current and new appearance and including revised product information as appropriate.",
+      "2) Samples of the finished product where applicable.",
+      "3) Results of the appropriate compendial tests demonstrating equivalence in characteristics/correct dosing"
+    ]
+  },
+  {
+    "code": "21.b",
+    "title": "Gastro-resistant, modified or prolonged release pharmaceutical forms — change in coating weight or capsule shell weight",
+    "category": "Container Closure System",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation including a detailed drawing of the current and proposed situation.",
+      "2) Comparative dissolution data on at least one pilot batch of the current and proposed dimensions. For herbal product comparative disintegration data may be acceptable.",
+      "3) Justification for not submitting a new bioequivalence study.",
+      "4) Samples of the finished product where applicable.",
+      "5) Results of the appropriate compendial tests demonstrating equivalence in characteristics/correct dosing. * Applicants are reminded that any change to the ‘strength’ of the medicinal product requires the submission of a new marketing authorization application."
+    ]
+  },
+  {
+    "code": "5",
+    "title": "Replacement of a single excipient with a comparable excipient with the same functional characteristics and at a similar level",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation including identification method for any new colorant and if appropriate updated end of shelf-life specifications.",
+      "2) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months and a letter of commitment to finalize the stability studies and to submit the data immediately to the authority in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action.",
+      "3) A declaration letter that stability studies will be finalized and that data will submitted immediately to the authority in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action.",
+      "4) Sample of the new product, where applicable.",
+      "5) Either a TSE Certificate of Suitability for any new source of material or, where applicable, documentary evidence that the specific source of the TSE risk material has previously been assessed by a national drug regulatory authority of the ICH region and associated countries.",
+      "6) Data to demonstrate that the new excipient does not interfere with the finished product specification test methods, if appropriate.",
+      "7) Justification for the change/choice of excipients etc. must be given by appropriate development pharmaceutics (including stability aspects and antimicrobial preservation where appropriate).",
+      "8) For solid dosage forms, comparative dissolution profile data of at least two pilot scale batches of the finished product in the new and old composition. For semisolid dosage forms, comparative in vitro release test of at least two pilot scale batches.",
+      "9) Justification for not submitting a new bioequivalence study.",
+      "10) For veterinary medicines intended for use in food producing animals, justification that the excipient does not have pharmacological activity at the dose at which it is administered to the target animal."
+    ]
+  },
+  {
+    "code": "6",
+    "title": "Any minor adjustment of the quantitative composition of the finished product with respect to excipients (excluding biological/immunological product)",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation including identification method for any new colorant and if appropriate updated end of shelf-life specifications.",
+      "2) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months and a letter of commitment to finalize the stability studies and to submit the data must immediately to the authority in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action.",
+      "3) A declaration letter that stability studies will be finalized and that data will submitted immediately to the authority in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action.",
+      "4) Sample of the new product, where applicable.",
+      "7) Justification for the change/choice of excipients etc. must be given by appropriate development pharmaceutics(including stability aspects and antimicrobial preservation where appropriate).",
+      "8) For solid dosage forms, comparative dissolution profile data of at least two pilot scale batches of the finished product in the new and old composition. For herbal products, comparative disintegration data may be acceptable. For semisolid dosage forms, comparative in vitro release test of at least two pilot scale batches of the finished product in the new and old composition."
+    ]
+  },
+  {
+    "code": "25",
+    "title": "Deletion of the solvent/diluent container from the pack",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Justification for the deletion, including a statement regarding alternative means to obtain the solvent/ diluent as required for the safe and effective use of the medicinal product.",
+      "2) Replacement of the relevant pages of the dossier that are affected by the variation. b) Manufacture"
+    ]
+  },
+  {
+    "code": "26.d",
+    "title": "Site where any manufacturing operation(s) take place, except batch release, batch control, and primary and secondary packaging, for non-sterile medicinal products",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "8) Copy of approved release and end of shelf-life specifications for the product if relevant.",
+      "9) Batch analysis data on one production batch and two pilot-scale batches simulating the production process (or two production batches) and comparative data on the last three batches from the previous site; batch data on the next two production batches should be available on request or reported if outside specifications (with proposed action).",
+      "10) Relevant stability studies have been started according to the SFDA stability and relevant stability parameters have been assessed in at least two pilot scale or production scale batches for at least three months.",
+      "11) A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action.",
+      "12) Where relevant the batch numbers, corresponding batch size and the manufacturing date of batches (≥3) used in the validation study should be indicated or validation protocol (scheme) be submitted."
+    ]
+  },
+  {
+    "code": "28.e",
+    "title": "Minor change in the manufacturing process of an immediate release solid oral pharmaceutical form or oral solution",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation, including a direct comparison of the present process and the new process.",
+      "2) For semi-solid and liquid products in which the active substance is present in non-dissolved form: appropriate validation of the change including microscopic imaging of particles to check for visible changes in morphology; comparative size distribution data by an appropriate method.",
+      "4) Justification for not submitting a new bioequivalence study.",
+      "6) Copy of approved release and end of shelf-life specifications.",
+      "7) Batch analysis data (in a comparative tabulated format) on a minimum of one batch manufactured to both the currently approved and the proposed process. Batch data on the next two full production batches should be made available upon request and reported by the marketing authorization holder if outside specification (with proposed action).",
+      "8) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least one pilot or production scale batches for at least three months.",
+      "9) A letter of commitment to finalize the stability studies with indication of the batch concerned and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action."
+    ]
+  },
+  {
+    "code": "29.e",
+    "title": "More than 10-fold increase compared to the originally approved batch size for the finished product",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Batch analysis data (in a comparative tabulated format) on a minimum of one production batch manufactured to both the currently approved and the proposed sizes. Batch data on the next two full production batches should be made available upon request and reported by the marketing authorization holder if outside specifications (with proposed action).",
+      "3) Copy of approved release and end of shelf-life specifications.",
+      "4) Where relevant the batch numbers, corresponding batch size and the manufacturing date of batches (≥3) used in the validation study should be indicated or validation protocol (scheme) be submitted.",
+      "5) The validation results should be provided",
+      "6) The results of stability studies that have been carried out according to the SFDA stability guidelines , on the relevant stability parameters, on at least one batch of the proposed batch Size(s) for at least three months.",
+      "7) A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action. For biologicals/immunologicals: a declaration that an assessment of comparability is not required."
+    ]
+  },
+  {
+    "code": "29.f",
+    "title": "The scale for a biological/immunological finished product is increased/decreased",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Batch analysis data (in a comparative tabulated format) on a minimum of one production batch manufactured to both the currently approved and the proposed sizes. Batch data on the next two full production batches should be made available upon request and reported by the marketing authorization holder if outside specifications (with proposed action).",
+      "3) Copy of approved release and end of shelf-life specifications.",
+      "4) Where relevant the batch numbers, corresponding batch size and the manufacturing date of batches (≥3) used in the validation study should be indicated or validation protocol (scheme) be submitted.",
+      "5) The validation results should be provided",
+      "6) The results of stability studies that have been carried out according to the SFDA stability guidelines , on the relevant stability parameters, on at least one batch of the proposed batch Size(s) for at least three months.",
+      "7) A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life along with the proposed action. For biologicals/immunologicals: a declaration that an assessment of comparability is not required."
+    ]
+  },
+  {
+    "code": "30.e",
+    "title": "Addition or replacement of an in-process test for the finished product as a result of a safety or quality issue",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed in-process tests.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biologicals, unless otherwise justified) of the finished product for all specification parameters.",
+      "5) Where appropriate, comparative dissolution profile data for the finished product on at least one pilot batch manufactured using the current and new in-process tests. For herbal products, comparative disintegration data may be acceptable.",
+      "7) Justification of the new in-process test and limits. c) Control of excipients"
+    ]
+  },
+  {
+    "code": "31.e",
+    "title": "Addition or replacement (excluding biological or immunological method) of a specification parameter for the finished product as a result of a safety or quality issue",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biological excipients,) of the excipient for all specification parameters.",
+      "5) Where appropriate, comparative dissolution profile data for the finished product on at least one pilot batch containing the excipient complying with the current and proposed specification. For herbal products, comparative disintegration data may be acceptable.",
+      "6) Justification for not submitting a new bioequivalence study, if appropriate.",
+      "8) Justification of the new specification parameter and the limits."
+    ]
+  },
+  {
+    "code": "31.g",
+    "title": "Change in specification from in-house to a non-official pharmacopoeia or to another official pharmacopoeia (finished product)",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biological excipients,) of the excipient for all specification parameters.",
+      "5) Where appropriate, comparative dissolution profile data for the finished product on at least one pilot batch containing the excipient complying with the current and proposed specification. For herbal products, comparative disintegration data may be acceptable.",
+      "6) Justification for not submitting a new bioequivalence study, if appropriate.",
+      "8) Justification of the new specification parameter and the limits."
+    ]
+  },
+  {
+    "code": "32.c",
+    "title": "Other changes to a test procedure (including replacement or addition) for the finished product or an excipient",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation, which includes a description of the analytical methodology, a summary of validation data, revised specifications for impurities (if applicable).",
+      "2) Comparative validation results or if justified comparative analysis results showing that the current test and the proposed one are equivalent. This requirement is not applicable in case of an addition of a new test procedure."
+    ]
+  },
+  {
+    "code": "33.a",
+    "title": "Change from TSE risk material to vegetable or synthetic origin for excipients or reagents",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Declaration from the manufacturer of the material that it is purely of vegetable or synthetic origin.",
+      "2) Study of equivalence of the materials and the impact on production of the final material and impact on behavior (e.g. dissolution characteristics) of the finished product."
+    ]
+  },
+  {
+    "code": "36.e",
+    "title": "Addition or replacement (excluding biological or immunological method) of a specification parameter for an excipient as a result of a safety or quality issue",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two production batches (3 production batches for biologicals, unless otherwise justified) of the finished product for all specification parameters at the end of shelf life.",
+      "5) Where appropriate, comparative dissolution profile data for the finished product on at least one pilot batch complying with the current and proposed specification. For herbal products, comparative disintegration data may be acceptable.",
+      "7) Justification of the new specification parameter and the limits.",
+      "8) An official letter stating that the company has started long term stability studies (Section 3.2.P.8.3) according to the SFDA Guidelines for Stability Testing, taking into consideration the updated specifications .Assurance should be given that any out of specification results will be reported immediately to the SFDA."
+    ]
+  },
+  {
+    "code": "37.c",
+    "title": "Other changes to a test procedure (including replacement or addition) for an excipient",
+    "category": "Quality - Finished Product",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation, which includes a description of the analytical methodology, a summary of validation data, revised specifications for impurities (if applicable).",
+      "2) Comparative validation results or if justified comparative analysis results showing that the current test and the proposed one are equivalent. This requirement is not applicable in case of an addition of a new test procedure."
+    ]
+  },
+  {
+    "code": "39",
+    "title": "Change in immediate packaging of the finished product — qualitative and quantitative composition for semi-solid and non-sterile liquid pharmaceutical forms",
+    "category": "Container Closure System",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Appropriate data on the new packaging (comparative data on permeability e.g. for O2, CO2 moisture).",
+      "3) Proof must be provided that no interaction between the content and the packaging material occurs (e.g. no migration of components of the proposed material into the content and no loss of components of the product into the pack). Including confirmation that the material complies with relevant pharmacopoeial requirements.",
+      "4) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months.",
+      "5) A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life with the proposed action.",
+      "6) Comparative table of the current and proposed immediate packaging specifications, if applicable."
+    ]
+  },
+  {
+    "code": "39.b",
+    "title": "Change in the container type or addition of a new container of the finished product",
+    "category": "Container Closure System",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Appropriate data on the new packaging (comparative data on permeability e.g. for O2, CO2 moisture).",
+      "3) Proof must be provided that no interaction between the content and the packaging material occurs (e.g. no migration of components of the proposed material into the content and no loss of components of the product into the pack). Including confirmation that the material complies with relevant pharmacopoeial requirements.",
+      "4) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months.",
+      "5) A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life with the proposed action.",
+      "6) Comparative table of the current and proposed immediate packaging specifications, if applicable.",
+      "7) Samples of the new container/closure where applicable"
+    ]
+  },
+  {
+    "code": "40.c",
+    "title": "Addition or replacement of a specification parameter for the immediate packaging as a result of a safety or quality issue",
+    "category": "Container Closure System",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and validation data.",
+      "4) Batch analysis data on two batches of the immediate packaging for all specification parameters.",
+      "6) Justification of the new specification parameter and the limits."
+    ]
+  },
+  {
+    "code": "42.c",
+    "title": "Sterile medicinal products — change in any part of the (primary) packaging material not in contact with the finished product formulation",
+    "category": "Container Closure System",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation (including description, detailed drawing and composition of the container or closure material).",
+      "2) Samples of the current and new container/closure where applicable.",
+      "3) Re-validation studies have been performed in case of sterile products terminally sterilized and the summary of validation data is required.",
+      "4) In case of a change in the headspace or a change in the surface/volume ratio, the following should be submitted: •   The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches (three batches for biological/immunological medicinal product) for at least three months (six months for biological/immunological medicinal product). •   A letter of commitment to finalize the stability studies and the data must be submitted immediately to the authority only in case of any out-of-specifications (OOS) results or potentially outside specifications at the end of the approved shelf life with the proposed action."
+    ]
+  },
+  {
+    "code": "43.a",
+    "title": "Change in pack size of the finished product — change in the number of units (e.g. tablets, ampoules, etc.) in a pack",
+    "category": "Stability and Shelf-life",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation, including revised product information as appropriate.",
+      "2) Justification for the new/remaining pack-size, showing that the new/remaining size is/are consistent with the dosage regimen and duration of use as approved in the summary of product characteristics.",
+      "3) Certificate of a Pharmaceutical Product (CPP) stating the new pack size.",
+      "4) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months.",
+      "5) A letter of commitment to finalize the stability study and to report any out-of-specification results immediately to the authority.",
+      "6) A recent and official price certificate by the company and legalized by the Saudi Embassy in the country of origin (indicating the new pack size).",
+      "7) Samples of the finished product."
+    ]
+  },
+  {
+    "code": "43.d",
+    "title": "Change in the fill weight/fill volume of non-parenteral multi-dose (or single-dose, partial use) medicinal products",
+    "category": "Stability and Shelf-life",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation, including revised product information as appropriate.",
+      "2) Justification for the new/remaining pack-size, showing that the new/remaining size is/are consistent with the dosage regimen and duration of use as approved in the summary of product characteristics.",
+      "3) Certificate of a Pharmaceutical Product (CPP) stating the new pack size.",
+      "4) The results of stability studies that have been carried out according to the SFDA stability guidelines, on the relevant stability parameters, on at least two pilot or production scale batches for at least three months.",
+      "5) A letter of commitment to finalize the stability study and to report any out-of-specification results immediately to the authority.",
+      "6) A recent and official price certificate by the company and legalized by the Saudi Embassy in the country of origin (indicating the new pack size).",
+      "7) Samples of the finished product."
+    ]
+  },
+  {
+    "code": "46",
+    "title": "Change in the packaging design of the primary and/or secondary packaging",
+    "category": "Stability and Shelf-life",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) The submitted documents should clearly outline the “present” and “proposed” mock-up.",
+      "3) Sample of the artwork f) Stability"
+    ]
+  },
+  {
+    "code": "47.b",
+    "title": "Extension of the shelf-life of the finished product as packaged for sale supported by real time data",
+    "category": "Stability and Shelf-life",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Recent real time stability studies (covering the entire shelf-life) conducted according to the SFDA stability guidelines and relevant stability parameters have been assessed on at least two pilot scale batches* batches (three production batches for biological/ immunological medicinal product) of the finished product in the authorized packaging material and/or after first opening or reconstitution (in-use stability), as appropriate; where applicable, results of appropriate microbiological testing should be included.",
+      "3) Copy of approved end of shelf life finished product specification and where applicable, specifications after dilution/reconstitution or first opening."
+    ]
+  },
+  {
+    "code": "47",
+    "title": "Extension of the shelf-life of a biological/immunological medicinal product in accordance with an approved stability protocol",
+    "category": "Stability and Shelf-life",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Recent real time stability studies (covering the entire shelf-life) conducted according to the SFDA stability guidelines and relevant stability parameters have been assessed on at least two pilot scale batches* batches (three production batches for biological/ immunological medicinal product) of the finished product in the authorized packaging material and/or after first opening or reconstitution (in-use stability), as appropriate; where applicable, results of appropriate microbiological testing should be included.",
+      "3) Copy of approved end of shelf life finished product specification and where applicable, specifications after dilution/reconstitution or first opening."
+    ]
+  },
+  {
+    "code": "47.c",
+    "title": "Change in storage conditions of the finished product or of the diluted/reconstituted product",
+    "category": "Stability and Shelf-life",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Recent real time stability studies (covering the entire shelf-life) conducted according to the SFDA stability guidelines and relevant stability parameters have been assessed on at least two pilot scale batches* batches (three production batches for biological/ immunological medicinal product) of the finished product in the authorized packaging material and/or after first opening or reconstitution (in-use stability), as appropriate; where applicable, results of appropriate microbiological testing should be included.",
+      "3) Copy of approved end of shelf life finished product specification and where applicable, specifications after dilution/reconstitution or first opening."
+    ]
+  },
+  {
+    "code": "48",
+    "title": "New certificate for a non-sterile active substance from a new manufacturer (CEP)",
+    "category": "Manufacturing and Sites",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) A valid Certificate of Suitability (CEP) (including any annexes) where the declaration of access for the CEP should be duly filled out by the CEP holder, including a written assurance that no significant changes in the manufacturing method have taken place following the granting of certificate or its last revision.",
+      "2) The submitted documents should clearly outline the “present” and “proposed” manufacturers.",
+      "3) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "4) Where applicable, a document providing information of any materials falling within the scope of the note for guidance on minimizing the risk of transmitting animal spongiform encephalopathy agents via human and veterinary medicinal products or an equivalent guideline of the ICH region and associated countries including those which are used in the manufacturer of the API. The following information should be included for each such material: name of manufacturer, species and tissues from which the material is a derivative, country of origin of the source animals and its use.",
+      "5) Where applicable, for active substance, a declaration by the Qualified Person (QP) of each of the manufacturing authorisation holders listed in the application where the active substance is used as a starting material and a declaration by the QP of each of the manufacturing authorisation holders listed in the application as responsible for batch release. These declarations should state that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. The manufacture of intermediates also require a QP declaration, while as far as any updates to certificates for active substances and intermediates are concerned, a QP declaration is only required if, compared to the previously registered version of the certificate, there is a change to the actual listed manufacturing sites.",
+      "6) Suitable evidence to confirm compliance of the water used in the final steps of the synthesis of the active substance with the corresponding requirements on quality of water for pharmaceutical use.",
+      "7) Specifications of the finished product manufacturer including all tests and limits of the CEP and Ph.Eur. monograph and any additional tests and acceptance criteria that are not controlled in the CEP and Ph.Eur. monograph, such as polymorphs and/or particle size distribution."
+    ]
+  },
+  {
+    "code": "50.b",
+    "title": "First-time inclusion of a new Plasma Master File not affecting the properties of the finished product",
+    "category": "Manufacturing and Sites",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Letter declaring that: •   The PMF certificate, evaluation report and PMF are fully applicable to the authorized product, •   PMF holder has submitted the PMF certificate, evaluation report and PMF dossier to the MAH (where the MAH is different from the PMF holder), •   The PMF certificate, evaluation report and PMF dossier replace the previous PMF documentation for this Marketing Authorization.",
+      "2) Plasma Master File (PMF) certificate, evaluation report and PMF dossier (or amended parts).",
+      "3) An expert statement outlining all the changes introduced with the certified PMF and evaluating their potential impact on the finished products including product specific risk assessments. .",
+      "4) The submitted documents should clearly outline the “present” and “proposed” PMF certificate."
+    ]
+  },
+  {
+    "code": "50.c",
+    "title": "Inclusion of an updated/amended Plasma Master File not affecting the properties of the finished product",
+    "category": "Manufacturing and Sites",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Letter declaring that: •   The PMF certificate, evaluation report and PMF are fully applicable to the authorized product, •   PMF holder has submitted the PMF certificate, evaluation report and PMF dossier to the MAH (where the MAH is different from the PMF holder), •   The PMF certificate, evaluation report and PMF dossier replace the previous PMF documentation for this Marketing Authorization.",
+      "2) Plasma Master File (PMF) certificate, evaluation report and PMF dossier (or amended parts).",
+      "3) An expert statement outlining all the changes introduced with the certified PMF and evaluating their potential impact on the finished products including product specific risk assessments. .",
+      "4) The submitted documents should clearly outline the “present” and “proposed” PMF certificate."
+    ]
+  },
+  {
+    "code": "51.b",
+    "title": "Inclusion of an updated/amended Vaccine Antigen Master File not affecting the properties of the finished product",
+    "category": "Manufacturing and Sites",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Letter declaring that: •   The VAMF certificate, evaluation report and VAMF are fully applicable to the authorized product, •   VAMF holder has submitted the VAMF certificate, Evaluation report and VAMF dossier to the MAH (where the MAH is different from the VAMF holder), •   The VAMF certificate, evaluation report and VAMF dossier replace the previous VAMF documentation for this Marketing Authorization.",
+      "2) VAMF certificate, evaluation report and VAMF dossier (or amended parts).",
+      "3) An expert statement outlining all the changes introduced with the certified VAMF and evaluating their potential impact on the finished products including product specific risk assessments. .",
+      "4) The submitted document should clearly outline the “present” and “proposed” VAMF certificate. II.5 Drug containing medical device"
+    ]
+  },
+  {
+    "code": "52",
+    "title": "Change of a measuring or administration device — non-certified device for veterinary products",
+    "category": "Manufacturing and Sites",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation (including description, detailed drawing and composition of the device material and supplier where appropriate).",
+      "3) Data to demonstrate accuracy, precision and compatibility of the device."
+    ]
+  },
+  {
+    "code": "53.e",
+    "title": "Addition of a specification parameter for a measuring or administration device as a result of a safety or quality issue",
+    "category": "Manufacturing and Sites",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation.",
+      "2) Comparative table of current and proposed specifications.",
+      "3) Details of any new analytical method and summary of validation data.",
+      "4) Batch analysis data on two production batches for all tests in the new specification.",
+      "6) Justification for the new specification parameter and the limits."
+    ]
+  },
+  {
+    "code": "55",
+    "title": "Change in the summary of product characteristics, labeling or package leaflet — implementation of change(s) for which no new pre/non-clinical or clinical data exist",
+    "category": "Labeling and Leaflet",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Attached to the cover letter of the variation application: the competent authority request, if available.",
+      "2) Revised product information.",
+      "3) Clear comparison table that shows the exact differences between current and proposed SPC/PIL."
+    ]
+  },
+  {
+    "code": "56",
+    "title": "Change(s) in the summary of product characteristics, labeling or package leaflet — implementation of agreed wording change(s) requested by SFDA",
+    "category": "Labeling and Leaflet",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Attached to the cover letter of the variation application: the competent authority request with attached relevant assessment report, if available.",
+      "2) Revised product information. Note: MAHs are reminded that once new information becomes available (e.g. new study data) which might entail the variation of the MA, this should be submitted as a variation. 57.Variations related to significant modifications of the           Conditions      Documentation       Procedure Summary of Product Characteristics due in particular to          to be           to be supplied      type new quality, pre-clinical, clinical or pharmacovigilance         fulfilled data*"
+    ]
+  },
+  {
+    "code": "59.a",
+    "title": "Deletion of a pharmaceutical form",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Declaration that the remaining product presentation(s) are adequate for the dosing instructions and treatment duration as mentioned in the summary of product characteristics.",
+      "2) Revised product information. Note: This change used to update product information, deregistration of a pharmaceutical form or strength should be submitted as cessation of marketing of a medicinal product according to SFDA guidance for submission. * Variation requests related to pharmacovigilance data such as RMP, drug safety labeling updates, PSMF, QPPV information or packaging artwork † For innovator"
+    ]
+  },
+  {
+    "code": "59.b",
+    "title": "Deletion of a strength",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Declaration that the remaining product presentation(s) are adequate for the dosing instructions and treatment duration as mentioned in the summary of product characteristics.",
+      "2) Revised product information. Note: This change used to update product information, deregistration of a pharmaceutical form or strength should be submitted as cessation of marketing of a medicinal product according to SFDA guidance for submission. * Variation requests related to pharmacovigilance data such as RMP, drug safety labeling updates, PSMF, QPPV information or packaging artwork † For innovator"
+    ]
+  },
+  {
+    "code": "60.a",
+    "title": "Change in legal status of a medicinal product — for generic/biosimilar medicinal products",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Legal status classification of the product in stringent regulatory authorities (in tabular format)."
+    ]
+  },
+  {
+    "code": "60.c",
+    "title": "Change the distribution site of the reference medicinal product",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "4) The company must provide justifications for the change in the distribution site included in the cover letter of the application."
+    ]
+  },
+  {
+    "code": "63.b",
+    "title": "Deletion of a food producing or non-food producing species not resulting from a safety issue (veterinary)",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Justification for the deletion of the target species.",
+      "2) Replacement of the relevant pages of the dossier that are affected by the variation."
+    ]
+  },
+  {
+    "code": "64.b",
+    "title": "Other changes to the pharmacovigilance system master file (PSMF)",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Replacement of the relevant pages of the dossier that are affected by the variation."
+    ]
+  },
+  {
+    "code": "68.b",
+    "title": "Change(s) to a PSMF which has been assessed by the relevant national competent authority for another product of the same MAH",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) The new Detailed Description of the Pharmacovigilance System) DDPS(",
+      "2) Reference to the application/procedure and product in which the DDPS was assessed previously IV.      PMF/VAMF"
+    ]
+  },
+  {
+    "code": "73",
+    "title": "Replacement or addition of a blood/plasma collection centre",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Epidemiological data for viral markers related to the blood/plasma collection centre covering the last 3 years. For newly opened centre(s) or in case no data are yet available, a declaration that epidemiological data will be provided at the time of the next annual update(s).",
+      "2) Statement that the centre is working under the same conditions as the other centers belonging to the blood establishment, as specified in the standard contract between blood establishment and PMF holder.",
+      "3) Updated relevant sections and annexes of the PMF dossier."
+    ]
+  },
+  {
+    "code": "76",
+    "title": "Replacement or addition of a blood centre for testing",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Statement that the testing site is performed following the same SOPs and/or test methods as the already accepted.",
+      "2) Updated relevant sections and annexes of the PMF dossier. 77.Addition of a new blood establishment for testing of          Conditions        Documentation    Procedure donations and/or plasma pool not included in the PMF          to be             to be supplied   type fulfilled"
+    ]
+  },
+  {
+    "code": "78",
+    "title": "Replacement or addition of a new blood establishment for the collection and testing of blood/blood components used as starting material",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Statement that the storage centre is working following the same SOPs as the already accepted establishment.",
+      "2) Updated relevant sections and annexes of the PMF dossier."
+    ]
+  },
+  {
+    "code": "80",
+    "title": "Replacement or addition of an organization involved in the transport of plasma or intermediates",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Updated relevant sections and annexes of the PMF dossier, including a list of all the blood establishments using this transport organization, a summary of the system in place to ensure that the transport is performed under appropriate conditions (time, temperature and GMP compliance) and confirmation that transport conditions are validated."
+    ]
+  },
+  {
+    "code": "86",
+    "title": "Removal of inventory hold period or reduction in its duration",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Updated relevant sections of the PMF dossier."
+    ]
+  },
+  {
+    "code": "90",
+    "title": "Change in the plasma pool preparation (e.g. pool size)",
+    "category": "Safety and Efficacy",
+    "type": "IB",
+    "conditions": [],
+    "documents": [
+      "1) Updated relevant sections of the PMF dossier."
+    ]
   }
 ];
