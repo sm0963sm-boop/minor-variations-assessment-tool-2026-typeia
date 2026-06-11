@@ -82,19 +82,6 @@ function Home() {
           </div>
 
 
-          <div className="mt-14 grid gap-4 sm:grid-cols-2">
-            {(["IA", "IAIN"] as const).map((t) => (
-              <div key={t} className="rounded-2xl border border-border bg-card-gradient p-6 shadow-soft hover:shadow-elegant transition">
-                <TypeBadge type={t} size="lg" />
-                <h3 className="mt-4 font-display font-bold text-lg text-foreground">{TYPE_INFO[t].label}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{TYPE_INFO[t].description}</p>
-                <div className="mt-4 flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">{TYPE_INFO[t].timeline}</span>
-                  <span className="font-bold text-foreground">{counts[t]} variations</span>
-                </div>
-              </div>
-            ))}
-          </div>
 
           <div className="mt-16">
             <div className="text-center mb-10">
