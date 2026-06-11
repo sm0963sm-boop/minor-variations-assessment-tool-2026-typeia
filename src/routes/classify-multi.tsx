@@ -456,7 +456,7 @@ function ClassifyMulti() {
                 if (missingDocs.length === 0) {
                   lines.push("is approved (all required documents submitted)");
                 } else {
-                  lines.push(`is suspended — the following required document(s) are not submitted:`);
+                  lines.push(`is suspended — please provide the following required document(s):`);
                   missingDocs.forEach(d => lines.push(`• ${d}`));
                 }
                 return lines.join("\n");
@@ -701,7 +701,7 @@ function ClassifyMulti() {
                 ? WARN_BORDER
                 : accepted ? SUCCESS_BORDER : DANGER_BORDER;
               const statusText = isSuspendedItem
-                ? `  is suspended — the following required document(s) are not submitted:`
+                ? `  is suspended — please provide the following required document(s):`
                 : accepted
                   ? "  is approved"
                   : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
@@ -877,7 +877,7 @@ function ClassifyMulti() {
                         <span className="font-semibold">{v.title}</span>
                         {isSuspendedItem ? (
                           <span className="ms-1 font-bold text-foreground">
-                            is suspended — the following required document(s) are not submitted:
+                            is suspended — please provide the following required document(s):
                           </span>
 
                         ) : accepted ? (
