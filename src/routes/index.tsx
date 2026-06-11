@@ -95,6 +95,29 @@ function Home() {
               </div>
             ))}
           </div>
+
+          <div className="mt-16">
+            <div className="text-center mb-10">
+              <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground">How it works</h2>
+              <p className="mt-2 text-muted-foreground">Four guided steps from variation selection to final decision</p>
+            </div>
+            <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { n: "1", title: "Select variation type", desc: "Choose the Type IA / IAIN change(s) you want to assess." },
+                { n: "2", title: "Verify conditions", desc: "Confirm that all required conditions for the variation are met." },
+                { n: "3", title: "Verify documentation", desc: "Ensure every required document has been submitted." },
+                { n: "4", title: "Final decision", desc: "Get a per-variation recommendation: approved, suspended, or rejected." },
+              ].map((s) => (
+                <li key={s.n} className="relative rounded-2xl border border-border bg-card p-6 pt-8 shadow-soft hover:shadow-elegant transition">
+                  <div className="absolute -top-4 left-6 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-display font-extrabold shadow-elegant">
+                    {s.n}
+                  </div>
+                  <h3 className="mt-2 font-display font-bold text-lg text-foreground">{s.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 
