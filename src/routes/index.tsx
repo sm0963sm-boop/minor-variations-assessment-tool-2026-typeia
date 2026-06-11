@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { TYPE_INFO, VARIATIONS } from "@/lib/variations-data";
 import { TypeBadge } from "@/components/TypeBadge";
+import heroIllustration from "@/assets/hero-illustration.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
