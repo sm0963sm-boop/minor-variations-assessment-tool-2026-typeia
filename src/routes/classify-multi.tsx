@@ -856,12 +856,15 @@ function ClassifyMulti() {
                       setAiError(null);
                       try {
                         const items = results.map(r => ({
-                          code: r.v.code,
-                          title: r.v.title,
-                          accepted: r.accepted,
-                          unmetConditions: r.unmet,
-                          metConditions: r.v.conditions.filter(c => !r.unmet.includes(c)),
-                        }));
+                           code: r.v.code,
+                           title: r.v.title,
+                           type: r.v.type,
+                           accepted: r.accepted,
+                           status: itemStatusOf(r),
+                           unmetConditions: r.unmet,
+                           metConditions: r.v.conditions.filter(c => !r.unmet.includes(c)),
+                           missingDocs: r.missingDocs,
+                         }));
                         const res = await callAnalysis({ data: { items } });
                         setAiAnalysis(res.analysis);
                       } catch (e: any) {
