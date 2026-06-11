@@ -471,6 +471,8 @@ function ClassifyMulti() {
             const SUCCESS_BORDER = "3F8A56";
             const DANGER_BG = "FBEAEA";
             const DANGER_BORDER = "B33A3A";
+            const WARN_BG = "FFF4E5";
+            const WARN_BORDER = "B8860B";
 
             const today = new Date().toLocaleDateString("en-GB", {
               day: "2-digit", month: "long", year: "numeric",
