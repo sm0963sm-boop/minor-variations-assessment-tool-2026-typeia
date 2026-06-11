@@ -288,7 +288,7 @@ function ClassifyMulti() {
               <div className="text-sm text-muted-foreground">{selectedCodes.length} selected</div>
               <button
                 disabled={selectedCodes.length === 0}
-                onClick={() => setStep(2)}
+                onClick={() => setStep(hasConditionVars ? 2 : 3)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold disabled:opacity-50 hover:bg-primary/90 transition"
               >
                 Continue →
@@ -298,10 +298,10 @@ function ClassifyMulti() {
         )}
 
         {step === 2 && (
-          <Panel title="2. Verify conditions for each variation" subtitle="Mark each condition as Met / Not met / N/A.">
+          <Panel title="2. Verify conditions (Type IA / IAIN)" subtitle="Mark each condition as Met / Not met / N/A. Type IB variations are not shown here — they are assessed on documentation only in the next step.">
 
             <div className="space-y-5">
-              {selected.map(v => (
+              {selected.filter(v => v.conditions.length > 0).map(v => (
                 <div key={v.code} className="rounded-xl border border-border bg-card p-4">
                   <div className="flex items-start gap-3 mb-3">
                     <TypeBadge type={v.type} size="sm" />
@@ -369,7 +369,7 @@ function ClassifyMulti() {
             title="3. Verify required documentation"
             subtitle={allAccepted
               ? "Tick each required document that has been submitted. Any missing item will place that variation on Suspension."
-              : "Shown only for variations that met all their conditions. Tick the documents that have been submitted; missing items will place that variation on Suspension."}
+              : "Shown for Type IB variations and for Type IA / IAIN variations that met all their conditions. Tick the documents that have been submitted; missing items will place that variation on Suspension."}
           >
             <div className="space-y-5">
               {selected.filter(v => (results.find(r => r.v.code === v.code)?.accepted)).map(v => {
@@ -426,7 +426,7 @@ function ClassifyMulti() {
             </div>
 
             <div className="mt-5 flex items-center justify-between gap-3">
-              <button onClick={() => setStep(2)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
+              <button onClick={() => setStep(hasConditionVars ? 2 : 1)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
               <button onClick={() => setStep(4)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
                 Generate final decision →
@@ -600,7 +600,7 @@ function ClassifyMulti() {
             children.push(new Paragraph({
               alignment: AlignmentType.CENTER,
               spacing: { after: 80 },
-              children: [new TextRun({ text: "Type IA / IAIN Variations — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
+              children: [new TextRun({ text: "Minor Variations (Type IA / IAIN / IB) — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
             }));
             children.push(new Paragraph({
               alignment: AlignmentType.CENTER,
@@ -729,7 +729,7 @@ function ClassifyMulti() {
             });
 
             const doc = new Document({
-              creator: "Type IA Variation Assessment Tool",
+              creator: "Minor Variations Assessment Tool",
               title: "Variation Assessment Report",
               styles: {
                 default: { document: { run: { font: "Calibri", size: 22 } } },
