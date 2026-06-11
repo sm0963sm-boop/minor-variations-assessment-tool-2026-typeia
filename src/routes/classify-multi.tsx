@@ -25,7 +25,8 @@ export const Route = createFileRoute("/classify-multi")({
 
 type CondStatus = "met" | "unmet" | "na";
 type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
-type DocsMap = Record<string, boolean[]>; // code -> docs submitted flags
+type DocStatus = "submitted" | "missing" | "na";
+type DocsMap = Record<string, DocStatus[]>; // code -> per-document status
 
 function ClassifyMulti() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -87,7 +88,7 @@ function ClassifyMulti() {
         return next;
       } else {
         setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill("unmet") });
-        setDocsSubmitted({ ...docsSubmitted, [v.code]: new Array(v.documents.length).fill(false) });
+        setDocsSubmitted({ ...docsSubmitted, [v.code]: new Array(v.documents.length).fill("missing" as DocStatus) });
         return [...prev, v.code];
       }
     });
@@ -99,7 +100,7 @@ function ClassifyMulti() {
     setChecks({ ...checks, [code]: arr });
   };
 
-  const setDocSubmitted = (code: string, idx: number, val: boolean) => {
+  const setDocStatus = (code: string, idx: number, val: DocStatus) => {
     const arr = [...(docsSubmitted[code] || [])];
     arr[idx] = val;
     setDocsSubmitted({ ...docsSubmitted, [code]: arr });
@@ -115,7 +116,7 @@ function ClassifyMulti() {
     const arr = checks[v.code] || [];
     const unmet = v.conditions.filter((_, i) => (arr[i] || "unmet") === "unmet");
     const docFlags = docsSubmitted[v.code] || [];
-    const missingDocs = v.documents.filter((_, i) => !docFlags[i]);
+    const missingDocs = v.documents.filter((_, i) => (docFlags[i] || "missing") === "missing");
     return { v, unmet, status: arr, accepted: unmet.length === 0, missingDocs };
   });
 
@@ -364,7 +365,8 @@ function ClassifyMulti() {
             <div className="space-y-5">
               {selected.map(v => {
                 const flags = docsSubmitted[v.code] || [];
-                const missingCount = v.documents.filter((_, i) => !flags[i]).length;
+                const missingCount = v.documents.filter((_, i) => (flags[i] || "missing") === "missing").length;
+                const naCount = v.documents.filter((_, i) => flags[i] === "na").length;
                 return (
                   <div key={v.code} className="rounded-xl border border-border bg-card p-4">
                     <div className="flex items-start gap-3 mb-3">
@@ -374,7 +376,7 @@ function ClassifyMulti() {
                         <div className="font-bold text-foreground text-sm">{v.title}</div>
                       </div>
                       <span className={`text-xs font-bold px-2 py-1 rounded-md ${missingCount === 0 ? "bg-success/15 text-success" : "bg-warning/15 text-warning"}`}>
-                        {missingCount === 0 ? "All submitted" : `${missingCount} missing`}
+                        {missingCount === 0 ? (naCount > 0 ? `All cleared (${naCount} N/A)` : "All submitted") : `${missingCount} missing`}
                       </span>
                     </div>
                     {v.documents.length === 0 ? (
@@ -382,16 +384,28 @@ function ClassifyMulti() {
                     ) : (
                       <ul className="space-y-2">
                         {v.documents.map((d, i) => {
-                          const checked = !!flags[i];
+                          const status: DocStatus = (flags[i] || "missing") as DocStatus;
+                          const rowClass =
+                            status === "submitted" ? "bg-success/10 border-success/30"
+                            : status === "na" ? "bg-muted/40 border-border"
+                            : "bg-destructive/5 border-destructive/30";
+                          const btn = (val: DocStatus, label: string, activeCls: string) => (
+                            <button
+                              type="button"
+                              onClick={() => setDocStatus(v.code, i, val)}
+                              className={`px-2.5 py-1 rounded-md text-xs font-bold border transition ${status === val ? activeCls : "bg-background border-border text-muted-foreground hover:text-foreground"}`}
+                            >
+                              {label}
+                            </button>
+                          );
                           return (
-                            <li key={i} className={`p-2.5 rounded-lg border flex items-start gap-3 ${checked ? "bg-success/10 border-success/30" : "bg-destructive/5 border-destructive/30"}`}>
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={(e) => setDocSubmitted(v.code, i, e.target.checked)}
-                                className="mt-1 size-4 accent-primary shrink-0"
-                              />
-                              <span className="text-sm text-foreground leading-relaxed">{d}</span>
+                            <li key={i} className={`p-2.5 rounded-lg border flex items-start gap-3 ${rowClass}`}>
+                              <span className="flex-1 text-sm text-foreground leading-relaxed">{d}</span>
+                              <div className="flex gap-1 shrink-0">
+                                {btn("submitted", "Submitted", "bg-success/20 border-success/40 text-success")}
+                                {btn("missing", "Missing", "bg-destructive/15 border-destructive/40 text-destructive")}
+                                {btn("na", "N/A", "bg-muted border-border text-foreground")}
+                              </div>
                             </li>
                           );
                         })}
