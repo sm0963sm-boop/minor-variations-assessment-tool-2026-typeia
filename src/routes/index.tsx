@@ -81,51 +81,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Editorial Workflow — bold typographic timeline */}
-          <div className="mt-12">
-            <div className="flex items-end justify-between mb-6 border-b border-border/60 pb-3">
-              <div>
-                <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">How it works</p>
-              </div>
-              <span className="hidden sm:block font-mono text-[11px] text-muted-foreground">01 — 04</span>
-            </div>
-
-            <div className="relative">
-              {/* dashed timeline */}
-              <div className="hidden lg:block absolute top-10 left-0 right-0 h-px border-t border-dashed border-border" />
-
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-                {[
-                  { n: "01", t: "Select Variation",       d: "Pick variations from the SFDA catalog.", accent: "text-sky-500",     bar: "bg-sky-500" },
-                  { n: "02", t: "Check Conditions",       d: "Answer yes/no questions.",               accent: "text-violet-500",  bar: "bg-violet-500" },
-                  { n: "03", t: "Assessor Opinion",       d: "AI analysis of unmet conditions.",       accent: "text-indigo-500",  bar: "bg-indigo-500" },
-                  { n: "04", t: "Final Recommendation",   d: "Accept or Reject outcome.",              accent: "text-emerald-500", bar: "bg-emerald-500" },
-                ].map((s) => (
-                  <div key={s.n} className="group relative">
-                    {/* node on timeline */}
-                    <div className="hidden lg:flex absolute -top-[5px] left-0 size-[11px] rounded-full bg-background border-2 border-foreground" />
-
-                    <div className="relative pt-6 lg:pt-10">
-                      {/* huge ghost numeral */}
-                      <div className={`font-display font-black text-[5rem] leading-none ${s.accent} opacity-15 group-hover:opacity-30 transition select-none`}>
-                        {s.n}
-                      </div>
-                      <div className={`mt-3 h-[3px] w-10 ${s.bar} group-hover:w-20 transition-all duration-300`} />
-                      <h3 className="mt-3 font-display font-bold text-base text-foreground tracking-tight">
-                        {s.t}
-                      </h3>
-                      <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-                        {s.d}
-                      </p>
-                      <p className={`mt-2 font-mono text-[10px] uppercase tracking-widest ${s.accent}`}>
-                        Step {s.n}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
           <div className="mt-14 grid gap-4 sm:grid-cols-2">
             {(["IA", "IAIN"] as const).map((t) => (
