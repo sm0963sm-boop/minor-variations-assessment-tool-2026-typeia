@@ -25,7 +25,8 @@ export const Route = createFileRoute("/classify-multi")({
 
 type CondStatus = "met" | "unmet" | "na";
 type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
-type DocsMap = Record<string, boolean[]>; // code -> docs submitted flags
+type DocStatus = "submitted" | "missing" | "na";
+type DocsMap = Record<string, DocStatus[]>; // code -> per-document status
 
 function ClassifyMulti() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
