@@ -362,13 +362,15 @@ function ClassifyMulti() {
           </Panel>
         )}
 
-        {step === 3 && allAccepted && (
+        {step === 3 && anyAccepted && (
           <Panel
             title="3. Verify required documentation"
-            subtitle="Tick each required document that has been submitted. Any missing item will place the final decision on Suspension."
+            subtitle={allAccepted
+              ? "Tick each required document that has been submitted. Any missing item will place that variation on Suspension."
+              : "Shown only for variations that met all their conditions. Tick the documents that have been submitted; missing items will place that variation on Suspension."}
           >
             <div className="space-y-5">
-              {selected.map(v => {
+              {selected.filter(v => (results.find(r => r.v.code === v.code)?.accepted)).map(v => {
                 const flags = docsSubmitted[v.code] || [];
                 const missingCount = v.documents.filter((_, i) => (flags[i] || "missing") === "missing").length;
                 const naCount = v.documents.filter((_, i) => flags[i] === "na").length;
