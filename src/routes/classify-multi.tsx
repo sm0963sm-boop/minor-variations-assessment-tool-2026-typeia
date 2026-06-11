@@ -837,28 +837,29 @@ function ClassifyMulti() {
 
             <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${
               decisionStatus === "APPROVED" ? "border-success/30 bg-success/5"
-              : decisionStatus === "SUSPENDED" ? "border-warning/40 bg-warning/5"
+              : decisionStatus === "SUSPENDED" ? "border-border bg-background"
               : "border-destructive/30 bg-destructive/5"
             }`}>
               <div className={`mb-5 rounded-2xl border-2 p-4 ${
                 decisionStatus === "APPROVED" ? "border-success/50 bg-success/10"
-                : decisionStatus === "SUSPENDED" ? "border-warning/50 bg-warning/10"
+                : decisionStatus === "SUSPENDED" ? "border-border bg-muted/30"
                 : "border-destructive/50 bg-destructive/10"
               }`}>
                 <div className={`text-xs font-extrabold uppercase tracking-widest mb-1 ${
                   decisionStatus === "APPROVED" ? "text-success"
-                  : decisionStatus === "SUSPENDED" ? "text-warning"
+                  : decisionStatus === "SUSPENDED" ? "text-foreground"
                   : "text-destructive"
                 }`}>Final decision</div>
                 <div className={`text-xl font-extrabold ${
                   decisionStatus === "APPROVED" ? "text-success"
-                  : decisionStatus === "SUSPENDED" ? "text-warning"
+                  : decisionStatus === "SUSPENDED" ? "text-foreground"
                   : "text-destructive"
                 }`}>
                   {decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED"}
                 </div>
                 <p className="mt-2 text-sm text-foreground/80 leading-relaxed">{overall}</p>
               </div>
+
 
               <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -880,9 +881,10 @@ function ClassifyMulti() {
                         <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
                         <span className="font-semibold">{v.title}</span>
                         {isSuspendedItem ? (
-                          <span className="ms-1 font-bold text-warning">
+                          <span className="ms-1 font-bold text-foreground">
                             is suspended — the following required document(s) are not submitted:
                           </span>
+
                         ) : accepted ? (
                           <span className="ms-1 font-bold text-success">is approved</span>
                         ) : (
