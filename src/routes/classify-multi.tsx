@@ -843,7 +843,8 @@ function ClassifyMulti() {
 
             <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${
               decisionStatus === "APPROVED" ? "border-success/30 bg-success/5"
-              : decisionStatus === "SUSPENDED" ? "border-border bg-background"
+              : decisionStatus === "SUSPENDED" ? "border-warning/30 bg-warning/5"
+              : decisionStatus === "MIXED" ? "border-border bg-background"
               : "border-destructive/30 bg-destructive/5"
             }`}>
 
@@ -863,32 +864,32 @@ function ClassifyMulti() {
                   </button>
                 </div>
                 <ul className="space-y-3">
-                  {results.map(({ v, unmet, accepted, missingDocs }) => {
-                    const isSuspendedItem = decisionStatus === "SUSPENDED" && accepted && missingDocs.length > 0;
+                  {results.map((r) => {
+                    const { v, unmet, missingDocs } = r;
+                    const s = itemStatusOf(r);
                     return (
                       <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
                         <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
                         <span className="font-semibold">{v.title}</span>
-                        {isSuspendedItem ? (
-                          <span className="ms-1 font-bold text-foreground">
+                        {s === "SUSPENDED" ? (
+                          <span className="ms-1 font-bold text-warning">
                             is suspended — please provide the following required document(s):
                           </span>
-
-                        ) : accepted ? (
+                        ) : s === "APPROVED" ? (
                           <span className="ms-1 font-bold text-success">is approved</span>
                         ) : (
                           <span className="ms-1 font-bold text-destructive">
                             is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
                           </span>
                         )}
-                        {isSuspendedItem && (
+                        {s === "SUSPENDED" && (
                           <ul className="mt-2 space-y-1 ps-5">
                             {missingDocs.map((d, i) => (
                               <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{d}</li>
                             ))}
                           </ul>
                         )}
-                        {!isSuspendedItem && !accepted && unmet.length > 0 && (
+                        {s === "REJECTED" && unmet.length > 0 && (
                           <ul className="mt-2 space-y-1 ps-5">
                             {unmet.map((c, i) => (
                               <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
