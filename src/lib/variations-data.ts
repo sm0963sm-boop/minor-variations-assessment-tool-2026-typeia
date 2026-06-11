@@ -1401,7 +1401,7 @@ export const VARIATIONS: Variation[] = [
       "2) Documents clearly outlining the present and proposed manufacturers.",
       "3) Replacement of the relevant pages of the dossier.",
       "4) Where applicable, TSE/BSE risk information.",
-      "5) Where applicable, Qualified Person (QP) declarations."
+      "5) Where applicable, declaration(s) from the Qualified Person(s) (QP) of each of the manufacturing authorization holder(s) listed in the marketing authorization application where the active substance is used as a starting material, and from the QP of each of the manufacturing authorization holder(s) listed in the marketing authorization application as responsible for batch release, stating that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. Under certain circumstances a single declaration may be acceptable."
     ]
   },
   {
@@ -1421,7 +1421,7 @@ export const VARIATIONS: Variation[] = [
       "2) Documents clearly outlining the present and proposed manufacturers.",
       "3) Replacement of the relevant pages of the dossier.",
       "4) Where applicable, TSE/BSE risk information.",
-      "5) Where applicable, QP declarations."
+      "5) Where applicable, declaration(s) from the Qualified Person(s) (QP) of each of the manufacturing authorization holder(s) listed in the marketing authorization application where the active substance is used as a starting material, and from the QP of each of the manufacturing authorization holder(s) listed in the marketing authorization application as responsible for batch release, stating that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. Under certain circumstances a single declaration may be acceptable."
     ]
   },
   {
@@ -1443,7 +1443,7 @@ export const VARIATIONS: Variation[] = [
       "2) Documents clearly outlining the present and proposed manufacturers.",
       "3) Replacement of the relevant pages of the dossier.",
       "4) Where applicable, TSE/BSE risk information.",
-      "5) Where applicable, QP declarations.",
+      "5) Where applicable, declaration(s) from the Qualified Person(s) (QP) of each of the manufacturing authorization holder(s) listed in the marketing authorization application where the active substance is used as a starting material, and from the QP of each of the manufacturing authorization holder(s) listed in the marketing authorization application as responsible for batch release, stating that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. Under certain circumstances a single declaration may be acceptable.",
       "7) Specifications of the finished product manufacturer including all tests and limits of the CEP and Ph.Eur. monograph.",
       "8) Batch analysis from both API manufacturer and finished product manufacturer.",
       "9) Letter of commitment to initiate stability studies using API from the new supplier.",
@@ -1478,7 +1478,7 @@ export const VARIATIONS: Variation[] = [
       "2) Documents clearly outlining the present and proposed manufacturers.",
       "3) Replacement of the relevant pages of the dossier.",
       "4) Where applicable, TSE/BSE risk information.",
-      "5) Where applicable, QP declarations."
+      "5) Where applicable, declaration(s) from the Qualified Person(s) (QP) of each of the manufacturing authorization holder(s) listed in the marketing authorization application where the active substance is used as a starting material, and from the QP of each of the manufacturing authorization holder(s) listed in the marketing authorization application as responsible for batch release, stating that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. Under certain circumstances a single declaration may be acceptable."
     ]
   },
   {
@@ -1496,7 +1496,7 @@ export const VARIATIONS: Variation[] = [
       "2) Documents clearly outlining the present and proposed manufacturers.",
       "3) Replacement of the relevant pages of the dossier.",
       "4) Where applicable, TSE/BSE risk information.",
-      "5) Where applicable, QP declarations."
+      "5) Where applicable, declaration(s) from the Qualified Person(s) (QP) of each of the manufacturing authorization holder(s) listed in the marketing authorization application where the active substance is used as a starting material, and from the QP of each of the manufacturing authorization holder(s) listed in the marketing authorization application as responsible for batch release, stating that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. Under certain circumstances a single declaration may be acceptable."
     ]
   },
   {
@@ -1513,7 +1513,7 @@ export const VARIATIONS: Variation[] = [
       "2) Documents clearly outlining the present and proposed manufacturers.",
       "3) Replacement of the relevant pages of the dossier.",
       "4) Where applicable, TSE/BSE risk information.",
-      "5) Where applicable, QP declarations."
+      "5) Where applicable, declaration(s) from the Qualified Person(s) (QP) of each of the manufacturing authorization holder(s) listed in the marketing authorization application where the active substance is used as a starting material, and from the QP of each of the manufacturing authorization holder(s) listed in the marketing authorization application as responsible for batch release, stating that the active substance manufacturer(s) referred to in the application operate in compliance with the detailed guidelines on good manufacturing practice for starting materials. Under certain circumstances a single declaration may be acceptable."
     ]
   },
   {
