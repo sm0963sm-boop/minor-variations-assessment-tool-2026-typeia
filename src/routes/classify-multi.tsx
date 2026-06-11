@@ -25,11 +25,13 @@ export const Route = createFileRoute("/classify-multi")({
 
 type CondStatus = "met" | "unmet" | "na";
 type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
+type DocsMap = Record<string, boolean[]>; // code -> docs submitted flags
 
 function ClassifyMulti() {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [checks, setChecks] = useState<ChecksMap>({});
+  const [docsSubmitted, setDocsSubmitted] = useState<DocsMap>({});
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,10 +81,13 @@ function ClassifyMulti() {
       if (exists) {
         const next = prev.filter(c => c !== v.code);
         const { [v.code]: _omit, ...rest } = checks;
+        const { [v.code]: _omit2, ...restDocs } = docsSubmitted;
         setChecks(rest);
+        setDocsSubmitted(restDocs);
         return next;
       } else {
         setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill("unmet") });
+        setDocsSubmitted({ ...docsSubmitted, [v.code]: new Array(v.documents.length).fill(false) });
         return [...prev, v.code];
       }
     });
@@ -94,8 +99,14 @@ function ClassifyMulti() {
     setChecks({ ...checks, [code]: arr });
   };
 
+  const setDocSubmitted = (code: string, idx: number, val: boolean) => {
+    const arr = [...(docsSubmitted[code] || [])];
+    arr[idx] = val;
+    setDocsSubmitted({ ...docsSubmitted, [code]: arr });
+  };
+
   const reset = () => {
-    setStep(1); setSelectedCodes([]); setChecks({}); setOpinion("");
+    setStep(1); setSelectedCodes([]); setChecks({}); setDocsSubmitted({}); setOpinion("");
     setAiAnalysis(""); setAiError(null);
   };
 
@@ -103,11 +114,15 @@ function ClassifyMulti() {
   const results = selected.map(v => {
     const arr = checks[v.code] || [];
     const unmet = v.conditions.filter((_, i) => (arr[i] || "unmet") === "unmet");
-    return { v, unmet, status: arr, accepted: unmet.length === 0 };
+    const docFlags = docsSubmitted[v.code] || [];
+    const missingDocs = v.documents.filter((_, i) => !docFlags[i]);
+    return { v, unmet, status: arr, accepted: unmet.length === 0, missingDocs };
   });
 
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
   const anyRejected = results.some(r => !r.accepted);
+  const allDocsSubmitted = allAccepted && results.every(r => r.missingDocs.length === 0);
+  const totalSteps = allAccepted ? 4 : 3;
 
   return (
     <div className="min-h-screen">
@@ -123,9 +138,12 @@ function ClassifyMulti() {
           <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
-          {[1, 2, 3].map(i => (
-            <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-border"}`} />
-          ))}
+          {Array.from({ length: totalSteps }, (_, idx) => idx + 1).map(i => {
+            const displayStep = allAccepted ? step : (step === 4 ? 3 : step);
+            return (
+              <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= displayStep ? "bg-primary" : "bg-border"}`} />
+            );
+          })}
         </div>
 
         {step === 1 && (
@@ -330,15 +348,71 @@ function ClassifyMulti() {
 
             <div className="mt-5 flex items-center justify-between gap-3">
               <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
-              <button onClick={() => setStep(3)}
+              <button onClick={() => setStep(allAccepted ? 3 : 4)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
-                Generate combined decision →
+                {allAccepted ? "Verify requirements →" : "Generate combined decision →"}
               </button>
             </div>
           </Panel>
         )}
 
-        {step === 3 && (() => {
+        {step === 3 && allAccepted && (
+          <Panel
+            title="3. Verify required documentation"
+            subtitle="Tick each required document that has been submitted. Any missing item will place the final decision on Suspension."
+          >
+            <div className="space-y-5">
+              {selected.map(v => {
+                const flags = docsSubmitted[v.code] || [];
+                const missingCount = v.documents.filter((_, i) => !flags[i]).length;
+                return (
+                  <div key={v.code} className="rounded-xl border border-border bg-card p-4">
+                    <div className="flex items-start gap-3 mb-3">
+                      <TypeBadge type={v.type} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
+                        <div className="font-bold text-foreground text-sm">{v.title}</div>
+                      </div>
+                      <span className={`text-xs font-bold px-2 py-1 rounded-md ${missingCount === 0 ? "bg-success/15 text-success" : "bg-warning/15 text-warning"}`}>
+                        {missingCount === 0 ? "All submitted" : `${missingCount} missing`}
+                      </span>
+                    </div>
+                    {v.documents.length === 0 ? (
+                      <p className="text-xs text-muted-foreground italic">No specific documentation required for this variation.</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {v.documents.map((d, i) => {
+                          const checked = !!flags[i];
+                          return (
+                            <li key={i} className={`p-2.5 rounded-lg border flex items-start gap-3 ${checked ? "bg-success/10 border-success/30" : "bg-destructive/5 border-destructive/30"}`}>
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) => setDocSubmitted(v.code, i, e.target.checked)}
+                                className="mt-1 size-4 accent-primary shrink-0"
+                              />
+                              <span className="text-sm text-foreground leading-relaxed">{d}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <button onClick={() => setStep(2)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
+              <button onClick={() => setStep(4)}
+                className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
+                Generate final decision →
+              </button>
+            </div>
+          </Panel>
+        )}
+
+        {step === 4 && (() => {
           const total = results.length;
           const approvedCount = results.filter(r => r.accepted).length;
           const rejectedCount = total - approvedCount;
@@ -349,24 +423,44 @@ function ClassifyMulti() {
           const typesSummary = Object.entries(typeCounts)
             .map(([t, n]) => `${n} × ${t}`)
             .join(", ");
-          const overall = allAccepted
-            ? "All selected variations satisfy their required conditions and qualify for the requested classification."
-            : approvedCount === 0
-              ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
-              : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
+          const decisionStatus: "APPROVED" | "SUSPENDED" | "NOT_ACCEPTED" =
+            !allAccepted ? "NOT_ACCEPTED" : (allDocsSubmitted ? "APPROVED" : "SUSPENDED");
+          const overall = decisionStatus === "APPROVED"
+            ? "All selected variations satisfy their required conditions and all required documentation has been submitted. The request qualifies for approval."
+            : decisionStatus === "SUSPENDED"
+              ? "All selected variations satisfy their required conditions; however, some required documentation has not been submitted. The request is placed on Suspension pending submission of the missing documents."
+              : approvedCount === 0
+                ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
+                : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
 
 
-          const finalText = results.map(({ v, unmet, accepted }) => {
-            const lines: string[] = [];
-            lines.push(`${v.code} ${v.title}`);
-            if (accepted) {
-              lines.push("is approved");
-            } else {
-              lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
-              unmet.forEach(c => lines.push(`• ${c}`));
+          const finalText = (() => {
+            if (decisionStatus === "SUSPENDED") {
+              const blocks = results.map(({ v, missingDocs }) => {
+                const lines: string[] = [];
+                lines.push(`${v.code} ${v.title}`);
+                if (missingDocs.length === 0) {
+                  lines.push("is approved (all required documents submitted)");
+                } else {
+                  lines.push(`is suspended — the following required document(s) are not submitted:`);
+                  missingDocs.forEach(d => lines.push(`• ${d}`));
+                }
+                return lines.join("\n");
+              });
+              return blocks.join("\n\n");
             }
-            return lines.join("\n");
-          }).join("\n\n");
+            return results.map(({ v, unmet, accepted }) => {
+              const lines: string[] = [];
+              lines.push(`${v.code} ${v.title}`);
+              if (accepted) {
+                lines.push("is approved");
+              } else {
+                lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
+                unmet.forEach(c => lines.push(`• ${c}`));
+              }
+              return lines.join("\n");
+            }).join("\n\n");
+          })();
 
           const downloadWord = async () => {
             const BRAND = "1F3A68"; // deep navy
@@ -377,6 +471,8 @@ function ClassifyMulti() {
             const SUCCESS_BORDER = "3F8A56";
             const DANGER_BG = "FBEAEA";
             const DANGER_BORDER = "B33A3A";
+            const WARN_BG = "FFF4E5";
+            const WARN_BORDER = "B8860B";
 
             const today = new Date().toLocaleDateString("en-GB", {
               day: "2-digit", month: "long", year: "numeric",
@@ -438,12 +534,16 @@ function ClassifyMulti() {
             });
 
             // Opinion callout box (single-cell shaded table)
-            const calloutFill = allAccepted ? SUCCESS_BG : DANGER_BG;
-            const calloutBorderColor = allAccepted ? SUCCESS_BORDER : DANGER_BORDER;
+            const calloutFill = decisionStatus === "APPROVED" ? SUCCESS_BG : decisionStatus === "SUSPENDED" ? WARN_BG : DANGER_BG;
+            const calloutBorderColor = decisionStatus === "APPROVED" ? SUCCESS_BORDER : decisionStatus === "SUSPENDED" ? WARN_BORDER : DANGER_BORDER;
             const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
-            const opinionText = allAccepted
-              ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
-              : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED";
+            const opinionText =
+              decisionStatus === "APPROVED"
+                ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
+                : decisionStatus === "SUSPENDED"
+                  ? "All applicable conditions for the proposed Type IA variation(s) have been met; however, one or more required documents have not been submitted. The request is therefore placed on Suspension pending submission of the missing documentation listed below."
+                  : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
             const opinionCallout = new Table({
               width: { size: 9360, type: WidthType.DXA },
               columnWidths: [9360],
@@ -456,7 +556,7 @@ function ClassifyMulti() {
                   children: [
                     new Paragraph({
                       spacing: { after: 80 },
-                      children: [new TextRun({ text: allAccepted ? "APPROVED" : "NOT ACCEPTED", bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
+                      children: [new TextRun({ text: calloutLabel, bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
                     }),
                     new Paragraph({
                       spacing: { line: 300 },
@@ -577,24 +677,33 @@ function ClassifyMulti() {
             }
             children.push(spacer());
 
-            // Final recommendation — exact mirror of the UI box in the last step
+            // Final recommendation — mirrors the UI box in the last step
             children.push(h1("4. Final recommendation"));
-            results.forEach(({ v, unmet, accepted }) => {
-              const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
+            children.push(opinionCallout);
+            children.push(spacer());
+            results.forEach(({ v, unmet, accepted, missingDocs }) => {
+              const isSuspendedItem = decisionStatus === "SUSPENDED" && accepted && missingDocs.length > 0;
+              const statusColor = isSuspendedItem
+                ? WARN_BORDER
+                : accepted ? SUCCESS_BORDER : DANGER_BORDER;
+              const statusText = isSuspendedItem
+                ? `  is suspended — the following required document(s) are not submitted:`
+                : accepted
+                  ? "  is approved"
+                  : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
               children.push(new Paragraph({
                 spacing: { before: 160, after: 80, line: 300 },
                 children: [
                   new TextRun({ text: `${v.code}  `, bold: true, font: "Consolas", size: 20, color: MUTED }),
                   new TextRun({ text: v.title, bold: true, font: "Calibri", size: 22 }),
-                  new TextRun({
-                    text: accepted
-                      ? "  is approved"
-                      : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`,
-                    bold: true, color: statusColor, font: "Calibri", size: 22,
-                  }),
+                  new TextRun({ text: statusText, bold: true, color: statusColor, font: "Calibri", size: 22 }),
                 ],
               }));
-              if (!accepted) unmet.forEach(c => children.push(bullet(c)));
+              if (isSuspendedItem) {
+                missingDocs.forEach(d => children.push(bullet(d)));
+              } else if (!accepted) {
+                unmet.forEach(c => children.push(bullet(c)));
+              }
             });
 
             const doc = new Document({
@@ -712,7 +821,31 @@ function ClassifyMulti() {
               )}
             </div>
 
-            <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${allAccepted ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
+            <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${
+              decisionStatus === "APPROVED" ? "border-success/30 bg-success/5"
+              : decisionStatus === "SUSPENDED" ? "border-warning/40 bg-warning/5"
+              : "border-destructive/30 bg-destructive/5"
+            }`}>
+              <div className={`mb-5 rounded-2xl border-2 p-4 ${
+                decisionStatus === "APPROVED" ? "border-success/50 bg-success/10"
+                : decisionStatus === "SUSPENDED" ? "border-warning/50 bg-warning/10"
+                : "border-destructive/50 bg-destructive/10"
+              }`}>
+                <div className={`text-xs font-extrabold uppercase tracking-widest mb-1 ${
+                  decisionStatus === "APPROVED" ? "text-success"
+                  : decisionStatus === "SUSPENDED" ? "text-warning"
+                  : "text-destructive"
+                }`}>Final decision</div>
+                <div className={`text-xl font-extrabold ${
+                  decisionStatus === "APPROVED" ? "text-success"
+                  : decisionStatus === "SUSPENDED" ? "text-warning"
+                  : "text-destructive"
+                }`}>
+                  {decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED"}
+                </div>
+                <p className="mt-2 text-sm text-foreground/80 leading-relaxed">{overall}</p>
+              </div>
+
               <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm font-bold text-primary">Final recommendation</div>
@@ -726,28 +859,43 @@ function ClassifyMulti() {
                   </button>
                 </div>
                 <ul className="space-y-3">
-                  {results.map(({ v, unmet, accepted }) => (
-                    <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
-                      <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
-                      <span className="font-semibold">{v.title}</span>
-                      {accepted ? (
-                        <span className="ms-1 font-bold text-success">is approved</span>
-                      ) : (
-                        <span className="ms-1 font-bold text-destructive">
-                          is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
-                        </span>
-                      )}
-                      {!accepted && unmet.length > 0 && (
-                        <ul className="mt-2 space-y-1 ps-5">
-                          {unmet.map((c, i) => (
-                            <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  ))}
+                  {results.map(({ v, unmet, accepted, missingDocs }) => {
+                    const isSuspendedItem = decisionStatus === "SUSPENDED" && accepted && missingDocs.length > 0;
+                    return (
+                      <li key={v.code} className="text-sm sm:text-base text-foreground leading-relaxed">
+                        <span className="font-mono font-bold text-xs me-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{v.code}</span>
+                        <span className="font-semibold">{v.title}</span>
+                        {isSuspendedItem ? (
+                          <span className="ms-1 font-bold text-warning">
+                            is suspended — the following required document(s) are not submitted:
+                          </span>
+                        ) : accepted ? (
+                          <span className="ms-1 font-bold text-success">is approved</span>
+                        ) : (
+                          <span className="ms-1 font-bold text-destructive">
+                            is rejected, the following {unmet.length === 1 ? "condition is" : "conditions are"} not met:
+                          </span>
+                        )}
+                        {isSuspendedItem && (
+                          <ul className="mt-2 space-y-1 ps-5">
+                            {missingDocs.map((d, i) => (
+                              <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{d}</li>
+                            ))}
+                          </ul>
+                        )}
+                        {!isSuspendedItem && !accepted && unmet.length > 0 && (
+                          <ul className="mt-2 space-y-1 ps-5">
+                            {unmet.map((c, i) => (
+                              <li key={i} className="text-sm text-foreground/80 leading-relaxed list-disc">{c}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
+
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <button
