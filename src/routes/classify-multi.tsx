@@ -121,9 +121,14 @@ function ClassifyMulti() {
   });
 
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
+  const anyAccepted = results.some(r => r.accepted);
   const anyRejected = results.some(r => !r.accepted);
   const allDocsSubmitted = allAccepted && results.every(r => r.missingDocs.length === 0);
-  const totalSteps = allAccepted ? 4 : 3;
+  // Per-item status: each variation gets its own final decision
+  type ItemStatus = "APPROVED" | "SUSPENDED" | "REJECTED";
+  const itemStatusOf = (r: typeof results[number]): ItemStatus =>
+    !r.accepted ? "REJECTED" : r.missingDocs.length === 0 ? "APPROVED" : "SUSPENDED";
+  const totalSteps = anyAccepted ? 4 : 3;
 
   return (
     <div className="min-h-screen">
