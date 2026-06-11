@@ -86,7 +86,6 @@ function Home() {
             <div className="flex items-end justify-between mb-6 border-b border-border/60 pb-3">
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">How it works</p>
-                <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">The Workflow</h2>
               </div>
               <span className="hidden sm:block font-mono text-[11px] text-muted-foreground">01 — 04</span>
             </div>
