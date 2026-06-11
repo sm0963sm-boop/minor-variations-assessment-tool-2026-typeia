@@ -444,44 +444,39 @@ function ClassifyMulti() {
           const typesSummary = Object.entries(typeCounts)
             .map(([t, n]) => `${n} × ${t}`)
             .join(", ");
-          const decisionStatus: "APPROVED" | "SUSPENDED" | "NOT_ACCEPTED" =
-            !allAccepted ? "NOT_ACCEPTED" : (allDocsSubmitted ? "APPROVED" : "SUSPENDED");
+          const itemStatuses = results.map(itemStatusOf);
+          const hasApproved = itemStatuses.includes("APPROVED");
+          const hasSuspended = itemStatuses.includes("SUSPENDED");
+          const hasRejected = itemStatuses.includes("REJECTED");
+          const decisionStatus: "APPROVED" | "SUSPENDED" | "NOT_ACCEPTED" | "MIXED" =
+            !hasRejected && !hasSuspended ? "APPROVED"
+            : !hasApproved && !hasSuspended ? "NOT_ACCEPTED"
+            : !hasRejected ? "SUSPENDED"
+            : "MIXED";
           const overall = decisionStatus === "APPROVED"
             ? "All selected variations satisfy their required conditions and all required documentation has been submitted. The request qualifies for approval."
             : decisionStatus === "SUSPENDED"
               ? "All selected variations satisfy their required conditions; however, some required documentation has not been submitted. The request is placed on Suspension pending submission of the missing documents."
-              : approvedCount === 0
+              : decisionStatus === "NOT_ACCEPTED"
                 ? "None of the selected variations satisfy all required conditions; each one fails on at least one item."
-                : "The selected variations show a mixed outcome: some satisfy all conditions while others fail on one or more required items.";
+                : "The selected variations show a mixed outcome: each variation has its own independent decision below (Approved, Suspended, or Not accepted).";
 
 
-          const finalText = (() => {
-            if (decisionStatus === "SUSPENDED") {
-              const blocks = results.map(({ v, missingDocs }) => {
-                const lines: string[] = [];
-                lines.push(`${v.code} ${v.title}`);
-                if (missingDocs.length === 0) {
-                  lines.push("is approved (all required documents submitted)");
-                } else {
-                  lines.push(`is suspended — please provide the following required document(s):`);
-                  missingDocs.forEach(d => lines.push(`• ${d}`));
-                }
-                return lines.join("\n");
-              });
-              return blocks.join("\n\n");
+          const finalText = results.map((r) => {
+            const { v, unmet, missingDocs } = r;
+            const s = itemStatusOf(r);
+            const lines: string[] = [`${v.code} ${v.title}`];
+            if (s === "APPROVED") {
+              lines.push("is approved");
+            } else if (s === "SUSPENDED") {
+              lines.push("is suspended — please provide the following required document(s):");
+              missingDocs.forEach(d => lines.push(`• ${d}`));
+            } else {
+              lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
+              unmet.forEach(c => lines.push(`• ${c}`));
             }
-            return results.map(({ v, unmet, accepted }) => {
-              const lines: string[] = [];
-              lines.push(`${v.code} ${v.title}`);
-              if (accepted) {
-                lines.push("is approved");
-              } else {
-                lines.push(`is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`);
-                unmet.forEach(c => lines.push(`• ${c}`));
-              }
-              return lines.join("\n");
-            }).join("\n\n");
-          })();
+            return lines.join("\n");
+          }).join("\n\n");
 
           const downloadWord = async () => {
             const BRAND = "1F3A68"; // deep navy
