@@ -1,4 +1,4 @@
-export type VariationType = "IA" | "IAIN";
+export type VariationType = "IA" | "IAIN" | "IB";
 
 export interface Variation {
   code: string;
@@ -21,6 +21,12 @@ export const TYPE_INFO: Record<VariationType, { label: string; short: string; de
     short: "IAIN",
     description: "Type IA variations that must be notified immediately after implementation rather than via the annual report.",
     timeline: "Immediate notification after implementation",
+  },
+  IB: {
+    label: "Type IB — Minor variation (Tell, Wait and Do)",
+    short: "IB",
+    description: "Minor variations that require submission and acceptance of the required documentation before implementation. No predefined conditions — assessment is based on the documentation requirements only.",
+    timeline: "Tell, Wait and Do — implement after acceptance",
   },
 };
 

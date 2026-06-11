@@ -7,8 +7,8 @@ import heroIllustration from "@/assets/hero-illustration.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Type IA Variation Assessment Tool" },
-      { name: "description", content: "Classify Type IA / IAIN change requests on registered medicinal products per the SFDA Variation Requirements Guideline." },
+      { title: "Minor Variations Assessment Tool" },
+      { name: "description", content: "Assess Type IA / IAIN / IB minor variation requests on registered medicinal products per the SFDA Variation Requirements Guideline." },
     ],
   }),
   component: Home,
@@ -29,7 +29,7 @@ function Home() {
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div className="max-w-3xl">
               <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
-                <span className="bg-hero bg-clip-text text-transparent">Type IA Variation Assessment Tool</span>
+                <span className="bg-hero bg-clip-text text-transparent">Minor Variations Assessment Tool</span>
               </h1>
               <div className="mt-8">
                 <Link
@@ -90,10 +90,10 @@ function Home() {
             </div>
             <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { n: "1", title: "Select variation type", desc: "Choose the Type IA / IAIN change(s) you want to assess." },
-                { n: "2", title: "Verify conditions", desc: "Confirm that all required conditions for the variation are met." },
-                { n: "3", title: "Verify documentation", desc: "Ensure every required document has been submitted." },
-                { n: "4", title: "Final decision", desc: "Get a per-variation recommendation: approved, suspended, or rejected." },
+                { n: "1", title: "Select variation(s)", desc: "Choose any Type IA, IAIN, or IB change(s) you want to assess." },
+                { n: "2", title: "Verify Type IA conditions", desc: "For Type IA / IAIN variations, confirm that all required conditions are met. Skipped for Type IB." },
+                { n: "3", title: "Verify documentation", desc: "Check required documents for Type IB and for Type IA / IAIN variations that met all conditions." },
+                { n: "4", title: "Final decision", desc: "Per-variation recommendation: approved, suspended, or rejected." },
               ].map((s) => (
                 <li key={s.n} className="relative rounded-2xl border border-border bg-card p-6 pt-8 shadow-soft hover:shadow-elegant transition">
                   <div className="absolute -top-4 left-6 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-display font-extrabold shadow-elegant">

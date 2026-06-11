@@ -5,12 +5,12 @@ export function Header() {
     <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-hero shadow-soft flex items-center justify-center text-primary-foreground font-display font-bold">
-            IA
+          <div className="size-10 rounded-xl bg-hero shadow-soft flex items-center justify-center text-primary-foreground font-display font-bold text-sm">
+            MV
           </div>
           <div className="leading-tight">
-            <div className="font-display font-bold text-foreground">Type IA Variation Assessment Tool</div>
-            <div className="text-[11px] text-muted-foreground">SFDA — Variations Guideline</div>
+            <div className="font-display font-bold text-foreground">Minor Variations Assessment Tool</div>
+            <div className="text-[11px] text-muted-foreground">SFDA — Variations Guideline (Type IA / IAIN / IB)</div>
           </div>
         </Link>
         <nav className="flex items-center gap-1 text-sm">

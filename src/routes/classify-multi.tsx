@@ -16,8 +16,8 @@ const { saveAs } = fileSaver;
 export const Route = createFileRoute("/classify-multi")({
   head: () => ({
     meta: [
-      { title: "Type IA Variation Assessment Tool" },
-      { name: "description", content: "Classify multiple Type IA / IAIN variations at once and get a single combined final decision." },
+      { title: "Minor Variations Assessment Tool" },
+      { name: "description", content: "Assess multiple Type IA / IAIN / IB minor variations at once and get a per-variation final decision." },
     ],
   }),
   component: ClassifyMulti,
@@ -120,6 +120,8 @@ function ClassifyMulti() {
     return { v, unmet, status: arr, accepted: unmet.length === 0, missingDocs };
   });
 
+  // IB variations have no conditions → treated as auto-accepted; decision is based on documentation only.
+  const hasConditionVars = selected.some(v => v.conditions.length > 0);
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
   const anyAccepted = results.some(r => r.accepted);
   const anyRejected = results.some(r => !r.accepted);
@@ -136,11 +138,11 @@ function ClassifyMulti() {
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10">
         <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 mb-8">
           <p className="text-sm text-foreground leading-relaxed">
-            <span className="font-bold text-warning">Note:</span> This tool assists the reviewer in evaluating Type IA / IAIN variation requests. It does not replace the full independent assessment required by the reviewer.
+            <span className="font-bold text-warning">Note:</span> This tool assists the reviewer in evaluating Type IA / IAIN / IB minor variation requests. It does not replace the full independent assessment required by the reviewer.
           </p>
         </div>
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-display text-3xl font-extrabold text-foreground">Type IA Variation Assessment Tool</h1>
+          <h1 className="font-display text-3xl font-extrabold text-foreground">Minor Variations Assessment Tool</h1>
           <button onClick={reset} className="text-sm text-muted-foreground hover:text-foreground">↻ Restart</button>
         </div>
         <div className="flex gap-2 mb-8">
@@ -286,7 +288,7 @@ function ClassifyMulti() {
               <div className="text-sm text-muted-foreground">{selectedCodes.length} selected</div>
               <button
                 disabled={selectedCodes.length === 0}
-                onClick={() => setStep(2)}
+                onClick={() => setStep(hasConditionVars ? 2 : 3)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold disabled:opacity-50 hover:bg-primary/90 transition"
               >
                 Continue →
@@ -296,10 +298,10 @@ function ClassifyMulti() {
         )}
 
         {step === 2 && (
-          <Panel title="2. Verify conditions for each variation" subtitle="Mark each condition as Met / Not met / N/A.">
+          <Panel title="2. Verify conditions (Type IA / IAIN)" subtitle="Mark each condition as Met / Not met / N/A. Type IB variations are not shown here — they are assessed on documentation only in the next step.">
 
             <div className="space-y-5">
-              {selected.map(v => (
+              {selected.filter(v => v.conditions.length > 0).map(v => (
                 <div key={v.code} className="rounded-xl border border-border bg-card p-4">
                   <div className="flex items-start gap-3 mb-3">
                     <TypeBadge type={v.type} size="sm" />
@@ -367,7 +369,7 @@ function ClassifyMulti() {
             title="3. Verify required documentation"
             subtitle={allAccepted
               ? "Tick each required document that has been submitted. Any missing item will place that variation on Suspension."
-              : "Shown only for variations that met all their conditions. Tick the documents that have been submitted; missing items will place that variation on Suspension."}
+              : "Shown for Type IB variations and for Type IA / IAIN variations that met all their conditions. Tick the documents that have been submitted; missing items will place that variation on Suspension."}
           >
             <div className="space-y-5">
               {selected.filter(v => (results.find(r => r.v.code === v.code)?.accepted)).map(v => {
@@ -424,7 +426,7 @@ function ClassifyMulti() {
             </div>
 
             <div className="mt-5 flex items-center justify-between gap-3">
-              <button onClick={() => setStep(2)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
+              <button onClick={() => setStep(hasConditionVars ? 2 : 1)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
               <button onClick={() => setStep(4)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
                 Generate final decision →
@@ -598,7 +600,7 @@ function ClassifyMulti() {
             children.push(new Paragraph({
               alignment: AlignmentType.CENTER,
               spacing: { after: 80 },
-              children: [new TextRun({ text: "Type IA / IAIN Variations — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
+              children: [new TextRun({ text: "Minor Variations (Type IA / IAIN / IB) — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
             }));
             children.push(new Paragraph({
               alignment: AlignmentType.CENTER,
@@ -727,7 +729,7 @@ function ClassifyMulti() {
             });
 
             const doc = new Document({
-              creator: "Type IA Variation Assessment Tool",
+              creator: "Minor Variations Assessment Tool",
               title: "Variation Assessment Report",
               styles: {
                 default: { document: { run: { font: "Calibri", size: 22 } } },
