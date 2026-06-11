@@ -776,7 +776,62 @@ function ClassifyMulti() {
 
           return (
             <>
+            {(() => {
+              const submittedByVar = results
+                .map(r => {
+                  const s = itemStatusOf(r);
+                  if (r.v.type !== "IB" && s === "REJECTED") return null;
+                  const flags = docsSubmitted[r.v.code] || [];
+                  const submitted = r.v.documents
+                    .map((d, i) => ({ d, status: (flags[i] || "missing") as DocStatus }))
+                    .filter(x => x.status === "submitted")
+                    .map(x => x.d);
+                  if (submitted.length === 0) return null;
+                  return { v: r.v, status: s, submitted };
+                })
+                .filter((x): x is { v: typeof results[number]["v"]; status: ItemStatus; submitted: string[] } => x !== null);
+
+              if (submittedByVar.length === 0) return null;
+              return (
+                <div className="mb-6 rounded-3xl border-2 border-primary/40 bg-primary/5 p-6 sm:p-8 shadow-elegant">
+                  <div className="flex items-center gap-2 mb-4">
+                    <FileDown size={18} className="text-primary" />
+                    <div className="text-base font-extrabold text-primary uppercase tracking-wide">The submitted data</div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Documents submitted for each variation. Type IB shows all submitted documents; Type IA / IAIN shows submitted documents when the decision is Approved or Suspended.
+                  </p>
+                  <ul className="space-y-4">
+                    {submittedByVar.map(({ v, status, submitted }) => (
+                      <li key={v.code} className="rounded-xl border border-border bg-card p-4">
+                        <div className="flex items-start gap-3 mb-2 flex-wrap">
+                          <TypeBadge type={v.type} size="sm" />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
+                            <div className="font-bold text-foreground text-sm">{v.title}</div>
+                          </div>
+                          <span className={`text-xs font-bold px-2 py-1 rounded-md ${
+                            status === "APPROVED" ? "bg-success/15 text-success"
+                            : status === "SUSPENDED" ? "bg-warning/15 text-warning"
+                            : "bg-destructive/15 text-destructive"
+                          }`}>{status}</span>
+                        </div>
+                        <ul className="mt-2 space-y-1.5 ps-1">
+                          {submitted.map((d, i) => (
+                            <li key={i} className="text-sm text-foreground/90 leading-relaxed flex gap-2">
+                              <Check size={14} className="text-success mt-0.5 shrink-0" />
+                              <span>{d}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })()}
             <div className="mb-6 rounded-3xl border-2 border-info bg-info/15 p-6 sm:p-8 shadow-elegant">
+
               <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Sparkles size={18} className="text-info" />
