@@ -88,7 +88,7 @@ function ClassifyMulti() {
         return next;
       } else {
         setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill("unmet") });
-        setDocsSubmitted({ ...docsSubmitted, [v.code]: new Array(v.documents.length).fill(false) });
+        setDocsSubmitted({ ...docsSubmitted, [v.code]: new Array(v.documents.length).fill("missing" as DocStatus) });
         return [...prev, v.code];
       }
     });
