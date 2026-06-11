@@ -1,13 +1,24 @@
-## Changes
+## الفكرة
+رسمة توضيحية بنفس الأسلوب المسطّح (flat illustration) للصورة المرجعية، لكن مضمونها مرتبط بطبيعة الأداة: **تقييم طلبات التغيير من النوع IA / IAIN على المنتجات الدوائية المسجّلة وفق دليل SFDA**.
 
-1. **Remove the yellow "Note" box** on the home page (`src/routes/index.tsx`, lines 29–33).
+## محتوى الرسمة
+- **الشخصية المركزية:** مُقيِّم/صيدلاني يرتدي معطفاً أبيض، يجلس أمام لابتوب يفحص ملفاً
+- **العناصر العائمة حوله** (ترمز لعمل الأداة):
+  - زجاجة/علبة دواء مع ملصق "Registered Product"
+  - مستند تغيير (Variation Request) فيه سهم تعديل
+  - قائمة فحص (checklist) فيها ✓ و ✗ — ترمز للشروط (conditions)
+  - شارة/ختم اعتماد (Approved) وأخرى تعليق (Suspended)
+  - أيقونة وثيقة PDF صغيرة ترمز للدليل الإرشادي
+- **الألوان:** بنفسجي/إندجو (لون الهوية الأساسي) + أخضر اعتماد + أحمر/برتقالي خفيف للتنبيه + ورقي فاتح للخلفية
+- **الأسلوب:** flat vector، خطوط ناعمة، خلفية شفافة، بدون نصوص حقيقية على الرسمة (رموز فقط حتى لا تتعارض مع الترجمة)
 
-2. **Remove the "Classifier" link** from the top-right nav in `src/components/Header.tsx` (line 18). Keep Home and Catalog.
+## مكان الرسمة
+في الهيرو بصفحة `/`:
+- على الشاشات الكبيرة: عمودان — النص يساراً والرسمة يميناً
+- على الجوال: الرسمة تحت الكارد الأخضر، بحجم مناسب ومتمركزة
 
-3. **Optimize layout for desktop browsers** (not mobile-first):
-   - Switch preview viewport to desktop.
-   - In `src/routes/index.tsx`, adjust hero and grid sizing so the design reads as a desktop layout by default (larger base paddings, base font sizes targeting desktop, hero grid forced to 2 columns on standard screens, feature section to 3 columns at base).
-   - In `src/components/Header.tsx`, always show the nav (remove `hidden sm:flex` so it shows on desktop by default).
-   - Other routes (`/classify-multi`, `/catalog`) are left as-is unless desktop polish is also required — confirm if you want me to extend the same desktop tuning to them.
+## الملفات
+- توليد الصورة وحفظها في `src/assets/hero-illustration.png` (خلفية شفافة، جودة premium لأن فيها تفاصيل دقيقة)
+- تعديل `src/routes/index.tsx` فقط — تحويل غلاف الهيرو إلى `grid lg:grid-cols-2` وإضافة `<img>` مع `alt` وصفي
 
-No business logic or Word-report generation logic is touched.
+لا تغيير على المنطق أو البيانات أو بقية الصفحات.
