@@ -550,16 +550,21 @@ function ClassifyMulti() {
             });
 
             // Opinion callout box (single-cell shaded table)
-            const calloutFill = decisionStatus === "APPROVED" ? SUCCESS_BG : decisionStatus === "SUSPENDED" ? WARN_BG : DANGER_BG;
-            const calloutBorderColor = decisionStatus === "APPROVED" ? SUCCESS_BORDER : decisionStatus === "SUSPENDED" ? WARN_BORDER : DANGER_BORDER;
+            const calloutFill = decisionStatus === "APPROVED" ? SUCCESS_BG : decisionStatus === "NOT_ACCEPTED" ? DANGER_BG : WARN_BG;
+            const calloutBorderColor = decisionStatus === "APPROVED" ? SUCCESS_BORDER : decisionStatus === "NOT_ACCEPTED" ? DANGER_BORDER : WARN_BORDER;
             const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
-            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED";
+            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED"
+              : decisionStatus === "SUSPENDED" ? "SUSPENDED"
+              : decisionStatus === "MIXED" ? "MIXED OUTCOME — PER-VARIATION DECISION"
+              : "NOT ACCEPTED";
             const opinionText =
               decisionStatus === "APPROVED"
                 ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
                 : decisionStatus === "SUSPENDED"
                   ? "All applicable conditions for the proposed Type IA variation(s) have been met; however, one or more required documents have not been submitted. The request is therefore placed on Suspension pending submission of the missing documentation listed below."
-                  : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+                  : decisionStatus === "MIXED"
+                    ? "The submitted variations have different outcomes: each variation has its own independent decision (Approved, Suspended, or Not accepted) as listed below."
+                    : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
             const opinionCallout = new Table({
               width: { size: 9360, type: WidthType.DXA },
               columnWidths: [9360],
