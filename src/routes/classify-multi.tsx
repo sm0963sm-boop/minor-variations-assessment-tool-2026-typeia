@@ -116,7 +116,7 @@ function ClassifyMulti() {
     const arr = checks[v.code] || [];
     const unmet = v.conditions.filter((_, i) => (arr[i] || "unmet") === "unmet");
     const docFlags = docsSubmitted[v.code] || [];
-    const missingDocs = v.documents.filter((_, i) => !docFlags[i]);
+    const missingDocs = v.documents.filter((_, i) => (docFlags[i] || "missing") === "missing");
     return { v, unmet, status: arr, accepted: unmet.length === 0, missingDocs };
   });
 
