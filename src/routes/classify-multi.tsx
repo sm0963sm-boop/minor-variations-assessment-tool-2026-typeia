@@ -348,15 +348,71 @@ function ClassifyMulti() {
 
             <div className="mt-5 flex items-center justify-between gap-3">
               <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
-              <button onClick={() => setStep(3)}
+              <button onClick={() => setStep(allAccepted ? 3 : 4)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
-                Generate combined decision →
+                {allAccepted ? "Verify requirements →" : "Generate combined decision →"}
               </button>
             </div>
           </Panel>
         )}
 
-        {step === 3 && (() => {
+        {step === 3 && allAccepted && (
+          <Panel
+            title="3. Verify required documentation"
+            subtitle="Tick each required document that has been submitted. Any missing item will place the final decision on Suspension."
+          >
+            <div className="space-y-5">
+              {selected.map(v => {
+                const flags = docsSubmitted[v.code] || [];
+                const missingCount = v.documents.filter((_, i) => !flags[i]).length;
+                return (
+                  <div key={v.code} className="rounded-xl border border-border bg-card p-4">
+                    <div className="flex items-start gap-3 mb-3">
+                      <TypeBadge type={v.type} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs text-muted-foreground font-mono">{v.code}</div>
+                        <div className="font-bold text-foreground text-sm">{v.title}</div>
+                      </div>
+                      <span className={`text-xs font-bold px-2 py-1 rounded-md ${missingCount === 0 ? "bg-success/15 text-success" : "bg-warning/15 text-warning"}`}>
+                        {missingCount === 0 ? "All submitted" : `${missingCount} missing`}
+                      </span>
+                    </div>
+                    {v.documents.length === 0 ? (
+                      <p className="text-xs text-muted-foreground italic">No specific documentation required for this variation.</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {v.documents.map((d, i) => {
+                          const checked = !!flags[i];
+                          return (
+                            <li key={i} className={`p-2.5 rounded-lg border flex items-start gap-3 ${checked ? "bg-success/10 border-success/30" : "bg-destructive/5 border-destructive/30"}`}>
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) => setDocSubmitted(v.code, i, e.target.checked)}
+                                className="mt-1 size-4 accent-primary shrink-0"
+                              />
+                              <span className="text-sm text-foreground leading-relaxed">{d}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <button onClick={() => setStep(2)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
+              <button onClick={() => setStep(4)}
+                className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
+                Generate final decision →
+              </button>
+            </div>
+          </Panel>
+        )}
+
+        {step === 4 && (() => {
           const total = results.length;
           const approvedCount = results.filter(r => r.accepted).length;
           const rejectedCount = total - approvedCount;
