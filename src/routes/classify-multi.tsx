@@ -25,11 +25,13 @@ export const Route = createFileRoute("/classify-multi")({
 
 type CondStatus = "met" | "unmet" | "na";
 type ChecksMap = Record<string, CondStatus[]>; // code -> conditions status
+type DocsMap = Record<string, boolean[]>; // code -> docs submitted flags
 
 function ClassifyMulti() {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [checks, setChecks] = useState<ChecksMap>({});
+  const [docsSubmitted, setDocsSubmitted] = useState<DocsMap>({});
   const [opinion, setOpinion] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,10 +81,13 @@ function ClassifyMulti() {
       if (exists) {
         const next = prev.filter(c => c !== v.code);
         const { [v.code]: _omit, ...rest } = checks;
+        const { [v.code]: _omit2, ...restDocs } = docsSubmitted;
         setChecks(rest);
+        setDocsSubmitted(restDocs);
         return next;
       } else {
         setChecks({ ...checks, [v.code]: new Array(v.conditions.length).fill("unmet") });
+        setDocsSubmitted({ ...docsSubmitted, [v.code]: new Array(v.documents.length).fill(false) });
         return [...prev, v.code];
       }
     });
@@ -94,8 +99,14 @@ function ClassifyMulti() {
     setChecks({ ...checks, [code]: arr });
   };
 
+  const setDocSubmitted = (code: string, idx: number, val: boolean) => {
+    const arr = [...(docsSubmitted[code] || [])];
+    arr[idx] = val;
+    setDocsSubmitted({ ...docsSubmitted, [code]: arr });
+  };
+
   const reset = () => {
-    setStep(1); setSelectedCodes([]); setChecks({}); setOpinion("");
+    setStep(1); setSelectedCodes([]); setChecks({}); setDocsSubmitted({}); setOpinion("");
     setAiAnalysis(""); setAiError(null);
   };
 
@@ -103,11 +114,15 @@ function ClassifyMulti() {
   const results = selected.map(v => {
     const arr = checks[v.code] || [];
     const unmet = v.conditions.filter((_, i) => (arr[i] || "unmet") === "unmet");
-    return { v, unmet, status: arr, accepted: unmet.length === 0 };
+    const docFlags = docsSubmitted[v.code] || [];
+    const missingDocs = v.documents.filter((_, i) => !docFlags[i]);
+    return { v, unmet, status: arr, accepted: unmet.length === 0, missingDocs };
   });
 
   const allAccepted = results.length > 0 && results.every(r => r.accepted);
   const anyRejected = results.some(r => !r.accepted);
+  const allDocsSubmitted = allAccepted && results.every(r => r.missingDocs.length === 0);
+  const totalSteps = allAccepted ? 4 : 3;
 
   return (
     <div className="min-h-screen">
