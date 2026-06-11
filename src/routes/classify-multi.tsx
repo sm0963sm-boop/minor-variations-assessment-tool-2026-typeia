@@ -837,28 +837,29 @@ function ClassifyMulti() {
 
             <div className={`rounded-3xl border p-6 sm:p-8 shadow-elegant ${
               decisionStatus === "APPROVED" ? "border-success/30 bg-success/5"
-              : decisionStatus === "SUSPENDED" ? "border-warning/40 bg-warning/5"
+              : decisionStatus === "SUSPENDED" ? "border-border bg-background"
               : "border-destructive/30 bg-destructive/5"
             }`}>
               <div className={`mb-5 rounded-2xl border-2 p-4 ${
                 decisionStatus === "APPROVED" ? "border-success/50 bg-success/10"
-                : decisionStatus === "SUSPENDED" ? "border-warning/50 bg-warning/10"
+                : decisionStatus === "SUSPENDED" ? "border-border bg-muted/30"
                 : "border-destructive/50 bg-destructive/10"
               }`}>
                 <div className={`text-xs font-extrabold uppercase tracking-widest mb-1 ${
                   decisionStatus === "APPROVED" ? "text-success"
-                  : decisionStatus === "SUSPENDED" ? "text-warning"
+                  : decisionStatus === "SUSPENDED" ? "text-foreground"
                   : "text-destructive"
                 }`}>Final decision</div>
                 <div className={`text-xl font-extrabold ${
                   decisionStatus === "APPROVED" ? "text-success"
-                  : decisionStatus === "SUSPENDED" ? "text-warning"
+                  : decisionStatus === "SUSPENDED" ? "text-foreground"
                   : "text-destructive"
                 }`}>
                   {decisionStatus === "APPROVED" ? "APPROVED" : decisionStatus === "SUSPENDED" ? "SUSPENDED" : "NOT ACCEPTED"}
                 </div>
                 <p className="mt-2 text-sm text-foreground/80 leading-relaxed">{overall}</p>
               </div>
+
 
               <div className="rounded-2xl border-2 border-primary/40 bg-primary/10 p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
