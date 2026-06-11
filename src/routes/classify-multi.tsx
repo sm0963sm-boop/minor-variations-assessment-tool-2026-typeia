@@ -354,9 +354,9 @@ function ClassifyMulti() {
 
             <div className="mt-5 flex items-center justify-between gap-3">
               <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
-              <button onClick={() => setStep(allAccepted ? 3 : 4)}
+              <button onClick={() => setStep(anyAccepted ? 3 : 4)}
                 className="rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-bold hover:bg-primary/90 transition">
-                {allAccepted ? "Verify requirements →" : "Generate combined decision →"}
+                {anyAccepted ? "Verify requirements →" : "Generate combined decision →"}
               </button>
             </div>
           </Panel>
