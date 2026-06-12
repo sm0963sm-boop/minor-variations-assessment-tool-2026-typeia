@@ -90,19 +90,22 @@ function Home() {
             </div>
             <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { n: "1", title: "Select variation(s)", desc: "Choose any Type IA, IAIN, or IB change(s) you want to assess." },
-                { n: "2", title: "Verify Type IA conditions", desc: "For Type IA / IAIN variations, confirm that all required conditions are met. Skipped for Type IB." },
-                { n: "3", title: "Verify documentation", desc: "Check required documents for Type IB and for Type IA / IAIN variations that met all conditions." },
-                { n: "4", title: "Final decision", desc: "Per-variation recommendation: approved, suspended, or rejected." },
-              ].map((s) => (
-                <li key={s.n} className="relative rounded-2xl border border-border bg-card p-6 pt-8 shadow-soft hover:shadow-elegant transition">
-                  <div className="absolute -top-4 left-6 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-display font-extrabold shadow-elegant">
-                    {s.n}
-                  </div>
-                  <h3 className="mt-2 font-display font-bold text-lg text-foreground">{s.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-                </li>
-              ))}
+                { icon: ClipboardList, title: "Select variation(s)", desc: "Choose any Type IA, IAIN, or IB change(s) you want to assess." },
+                { icon: ShieldCheck, title: "Verify Type IA conditions", desc: "For Type IA / IAIN variations, confirm that all required conditions are met. Skipped for Type IB." },
+                { icon: FileCheck, title: "Verify documentation", desc: "Check required documents for Type IB and for Type IA / IAIN variations that met all conditions." },
+                { icon: Scale, title: "Final decision", desc: "Per-variation recommendation: approved, suspended, or rejected." },
+              ].map((s, i) => {
+                const Icon = s.icon;
+                return (
+                  <li key={i} className="relative rounded-2xl border border-border bg-card p-6 pt-10 shadow-soft hover:shadow-elegant transition">
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-elegant">
+                      <Icon className="w-6 h-6" strokeWidth={2} />
+                    </div>
+                    <h3 className="mt-4 font-display font-bold text-lg text-foreground text-center">{s.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed text-center">{s.desc}</p>
+                  </li>
+                );
+              })}
             </ol>
           </div>
         </div>
