@@ -528,14 +528,17 @@ function ClassifyMulti() {
             const spacer = () => new Paragraph({ children: [new TextRun("")], spacing: { after: 80 } });
 
             const infoRows: [string, string][] = [
-              ["Product name", productInfo.productName],
-              ["Request number", productInfo.requestNumber],
-              ["API supplier", productInfo.apiSupplier],
-              ["FPP manufacture", productInfo.fppManufacture],
+              ["Trade name", productInfo.tradeName],
+              ["Active Ingredient(s)", productInfo.activeIngredients],
+              ["Sub-product No.", productInfo.subProductNo],
+              ["MAH", productInfo.mah],
+              ["API Manufacturer(s)", productInfo.apiManufacturers],
+              ["Drug product manufacturer", productInfo.drugProductManufacturer],
+              ["Pharmaceutical form", productInfo.pharmaceuticalForm],
+              ["Route", productInfo.route],
               ["Strength", productInfo.strength],
-              ["Pack size", productInfo.packSize],
-              ["Storage condition", productInfo.storageCondition],
               ["Shelf life", productInfo.shelfLife],
+              ["Storage", productInfo.storage],
             ];
             const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
             const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
