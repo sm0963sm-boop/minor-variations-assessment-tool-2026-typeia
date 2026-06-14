@@ -1114,10 +1114,6 @@ function ReportMetadataForm({
   ];
   return (
     <div className="mb-6 rounded-3xl border-2 border-primary/30 bg-card p-6 sm:p-8 shadow-soft">
-      <div className="mb-4">
-        <h3 className="font-display text-lg font-extrabold text-foreground">Quality Assessment Report — header</h3>
-        <p className="text-xs text-muted-foreground mt-1">These fields populate the SFDA Quality Assessment Report cover, Administrative Information table, and Assessor Names table.</p>
-      </div>
       <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">Administrative Information</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         {fields.map(f => (
