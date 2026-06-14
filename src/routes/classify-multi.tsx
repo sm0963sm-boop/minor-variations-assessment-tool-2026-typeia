@@ -1074,3 +1074,91 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
     </div>
   );
 }
+
+type ProductInfo = {
+  tradeName: string; activeIngredients: string; subProductNo: string; mah: string;
+  apiManufacturers: string; drugProductManufacturer: string; pharmaceuticalForm: string;
+  route: string; strength: string; shelfLife: string; storage: string;
+};
+type Assessors = {
+  api: { name: string; endDate: string };
+  fpp: { name: string; endDate: string };
+  analytical: { name: string; endDate: string };
+};
+
+function ReportMetadataForm({
+  productInfo, setProductInfo, assessors, setAssessors,
+}: {
+  productInfo: ProductInfo;
+  setProductInfo: React.Dispatch<React.SetStateAction<ProductInfo>>;
+  assessors: Assessors;
+  setAssessors: React.Dispatch<React.SetStateAction<Assessors>>;
+}) {
+  const fields: { key: keyof ProductInfo; label: string; placeholder?: string }[] = [
+    { key: "tradeName", label: "Trade name", placeholder: "e.g. Productol" },
+    { key: "activeIngredients", label: "Active Ingredient(s)" },
+    { key: "subProductNo", label: "Sub-product No." },
+    { key: "mah", label: "MAH" },
+    { key: "apiManufacturers", label: "API Manufacturer(s)" },
+    { key: "drugProductManufacturer", label: "Drug product manufacturer" },
+    { key: "pharmaceuticalForm", label: "Pharmaceutical form" },
+    { key: "route", label: "Route" },
+    { key: "strength", label: "Strength" },
+    { key: "shelfLife", label: "Shelf life" },
+    { key: "storage", label: "Storage" },
+  ];
+  const assessorRows: { key: keyof Assessors; label: string }[] = [
+    { key: "api", label: "Active pharmaceutical ingredient" },
+    { key: "fpp", label: "Finished pharmaceutical product" },
+    { key: "analytical", label: "Analytical and validation" },
+  ];
+  return (
+    <div className="mb-6 rounded-3xl border-2 border-primary/30 bg-card p-6 sm:p-8 shadow-soft">
+      <div className="mb-4">
+        <h3 className="font-display text-lg font-extrabold text-foreground">Quality Assessment Report — header</h3>
+        <p className="text-xs text-muted-foreground mt-1">These fields populate the SFDA Quality Assessment Report cover, Administrative Information table, and Assessor Names table.</p>
+      </div>
+      <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">Administrative Information</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        {fields.map(f => (
+          <label key={f.key} className="block">
+            <span className="block text-xs font-semibold text-foreground mb-1">{f.label}</span>
+            <input
+              type="text"
+              value={productInfo[f.key]}
+              placeholder={f.placeholder}
+              onChange={(e) => setProductInfo(prev => ({ ...prev, [f.key]: e.target.value }))}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </label>
+        ))}
+      </div>
+      <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">Assessor Names</div>
+      <div className="space-y-3">
+        {assessorRows.map(row => (
+          <div key={row.key} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_180px] gap-3 items-end">
+            <div className="text-sm font-semibold text-foreground">{row.label}</div>
+            <label className="block">
+              <span className="block text-xs font-medium text-muted-foreground mb-1">Assessor name</span>
+              <input
+                type="text"
+                value={assessors[row.key].name}
+                onChange={(e) => setAssessors(prev => ({ ...prev, [row.key]: { ...prev[row.key], name: e.target.value } }))}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-medium text-muted-foreground mb-1">End date</span>
+              <input
+                type="date"
+                value={assessors[row.key].endDate}
+                onChange={(e) => setAssessors(prev => ({ ...prev, [row.key]: { ...prev[row.key], endDate: e.target.value } }))}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
