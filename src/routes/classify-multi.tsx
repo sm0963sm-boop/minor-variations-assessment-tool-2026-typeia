@@ -783,8 +783,8 @@ function ClassifyMulti() {
               }],
             });
             const blob = await Packer.toBlob(doc);
-            const safeName = (productInfo.productName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
-            saveAs(blob, `variation-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
+            const safeName = (productInfo.tradeName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
+            saveAs(blob, `quality-assessment-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
           };
 
           return (
