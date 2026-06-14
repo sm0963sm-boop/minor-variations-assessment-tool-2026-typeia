@@ -6,7 +6,7 @@ import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
 import { Copy, Check, FileDown, Sparkles, Loader2 } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Footer as DocFooter, LevelFormat } from "docx";
+import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Footer as DocFooter, LevelFormat, PageBreak } from "docx";
 
 import fileSaver from "file-saver";
 import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
@@ -50,15 +50,25 @@ function ClassifyMulti() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const callAnalysis = useServerFn(generateScientificAnalysis);
+  // SFDA Quality Assessment Report — Administrative Information
   const [productInfo, setProductInfo] = useState({
-    productName: "",
-    requestNumber: "",
-    apiSupplier: "",
-    fppManufacture: "",
+    tradeName: "",
+    activeIngredients: "",
+    subProductNo: "",
+    mah: "",
+    apiManufacturers: "",
+    drugProductManufacturer: "",
+    pharmaceuticalForm: "",
+    route: "",
     strength: "",
-    packSize: "",
-    storageCondition: "",
     shelfLife: "",
+    storage: "",
+  });
+  // SFDA Quality Assessment Report — Assessor Names
+  const [assessors, setAssessors] = useState({
+    api: { name: "", endDate: "" },
+    fpp: { name: "", endDate: "" },
+    analytical: { name: "", endDate: "" },
   });
 
   const handleCopy = async (text: string, key: string) => {
@@ -518,14 +528,17 @@ function ClassifyMulti() {
             const spacer = () => new Paragraph({ children: [new TextRun("")], spacing: { after: 80 } });
 
             const infoRows: [string, string][] = [
-              ["Product name", productInfo.productName],
-              ["Request number", productInfo.requestNumber],
-              ["API supplier", productInfo.apiSupplier],
-              ["FPP manufacture", productInfo.fppManufacture],
+              ["Trade name", productInfo.tradeName],
+              ["Active Ingredient(s)", productInfo.activeIngredients],
+              ["Sub-product No.", productInfo.subProductNo],
+              ["MAH", productInfo.mah],
+              ["API Manufacturer(s)", productInfo.apiManufacturers],
+              ["Drug product manufacturer", productInfo.drugProductManufacturer],
+              ["Pharmaceutical form", productInfo.pharmaceuticalForm],
+              ["Route", productInfo.route],
               ["Strength", productInfo.strength],
-              ["Pack size", productInfo.packSize],
-              ["Storage condition", productInfo.storageCondition],
               ["Shelf life", productInfo.shelfLife],
+              ["Storage", productInfo.storage],
             ];
             const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
             const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
@@ -590,30 +603,46 @@ function ClassifyMulti() {
               })],
             });
 
-            const children: (Paragraph | Table)[] = [];
-            // Title block
-            children.push(new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 80 },
-              children: [new TextRun({ text: "Variation Assessment Report", bold: true, size: 40, color: BRAND, font: "Calibri" })],
-            }));
-            children.push(new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 80 },
-              children: [new TextRun({ text: "Minor Variations (Type IA / IAIN / IB) — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
-            }));
-            children.push(new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 240 },
-              border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 6 } },
-              children: [new TextRun({ text: `Date: ${today}`, size: 20, color: MUTED, font: "Calibri" })],
-            }));
+            // ===== Assessor Names table (SFDA template) =====
+            const assessorCellBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
+            const assessorBorders = { top: assessorCellBorder, bottom: assessorCellBorder, left: assessorCellBorder, right: assessorCellBorder };
+            const mkAssessorCell = (text: string, opts: { bold?: boolean; fill?: string } = {}) => new TableCell({
+              borders: assessorBorders,
+              ...(opts.fill ? { shading: { fill: opts.fill, type: ShadingType.CLEAR, color: "auto" } } : {}),
+              margins: { top: 120, bottom: 120, left: 160, right: 160 },
+              children: [new Paragraph({ children: [new TextRun({ text: text || "—", bold: opts.bold, color: opts.bold ? BRAND : undefined, font: "Calibri", size: 22 })] })],
+            });
+            const assessorsTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [3360, 3600, 2400],
+              rows: [
+                new TableRow({
+                  tableHeader: true,
+                  children: [
+                    mkAssessorCell("Assessment area", { bold: true, fill: LIGHT_BG }),
+                    mkAssessorCell("Assessor name", { bold: true, fill: LIGHT_BG }),
+                    mkAssessorCell("End date", { bold: true, fill: LIGHT_BG }),
+                  ],
+                }),
+                new TableRow({ children: [
+                  mkAssessorCell("Active pharmaceutical ingredient", { bold: true }),
+                  mkAssessorCell(assessors.api.name),
+                  mkAssessorCell(assessors.api.endDate),
+                ]}),
+                new TableRow({ children: [
+                  mkAssessorCell("Finished pharmaceutical product", { bold: true }),
+                  mkAssessorCell(assessors.fpp.name),
+                  mkAssessorCell(assessors.fpp.endDate),
+                ]}),
+                new TableRow({ children: [
+                  mkAssessorCell("Analytical and validation", { bold: true }),
+                  mkAssessorCell(assessors.analytical.name),
+                  mkAssessorCell(assessors.analytical.endDate),
+                ]}),
+              ],
+            });
 
-            children.push(h1("1. Product information"));
-            children.push(infoTable);
-            children.push(spacer());
-
-            // Submitted variations table
+            // ===== Submitted variations table =====
             const varBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
             const varBorders = { top: varBorder, bottom: varBorder, left: varBorder, right: varBorder };
             const variationsTable = new Table({
@@ -621,6 +650,7 @@ function ClassifyMulti() {
               columnWidths: [1600, 5460, 2300],
               rows: [
                 new TableRow({
+                  tableHeader: true,
                   children: [
                     new TableCell({
                       borders: varBorders,
@@ -670,18 +700,64 @@ function ClassifyMulti() {
               ],
             });
 
-            children.push(h1("2. Submitted variations"));
-            children.push(para(`The following ${selected.length} variation(s) have been submitted for assessment:`));
-            children.push(variationsTable);
+            const children: (Paragraph | Table)[] = [];
+
+            // ===== Cover page (SFDA template) =====
+            children.push(new Paragraph({ spacing: { before: 2400 }, children: [new TextRun("")] }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 160 },
+              children: [new TextRun({ text: "Saudi Food & Drug Authority", bold: true, size: 36, color: BRAND, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 1200 },
+              children: [new TextRun({ text: "Drug Sector", size: 24, color: MUTED, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 240 },
+              children: [new TextRun({ text: "Quality Assessment Report", bold: true, size: 56, color: BRAND, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 1600 },
+              children: [
+                new TextRun({ text: "For  ", size: 32, color: MUTED, font: "Calibri" }),
+                new TextRun({ text: `${productInfo.tradeName || "..........."}®`, bold: true, size: 36, color: ACCENT, font: "Calibri" }),
+              ],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 6 } },
+              children: [new TextRun({ text: `Date: ${today}`, size: 22, color: MUTED, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({ children: [new PageBreak()] }));
+
+            // ===== Section 1: Administrative Information =====
+            children.push(h1("1. Administrative Information"));
+            children.push(infoTable);
             children.push(spacer());
 
-            // Assessor opinion — scientific analysis only (no red callout box)
-            children.push(h1("3. Assessor opinion"));
+            // ===== Section 2: Assessor Names =====
+            children.push(h1("2. Assessor Names"));
+            children.push(assessorsTable);
+            children.push(spacer());
+
+            // ===== Section 3: Scientific Assessment =====
+            children.push(h1("3. Scientific Assessment"));
+            children.push(para("This section presents the scientific assessment of the submitted Type IA / IAIN / IB minor variation(s), including the justification, impact on product quality (Efficacy, Safety, Stability, Bioavailability), and the assessor's conclusion for each variation.", { italic: true, color: MUTED }));
+            children.push(spacer());
+            children.push(para("3.1 Submitted variations", { bold: true, color: BRAND }));
+            children.push(variationsTable);
+            children.push(spacer());
             if (opinion.trim()) {
-              children.push(para("Reviewer's note", { bold: true, color: BRAND }));
+              children.push(para("3.2 Reviewer's note", { bold: true, color: BRAND }));
               opinion.trim().split("\n").forEach(l => children.push(para(l)));
               children.push(spacer());
             }
+            children.push(para(opinion.trim() ? "3.3 Scientific analysis" : "3.2 Scientific analysis", { bold: true, color: BRAND }));
             if (aiAnalysis.trim()) {
               aiAnalysis.split("\n").forEach(rawLine => {
                 const line = rawLine.replace(/\r/g, "");
@@ -697,11 +773,13 @@ function ClassifyMulti() {
                 if (li || oli) { children.push(bullet((li || oli)![1].replace(/\*\*/g, ""))); return; }
                 children.push(para(line.replace(/\*\*/g, "")));
               });
+            } else {
+              children.push(para("— Scientific analysis was not generated. Use the “Generate analysis” button before downloading the report. —", { italic: true, color: MUTED }));
             }
             children.push(spacer());
 
-            // Final recommendation — mirrors the UI box in the last step
-            children.push(h1("4. Final recommendation"));
+            // ===== Section 4: Final Decision =====
+            children.push(h1("4. Final Decision"));
             children.push(opinionCallout);
             children.push(spacer());
             results.forEach((r) => {
@@ -770,12 +848,13 @@ function ClassifyMulti() {
               }],
             });
             const blob = await Packer.toBlob(doc);
-            const safeName = (productInfo.productName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
-            saveAs(blob, `variation-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
+            const safeName = (productInfo.tradeName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
+            saveAs(blob, `quality-assessment-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
           };
 
           return (
             <>
+            <ReportMetadataForm productInfo={productInfo} setProductInfo={setProductInfo} assessors={assessors} setAssessors={setAssessors} />
             {(() => {
               const submittedByVar = results
                 .map(r => {
@@ -992,6 +1071,94 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
       <h2 className="font-display text-xl sm:text-2xl font-extrabold text-foreground">{title}</h2>
       {subtitle && <p className="mt-1 text-sm text-muted-foreground mb-5">{subtitle}</p>}
       {children}
+    </div>
+  );
+}
+
+type ProductInfo = {
+  tradeName: string; activeIngredients: string; subProductNo: string; mah: string;
+  apiManufacturers: string; drugProductManufacturer: string; pharmaceuticalForm: string;
+  route: string; strength: string; shelfLife: string; storage: string;
+};
+type Assessors = {
+  api: { name: string; endDate: string };
+  fpp: { name: string; endDate: string };
+  analytical: { name: string; endDate: string };
+};
+
+function ReportMetadataForm({
+  productInfo, setProductInfo, assessors, setAssessors,
+}: {
+  productInfo: ProductInfo;
+  setProductInfo: React.Dispatch<React.SetStateAction<ProductInfo>>;
+  assessors: Assessors;
+  setAssessors: React.Dispatch<React.SetStateAction<Assessors>>;
+}) {
+  const fields: { key: keyof ProductInfo; label: string; placeholder?: string }[] = [
+    { key: "tradeName", label: "Trade name", placeholder: "e.g. Productol" },
+    { key: "activeIngredients", label: "Active Ingredient(s)" },
+    { key: "subProductNo", label: "Sub-product No." },
+    { key: "mah", label: "MAH" },
+    { key: "apiManufacturers", label: "API Manufacturer(s)" },
+    { key: "drugProductManufacturer", label: "Drug product manufacturer" },
+    { key: "pharmaceuticalForm", label: "Pharmaceutical form" },
+    { key: "route", label: "Route" },
+    { key: "strength", label: "Strength" },
+    { key: "shelfLife", label: "Shelf life" },
+    { key: "storage", label: "Storage" },
+  ];
+  const assessorRows: { key: keyof Assessors; label: string }[] = [
+    { key: "api", label: "Active pharmaceutical ingredient" },
+    { key: "fpp", label: "Finished pharmaceutical product" },
+    { key: "analytical", label: "Analytical and validation" },
+  ];
+  return (
+    <div className="mb-6 rounded-3xl border-2 border-primary/30 bg-card p-6 sm:p-8 shadow-soft">
+      <div className="mb-4">
+        <h3 className="font-display text-lg font-extrabold text-foreground">Quality Assessment Report — header</h3>
+        <p className="text-xs text-muted-foreground mt-1">These fields populate the SFDA Quality Assessment Report cover, Administrative Information table, and Assessor Names table.</p>
+      </div>
+      <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">Administrative Information</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        {fields.map(f => (
+          <label key={f.key} className="block">
+            <span className="block text-xs font-semibold text-foreground mb-1">{f.label}</span>
+            <input
+              type="text"
+              value={productInfo[f.key]}
+              placeholder={f.placeholder}
+              onChange={(e) => setProductInfo(prev => ({ ...prev, [f.key]: e.target.value }))}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </label>
+        ))}
+      </div>
+      <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">Assessor Names</div>
+      <div className="space-y-3">
+        {assessorRows.map(row => (
+          <div key={row.key} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_180px] gap-3 items-end">
+            <div className="text-sm font-semibold text-foreground">{row.label}</div>
+            <label className="block">
+              <span className="block text-xs font-medium text-muted-foreground mb-1">Assessor name</span>
+              <input
+                type="text"
+                value={assessors[row.key].name}
+                onChange={(e) => setAssessors(prev => ({ ...prev, [row.key]: { ...prev[row.key], name: e.target.value } }))}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-medium text-muted-foreground mb-1">End date</span>
+              <input
+                type="date"
+                value={assessors[row.key].endDate}
+                onChange={(e) => setAssessors(prev => ({ ...prev, [row.key]: { ...prev[row.key], endDate: e.target.value } }))}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </label>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
