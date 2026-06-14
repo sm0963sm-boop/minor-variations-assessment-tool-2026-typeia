@@ -603,30 +603,46 @@ function ClassifyMulti() {
               })],
             });
 
-            const children: (Paragraph | Table)[] = [];
-            // Title block
-            children.push(new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 80 },
-              children: [new TextRun({ text: "Variation Assessment Report", bold: true, size: 40, color: BRAND, font: "Calibri" })],
-            }));
-            children.push(new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 80 },
-              children: [new TextRun({ text: "Minor Variations (Type IA / IAIN / IB) — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
-            }));
-            children.push(new Paragraph({
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 240 },
-              border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 6 } },
-              children: [new TextRun({ text: `Date: ${today}`, size: 20, color: MUTED, font: "Calibri" })],
-            }));
+            // ===== Assessor Names table (SFDA template) =====
+            const assessorCellBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
+            const assessorBorders = { top: assessorCellBorder, bottom: assessorCellBorder, left: assessorCellBorder, right: assessorCellBorder };
+            const mkAssessorCell = (text: string, opts: { bold?: boolean; fill?: string } = {}) => new TableCell({
+              borders: assessorBorders,
+              ...(opts.fill ? { shading: { fill: opts.fill, type: ShadingType.CLEAR, color: "auto" } } : {}),
+              margins: { top: 120, bottom: 120, left: 160, right: 160 },
+              children: [new Paragraph({ children: [new TextRun({ text: text || "—", bold: opts.bold, color: opts.bold ? BRAND : undefined, font: "Calibri", size: 22 })] })],
+            });
+            const assessorsTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [3360, 3600, 2400],
+              rows: [
+                new TableRow({
+                  tableHeader: true,
+                  children: [
+                    mkAssessorCell("Assessment area", { bold: true, fill: LIGHT_BG }),
+                    mkAssessorCell("Assessor name", { bold: true, fill: LIGHT_BG }),
+                    mkAssessorCell("End date", { bold: true, fill: LIGHT_BG }),
+                  ],
+                }),
+                new TableRow({ children: [
+                  mkAssessorCell("Active pharmaceutical ingredient", { bold: true }),
+                  mkAssessorCell(assessors.api.name),
+                  mkAssessorCell(assessors.api.endDate),
+                ]}),
+                new TableRow({ children: [
+                  mkAssessorCell("Finished pharmaceutical product", { bold: true }),
+                  mkAssessorCell(assessors.fpp.name),
+                  mkAssessorCell(assessors.fpp.endDate),
+                ]}),
+                new TableRow({ children: [
+                  mkAssessorCell("Analytical and validation", { bold: true }),
+                  mkAssessorCell(assessors.analytical.name),
+                  mkAssessorCell(assessors.analytical.endDate),
+                ]}),
+              ],
+            });
 
-            children.push(h1("1. Product information"));
-            children.push(infoTable);
-            children.push(spacer());
-
-            // Submitted variations table
+            // ===== Submitted variations table =====
             const varBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
             const varBorders = { top: varBorder, bottom: varBorder, left: varBorder, right: varBorder };
             const variationsTable = new Table({
@@ -634,6 +650,7 @@ function ClassifyMulti() {
               columnWidths: [1600, 5460, 2300],
               rows: [
                 new TableRow({
+                  tableHeader: true,
                   children: [
                     new TableCell({
                       borders: varBorders,
@@ -683,18 +700,64 @@ function ClassifyMulti() {
               ],
             });
 
-            children.push(h1("2. Submitted variations"));
-            children.push(para(`The following ${selected.length} variation(s) have been submitted for assessment:`));
-            children.push(variationsTable);
+            const children: (Paragraph | Table)[] = [];
+
+            // ===== Cover page (SFDA template) =====
+            children.push(new Paragraph({ spacing: { before: 2400 }, children: [new TextRun("")] }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 160 },
+              children: [new TextRun({ text: "Saudi Food & Drug Authority", bold: true, size: 36, color: BRAND, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 1200 },
+              children: [new TextRun({ text: "Drug Sector", size: 24, color: MUTED, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 240 },
+              children: [new TextRun({ text: "Quality Assessment Report", bold: true, size: 56, color: BRAND, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 1600 },
+              children: [
+                new TextRun({ text: "For  ", size: 32, color: MUTED, font: "Calibri" }),
+                new TextRun({ text: `${productInfo.tradeName || "..........."}®`, bold: true, size: 36, color: ACCENT, font: "Calibri" }),
+              ],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 6 } },
+              children: [new TextRun({ text: `Date: ${today}`, size: 22, color: MUTED, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({ children: [new PageBreak()] }));
+
+            // ===== Section 1: Administrative Information =====
+            children.push(h1("1. Administrative Information"));
+            children.push(infoTable);
             children.push(spacer());
 
-            // Assessor opinion — scientific analysis only (no red callout box)
-            children.push(h1("3. Assessor opinion"));
+            // ===== Section 2: Assessor Names =====
+            children.push(h1("2. Assessor Names"));
+            children.push(assessorsTable);
+            children.push(spacer());
+
+            // ===== Section 3: Scientific Assessment =====
+            children.push(h1("3. Scientific Assessment"));
+            children.push(para("This section presents the scientific assessment of the submitted Type IA / IAIN / IB minor variation(s), including the justification, impact on product quality (Efficacy, Safety, Stability, Bioavailability), and the assessor's conclusion for each variation.", { italic: true, color: MUTED }));
+            children.push(spacer());
+            children.push(para("3.1 Submitted variations", { bold: true, color: BRAND }));
+            children.push(variationsTable);
+            children.push(spacer());
             if (opinion.trim()) {
-              children.push(para("Reviewer's note", { bold: true, color: BRAND }));
+              children.push(para("3.2 Reviewer's note", { bold: true, color: BRAND }));
               opinion.trim().split("\n").forEach(l => children.push(para(l)));
               children.push(spacer());
             }
+            children.push(para(opinion.trim() ? "3.3 Scientific analysis" : "3.2 Scientific analysis", { bold: true, color: BRAND }));
             if (aiAnalysis.trim()) {
               aiAnalysis.split("\n").forEach(rawLine => {
                 const line = rawLine.replace(/\r/g, "");
@@ -710,11 +773,13 @@ function ClassifyMulti() {
                 if (li || oli) { children.push(bullet((li || oli)![1].replace(/\*\*/g, ""))); return; }
                 children.push(para(line.replace(/\*\*/g, "")));
               });
+            } else {
+              children.push(para("— Scientific analysis was not generated. Use the “Generate analysis” button before downloading the report. —", { italic: true, color: MUTED }));
             }
             children.push(spacer());
 
-            // Final recommendation — mirrors the UI box in the last step
-            children.push(h1("4. Final recommendation"));
+            // ===== Section 4: Final Decision =====
+            children.push(h1("4. Final Decision"));
             children.push(opinionCallout);
             children.push(spacer());
             results.forEach((r) => {
