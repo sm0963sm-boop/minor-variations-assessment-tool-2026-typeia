@@ -50,15 +50,25 @@ function ClassifyMulti() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const callAnalysis = useServerFn(generateScientificAnalysis);
+  // SFDA Quality Assessment Report — Administrative Information
   const [productInfo, setProductInfo] = useState({
-    productName: "",
-    requestNumber: "",
-    apiSupplier: "",
-    fppManufacture: "",
+    tradeName: "",
+    activeIngredients: "",
+    subProductNo: "",
+    mah: "",
+    apiManufacturers: "",
+    drugProductManufacturer: "",
+    pharmaceuticalForm: "",
+    route: "",
     strength: "",
-    packSize: "",
-    storageCondition: "",
     shelfLife: "",
+    storage: "",
+  });
+  // SFDA Quality Assessment Report — Assessor Names
+  const [assessors, setAssessors] = useState({
+    api: { name: "", endDate: "" },
+    fpp: { name: "", endDate: "" },
+    analytical: { name: "", endDate: "" },
   });
 
   const handleCopy = async (text: string, key: string) => {
