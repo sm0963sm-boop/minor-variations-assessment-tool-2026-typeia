@@ -854,6 +854,7 @@ function ClassifyMulti() {
 
           return (
             <>
+            <ReportMetadataForm productInfo={productInfo} setProductInfo={setProductInfo} assessors={assessors} setAssessors={setAssessors} />
             {(() => {
               const submittedByVar = results
                 .map(r => {
