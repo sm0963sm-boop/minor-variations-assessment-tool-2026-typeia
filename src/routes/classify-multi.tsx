@@ -595,7 +595,7 @@ function ClassifyMulti() {
               const applySafePlaceholders = (input: string) =>
                 Object.entries(placeholderMap).reduce((acc, [from, to]) => acc.replaceAll(from, to), input);
               const xml = applySafePlaceholders(documentXml.asText());
-              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\{@scientificXml\}<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
+              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\[\[scientificText\]\]<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
               const rawTagMatch = xml.match(rawTagPattern);
               const sectionPropsIndex = xml.lastIndexOf("<w:sectPr");
               if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
