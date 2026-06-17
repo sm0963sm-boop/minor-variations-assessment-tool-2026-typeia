@@ -496,74 +496,125 @@ function ClassifyMulti() {
               .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
               .replace(/\*\*/g, "")
               .trimEnd();
+            const esc = (s: string) => cleanText(s)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&apos;");
 
-            const parts: string[] = [];
-            parts.push("3. Scientific Assessment");
-            parts.push("This section presents the scientific assessment of the submitted Type IA / IAIN / IB minor variation(s), including the justification, impact on product quality (Efficacy, Safety, Stability, Bioavailability), and the assessor's conclusion for each variation.");
-            parts.push("");
-            parts.push("3.1 Submitted variations");
-            selected.forEach(v => parts.push(`${cleanText(v.code)} | ${cleanText(v.title)} | ${cleanText(v.type)}`));
-            parts.push("");
-            let nextIdx = 2;
+            // ---- OOXML helpers ----
+            const para = (text: string, opts: { bold?: boolean; size?: number; color?: string } = {}) => {
+              const { bold, size = 20, color } = opts;
+              const rPr = `<w:rPr>${bold ? "<w:b/>" : ""}<w:sz w:val="${size}"/>${color ? `<w:color w:val="${color}"/>` : ""}</w:rPr>`;
+              return `<w:p><w:pPr><w:spacing w:after="60"/></w:pPr><w:r>${rPr}<w:t xml:space="preserve">${esc(text)}</w:t></w:r></w:p>`;
+            };
+            const heading = (text: string) =>
+              `<w:p><w:pPr><w:spacing w:before="320" w:after="160"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="28"/><w:color w:val="1F3864"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r></w:p>`;
+            const bullet = (text: string) =>
+              `<w:p><w:pPr><w:spacing w:after="40"/><w:ind w:left="360"/></w:pPr><w:r><w:rPr><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">• ${esc(text)}</w:t></w:r></w:p>`;
+            const emptyPara = `<w:p/>`;
+            const cell = (content: string, width: number, shade?: string) => {
+              const shading = shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>` : "";
+              const body = content || emptyPara;
+              return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${shading}<w:tcBorders><w:top w:val="single" w:sz="4" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="4" w:color="BFBFBF"/><w:left w:val="single" w:sz="4" w:color="BFBFBF"/><w:right w:val="single" w:sz="4" w:color="BFBFBF"/></w:tcBorders><w:tcMar><w:top w:w="80" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tcMar></w:tcPr>${body}</w:tc>`;
+            };
+            const row = (cells: string[]) => `<w:tr>${cells.join("")}</w:tr>`;
+            const table = (rows: string[], widths: number[]) => {
+              const total = widths.reduce((a, b) => a + b, 0);
+              return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="4" w:color="BFBFBF"/><w:left w:val="single" w:sz="4" w:color="BFBFBF"/><w:right w:val="single" w:sz="4" w:color="BFBFBF"/><w:insideH w:val="single" w:sz="4" w:color="BFBFBF"/><w:insideV w:val="single" w:sz="4" w:color="BFBFBF"/></w:tblBorders></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>${rows.join("")}</w:tbl>${emptyPara}`;
+            };
+
+            const xmlParts: string[] = [];
+
+            // ===== Section 1: The submitted variations =====
+            xmlParts.push(heading("The submitted variations"));
+            const submittedRows: string[] = [];
+            const subWidths = [1300, 4300, 800, 1400, 1560];
+            submittedRows.push(row([
+              cell(para("Code", { bold: true }), subWidths[0], "D9E2F3"),
+              cell(para("Variation", { bold: true }), subWidths[1], "D9E2F3"),
+              cell(para("Type", { bold: true }), subWidths[2], "D9E2F3"),
+              cell(para("Status", { bold: true }), subWidths[3], "D9E2F3"),
+              cell(para("Submitted documents", { bold: true }), subWidths[4], "D9E2F3"),
+            ]));
+            results.forEach(r => {
+              const s = itemStatusOf(r);
+              const flags = docsSubmitted[r.v.code] || [];
+              const submittedDocs = r.v.documents.filter((_, i) => (flags[i] || "missing") === "submitted");
+              const docsContent = submittedDocs.length > 0
+                ? submittedDocs.map(d => bullet(d)).join("")
+                : para("—");
+              const statusShade = s === "APPROVED" ? "E2EFDA" : s === "SUSPENDED" ? "FFF2CC" : "FBE5D6";
+              submittedRows.push(row([
+                cell(para(r.v.code), subWidths[0]),
+                cell(para(r.v.title), subWidths[1]),
+                cell(para(r.v.type), subWidths[2]),
+                cell(para(s, { bold: true }), subWidths[3], statusShade),
+                cell(docsContent, subWidths[4]),
+              ]));
+            });
+            xmlParts.push(table(submittedRows, subWidths));
+
+            // ===== Section 2: ASSESSOR OPINION =====
+            xmlParts.push(heading("ASSESSOR OPINION"));
             if (opinion.trim()) {
-              parts.push(`3.${nextIdx} Reviewer's note`);
-              opinion.trim().split("\n").forEach(l => parts.push(cleanText(l)));
-              parts.push("");
-              nextIdx++;
+              opinion.trim().split("\n").forEach(l => xmlParts.push(para(l)));
+              xmlParts.push(emptyPara);
             }
-            parts.push(`3.${nextIdx} Scientific analysis (AI-assisted)`);
             if (aiAnalysis.trim()) {
               aiAnalysis.split("\n").forEach(rawLine => {
                 const line = cleanText(rawLine.replace(/\r/g, ""));
-                if (!line.trim()) { parts.push(""); return; }
+                if (!line.trim()) { xmlParts.push(emptyPara); return; }
                 const h2 = line.match(/^##\s+(.*)$/);
                 const h3 = line.match(/^###\s+(.*)$/);
                 const h4 = line.match(/^####\s+(.*)$/);
                 const li = line.match(/^\s*[-*]\s+(.*)$/);
                 const oli = line.match(/^\s*\d+\.\s+(.*)$/);
-                if (h2) { parts.push(cleanText(h2[1])); return; }
-                if (h3) { parts.push(cleanText(h3[1])); return; }
-                if (h4) { parts.push(cleanText(h4[1])); return; }
-                if (li || oli) { parts.push(`• ${cleanText((li || oli)![1])}`); return; }
-                parts.push(line);
+                if (h2) { xmlParts.push(para(h2[1], { bold: true, size: 26, color: "1F3864" })); return; }
+                if (h3) { xmlParts.push(para(h3[1], { bold: true, size: 24, color: "1F3864" })); return; }
+                if (h4) { xmlParts.push(para(h4[1], { bold: true, size: 22 })); return; }
+                if (li || oli) { xmlParts.push(bullet((li || oli)![1])); return; }
+                xmlParts.push(para(line));
               });
             } else {
-              parts.push("— Scientific analysis was not generated. Use the 'Generate analysis' button before downloading the report. —");
+              xmlParts.push(para("— Scientific analysis was not generated. Use the 'Generate analysis' button before downloading the report. —"));
             }
-            parts.push("");
 
-            // Section 4: Final Decision
-            parts.push("4. Final Decision");
-            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED"
-              : decisionStatus === "SUSPENDED" ? "SUSPENDED"
-              : decisionStatus === "MIXED" ? "MIXED OUTCOME — PER-VARIATION DECISION"
-              : "NOT ACCEPTED";
-            const opinionText =
-              decisionStatus === "APPROVED"
-                ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product."
-                : decisionStatus === "SUSPENDED"
-                  ? "All applicable conditions for the proposed variation(s) have been met; however, one or more required documents have not been submitted. The request is therefore placed on Suspension pending submission of the missing documentation listed below."
-                  : decisionStatus === "MIXED"
-                    ? "The submitted variations have different outcomes: each variation has its own independent decision (Approved, Suspended, or Not accepted) as listed below."
-                    : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
-            parts.push(calloutLabel);
-            parts.push(opinionText);
-            parts.push("");
-
-            results.forEach((r) => {
+            // ===== Section 3: Final recommendation =====
+            xmlParts.push(heading("Final recommendation"));
+            const finalWidths = [1300, 4800, 1500, 1760];
+            const finalRows: string[] = [];
+            finalRows.push(row([
+              cell(para("Code", { bold: true }), finalWidths[0], "D9E2F3"),
+              cell(para("Variation", { bold: true }), finalWidths[1], "D9E2F3"),
+              cell(para("Decision", { bold: true }), finalWidths[2], "D9E2F3"),
+              cell(para("Details", { bold: true }), finalWidths[3], "D9E2F3"),
+            ]));
+            results.forEach(r => {
               const { v, unmet, missingDocs } = r;
               const s = itemStatusOf(r);
-              const statusText = s === "APPROVED"
-                ? "is approved"
-                : s === "SUSPENDED"
-                  ? "is suspended — please provide the following required document(s):"
-                  : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
-              parts.push(`${cleanText(v.code)} ${cleanText(v.title)} ${statusText}`);
-              if (s === "SUSPENDED") missingDocs.forEach(d => parts.push(`• ${cleanText(d)}`));
-              else if (s === "REJECTED") unmet.forEach(c => parts.push(`• ${cleanText(c)}`));
+              const shade = s === "APPROVED" ? "E2EFDA" : s === "SUSPENDED" ? "FFF2CC" : "FBE5D6";
+              const detailParts: string[] = [];
+              if (s === "APPROVED") {
+                detailParts.push(para("Is approved."));
+              } else if (s === "SUSPENDED") {
+                detailParts.push(para("Suspended — please provide the following document(s):"));
+                missingDocs.forEach(d => detailParts.push(bullet(d)));
+              } else {
+                detailParts.push(para(`Rejected — the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`));
+                unmet.forEach(c => detailParts.push(bullet(c)));
+              }
+              finalRows.push(row([
+                cell(para(v.code), finalWidths[0]),
+                cell(para(v.title), finalWidths[1]),
+                cell(para(s, { bold: true }), finalWidths[2], shade),
+                cell(detailParts.join(""), finalWidths[3]),
+              ]));
             });
+            xmlParts.push(table(finalRows, finalWidths));
 
-            const scientificText = parts.join("\n");
+            const scientificXml = xmlParts.join("");
 
             // Load template & fill placeholders
             const res = await fetch("/report-template.docx");
@@ -590,12 +641,12 @@ function ClassifyMulti() {
                 "{fppEndDate}": "[[fppEndDate]]",
                 "{analyticalAssessor}": "[[analyticalAssessor]]",
                 "{analyticalEndDate}": "[[analyticalEndDate]]",
-                "{@scientificXml}": "[[scientificText]]",
+                "{@scientificXml}": "[[@scientificXml]]",
               };
               const applySafePlaceholders = (input: string) =>
                 Object.entries(placeholderMap).reduce((acc, [from, to]) => acc.replaceAll(from, to), input);
               const xml = applySafePlaceholders(documentXml.asText());
-              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\[\[scientificText\]\]<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
+              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\[\[@scientificXml\]\]<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
               const rawTagMatch = xml.match(rawTagPattern);
               const sectionPropsIndex = xml.lastIndexOf("<w:sectPr");
               if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
@@ -629,7 +680,7 @@ function ClassifyMulti() {
               fppEndDate: assessors.fpp.endDate || "",
               analyticalAssessor: assessors.analytical.name || "",
               analyticalEndDate: assessors.analytical.endDate || "",
-              scientificText,
+              scientificXml,
             });
             const blob = doc.getZip().generate({
               type: "blob",
@@ -638,6 +689,7 @@ function ClassifyMulti() {
             const safeName = (productInfo.tradeName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
             saveAs(blob, `quality-assessment-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
           };
+
 
 
           return (
