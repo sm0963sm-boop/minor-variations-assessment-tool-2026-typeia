@@ -2748,3 +2748,13 @@ export const VARIATIONS: Variation[] = [
     ]
   }
 ];
+
+// Strip leading numbering like "1) ", "2. ", "3)" from conditions and documents
+// so they render as plain bullets in the UI and in the generated Word document.
+const stripLeadingNumber = (s: string): string =>
+  s.replace(/^\s*\d+\s*[\)\.\-:]\s*/, "").trim();
+
+for (const v of VARIATIONS) {
+  v.conditions = v.conditions.map(stripLeadingNumber);
+  v.documents = v.documents.map(stripLeadingNumber);
+}
