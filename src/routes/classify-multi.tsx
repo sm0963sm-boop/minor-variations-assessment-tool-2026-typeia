@@ -492,77 +492,48 @@ function ClassifyMulti() {
           }).join("\n\n");
 
           const downloadWord = async () => {
-            // Helpers to build raw OOXML for the scientific section + final decision
-            const esc = (s: string) => (s || "")
+            const cleanText = (s: string) => (s || "")
               .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
-              .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const run = (text: string, opts: { bold?: boolean; color?: string; size?: number } = {}) => {
-              const rPr: string[] = [];
-              if (opts.bold) rPr.push("<w:b/><w:bCs/>");
-              if (opts.color) rPr.push(`<w:color w:val="${opts.color}"/>`);
-              if (opts.size) rPr.push(`<w:sz w:val="${opts.size}"/><w:szCs w:val="${opts.size}"/>`);
-              rPr.push(`<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>`);
-              return `<w:r><w:rPr>${rPr.join("")}</w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;
-            };
-            const para = (text: string, opts: Parameters<typeof run>[1] = {}) =>
-              `<w:p><w:pPr><w:spacing w:after="120" w:line="300" w:lineRule="auto"/></w:pPr>${run(text, opts)}</w:p>`;
-            const heading = (text: string) =>
-              `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:spacing w:before="280" w:after="160"/></w:pPr>${run(text, { bold: true, size: 28, color: "1F3A68" })}</w:p>`;
-            const bullet = (text: string) =>
-              `<w:p><w:pPr><w:ind w:left="720" w:hanging="360"/><w:spacing w:after="80" w:line="280" w:lineRule="auto"/></w:pPr>${run("•  ", { bold: true })}${run(text)}</w:p>`;
-            const cell = (text: string, opts: { bold?: boolean; fill?: string; width: number; color?: string } = { width: 3120 }) => {
-              const shd = opts.fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${opts.fill}"/>` : "";
-              return `<w:tc><w:tcPr><w:tcW w:w="${opts.width}" w:type="dxa"/>${shd}<w:tcBorders><w:top w:val="single" w:sz="4" w:color="BFBFBF"/><w:left w:val="single" w:sz="4" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="4" w:color="BFBFBF"/><w:right w:val="single" w:sz="4" w:color="BFBFBF"/></w:tcBorders><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/></w:pPr>${run(text, { bold: opts.bold, color: opts.color })}</w:p></w:tc>`;
-            };
-            const blank = () => `<w:p><w:pPr><w:spacing w:after="80"/></w:pPr></w:p>`;
+              .replace(/\*\*/g, "")
+              .trimEnd();
 
-            // 3.1 Variations table
-            const varHeader = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${cell("Code", { bold: true, fill: "F2F6FB", width: 1600, color: "1F3A68" })}${cell("Variation title", { bold: true, fill: "F2F6FB", width: 5460, color: "1F3A68" })}${cell("Type", { bold: true, fill: "F2F6FB", width: 2300, color: "1F3A68" })}</w:tr>`;
-            const varBody = selected.map(v =>
-              `<w:tr>${cell(v.code, { width: 1600 })}${cell(v.title, { width: 5460 })}${cell(v.type, { width: 2300, color: v.type === "IA" ? "3F8A56" : "2E75B6" })}</w:tr>`
-            ).join("");
-            const variationsTable = `<w:tbl><w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="BFBFBF"/><w:left w:val="single" w:sz="4" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="4" w:color="BFBFBF"/><w:right w:val="single" w:sz="4" w:color="BFBFBF"/><w:insideH w:val="single" w:sz="4" w:color="BFBFBF"/><w:insideV w:val="single" w:sz="4" w:color="BFBFBF"/></w:tblBorders></w:tblPr><w:tblGrid><w:gridCol w:w="1600"/><w:gridCol w:w="5460"/><w:gridCol w:w="2300"/></w:tblGrid>${varHeader}${varBody}</w:tbl>`;
-
-            // Scientific assessment XML
             const parts: string[] = [];
-            parts.push(heading("3. Scientific Assessment"));
-            parts.push(para("This section presents the scientific assessment of the submitted Type IA / IAIN / IB minor variation(s), including the justification, impact on product quality (Efficacy, Safety, Stability, Bioavailability), and the assessor's conclusion for each variation.", { color: "595959" }));
-            parts.push(blank());
-            parts.push(para("3.1 Submitted variations", { bold: true, color: "1F3A68" }));
-            parts.push(variationsTable);
-            parts.push(blank());
+            parts.push("3. Scientific Assessment");
+            parts.push("This section presents the scientific assessment of the submitted Type IA / IAIN / IB minor variation(s), including the justification, impact on product quality (Efficacy, Safety, Stability, Bioavailability), and the assessor's conclusion for each variation.");
+            parts.push("");
+            parts.push("3.1 Submitted variations");
+            selected.forEach(v => parts.push(`${cleanText(v.code)} | ${cleanText(v.title)} | ${cleanText(v.type)}`));
+            parts.push("");
             let nextIdx = 2;
             if (opinion.trim()) {
-              parts.push(para(`3.${nextIdx} Reviewer's note`, { bold: true, color: "1F3A68" }));
-              opinion.trim().split("\n").forEach(l => parts.push(para(l)));
-              parts.push(blank());
+              parts.push(`3.${nextIdx} Reviewer's note`);
+              opinion.trim().split("\n").forEach(l => parts.push(cleanText(l)));
+              parts.push("");
               nextIdx++;
             }
-            parts.push(para(`3.${nextIdx} Scientific analysis (AI-assisted)`, { bold: true, color: "1F3A68" }));
+            parts.push(`3.${nextIdx} Scientific analysis (AI-assisted)`);
             if (aiAnalysis.trim()) {
               aiAnalysis.split("\n").forEach(rawLine => {
-                const line = rawLine.replace(/\r/g, "");
-                if (!line.trim()) { parts.push(blank()); return; }
+                const line = cleanText(rawLine.replace(/\r/g, ""));
+                if (!line.trim()) { parts.push(""); return; }
                 const h2 = line.match(/^##\s+(.*)$/);
                 const h3 = line.match(/^###\s+(.*)$/);
                 const h4 = line.match(/^####\s+(.*)$/);
                 const li = line.match(/^\s*[-*]\s+(.*)$/);
                 const oli = line.match(/^\s*\d+\.\s+(.*)$/);
-                if (h2) { parts.push(para(h2[1].replace(/\*\*/g, ""), { bold: true, color: "1F3A68" })); return; }
-                if (h3) { parts.push(para(h3[1].replace(/\*\*/g, ""), { bold: true, color: "2E75B6" })); return; }
-                if (h4) { parts.push(para(h4[1].replace(/\*\*/g, ""), { bold: true })); return; }
-                if (li || oli) { parts.push(bullet((li || oli)![1].replace(/\*\*/g, ""))); return; }
-                parts.push(para(line.replace(/\*\*/g, "")));
+                if (h2) { parts.push(cleanText(h2[1])); return; }
+                if (h3) { parts.push(cleanText(h3[1])); return; }
+                if (h4) { parts.push(cleanText(h4[1])); return; }
+                if (li || oli) { parts.push(`• ${cleanText((li || oli)![1])}`); return; }
+                parts.push(line);
               });
             } else {
-              parts.push(para("— Scientific analysis was not generated. Use the 'Generate analysis' button before downloading the report. —", { color: "595959" }));
+              parts.push("— Scientific analysis was not generated. Use the 'Generate analysis' button before downloading the report. —");
             }
-            parts.push(blank());
+            parts.push("");
 
             // Section 4: Final Decision
-            parts.push(heading("4. Final Decision"));
-            const calloutFill = decisionStatus === "APPROVED" ? "E8F3EC" : decisionStatus === "NOT_ACCEPTED" ? "FBEAEA" : "FFF4E5";
-            const calloutBorder = decisionStatus === "APPROVED" ? "3F8A56" : decisionStatus === "NOT_ACCEPTED" ? "B33A3A" : "B8860B";
+            parts.push("4. Final Decision");
             const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED"
               : decisionStatus === "SUSPENDED" ? "SUSPENDED"
               : decisionStatus === "MIXED" ? "MIXED OUTCOME — PER-VARIATION DECISION"
@@ -575,28 +546,24 @@ function ClassifyMulti() {
                   : decisionStatus === "MIXED"
                     ? "The submitted variations have different outcomes: each variation has its own independent decision (Approved, Suspended, or Not accepted) as listed below."
                     : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
-            parts.push(
-              `<w:tbl><w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="8" w:color="${calloutBorder}"/><w:left w:val="single" w:sz="8" w:color="${calloutBorder}"/><w:bottom w:val="single" w:sz="8" w:color="${calloutBorder}"/><w:right w:val="single" w:sz="8" w:color="${calloutBorder}"/></w:tblBorders></w:tblPr><w:tblGrid><w:gridCol w:w="9360"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="9360" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${calloutFill}"/></w:tcPr><w:p><w:pPr><w:spacing w:after="80"/></w:pPr>${run(calloutLabel, { bold: true, color: calloutBorder })}</w:p><w:p><w:pPr><w:spacing w:line="300" w:lineRule="auto"/></w:pPr>${run(opinionText)}</w:p></w:tc></w:tr></w:tbl>`
-            );
-            parts.push(blank());
+            parts.push(calloutLabel);
+            parts.push(opinionText);
+            parts.push("");
 
             results.forEach((r) => {
               const { v, unmet, missingDocs } = r;
               const s = itemStatusOf(r);
-              const statusColor = s === "APPROVED" ? "3F8A56" : s === "SUSPENDED" ? "B8860B" : "B33A3A";
               const statusText = s === "APPROVED"
-                ? "  is approved"
+                ? "is approved"
                 : s === "SUSPENDED"
-                  ? "  is suspended — please provide the following required document(s):"
+                  ? "is suspended — please provide the following required document(s):"
                   : `  is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
-              parts.push(
-                `<w:p><w:pPr><w:spacing w:before="160" w:after="80" w:line="300" w:lineRule="auto"/></w:pPr>${run(v.code + "  ", { bold: true, color: "595959" })}${run(v.title, { bold: true })}${run(statusText, { bold: true, color: statusColor })}</w:p>`
-              );
-              if (s === "SUSPENDED") missingDocs.forEach(d => parts.push(bullet(d)));
-              else if (s === "REJECTED") unmet.forEach(c => parts.push(bullet(c)));
+              parts.push(`${cleanText(v.code)} ${cleanText(v.title)} ${statusText}`);
+              if (s === "SUSPENDED") missingDocs.forEach(d => parts.push(`• ${cleanText(d)}`));
+              else if (s === "REJECTED") unmet.forEach(c => parts.push(`• ${cleanText(c)}`));
             });
 
-            const scientificXml = parts.join("");
+            const scientificText = parts.join("\n");
 
             // Load template & fill placeholders
             const res = await fetch("/report-template.docx");
@@ -612,7 +579,9 @@ function ClassifyMulti() {
               if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
                 const xmlWithoutRawTag = xml.slice(0, rawTagMatch.index) + xml.slice(rawTagMatch.index + rawTagMatch[0].length);
                 const fixedSectionPropsIndex = xmlWithoutRawTag.lastIndexOf("<w:sectPr");
-                zip.file("word/document.xml", xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex));
+                zip.file("word/document.xml", (xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex)).replace("{@scientificXml}", "{scientificText}"));
+              } else {
+                zip.file("word/document.xml", xml.replace("{@scientificXml}", "{scientificText}"));
               }
             }
             const customProps = zip.file("docProps/custom.xml");
@@ -642,7 +611,7 @@ function ClassifyMulti() {
               fppEndDate: assessors.fpp.endDate || "",
               analyticalAssessor: assessors.analytical.name || "",
               analyticalEndDate: assessors.analytical.endDate || "",
-              scientificXml,
+              scientificText,
             });
             const blob = doc.getZip().generate({
               type: "blob",
