@@ -579,7 +579,9 @@ function ClassifyMulti() {
               if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
                 const xmlWithoutRawTag = xml.slice(0, rawTagMatch.index) + xml.slice(rawTagMatch.index + rawTagMatch[0].length);
                 const fixedSectionPropsIndex = xmlWithoutRawTag.lastIndexOf("<w:sectPr");
-                zip.file("word/document.xml", xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex));
+                zip.file("word/document.xml", (xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex)).replace("{@scientificXml}", "{scientificText}"));
+              } else {
+                zip.file("word/document.xml", xml.replace("{@scientificXml}", "{scientificText}"));
               }
             }
             const customProps = zip.file("docProps/custom.xml");
@@ -609,7 +611,7 @@ function ClassifyMulti() {
               fppEndDate: assessors.fpp.endDate || "",
               analyticalAssessor: assessors.analytical.name || "",
               analyticalEndDate: assessors.analytical.endDate || "",
-              scientificXml,
+              scientificText,
             });
             const blob = doc.getZip().generate({
               type: "blob",
