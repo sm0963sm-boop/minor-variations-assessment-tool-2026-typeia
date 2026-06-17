@@ -494,6 +494,7 @@ function ClassifyMulti() {
           const downloadWord = async () => {
             // Helpers to build raw OOXML for the scientific section + final decision
             const esc = (s: string) => (s || "")
+              .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
               .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             const run = (text: string, opts: { bold?: boolean; color?: string; size?: number } = {}) => {
               const rPr: string[] = [];
@@ -602,6 +603,18 @@ function ClassifyMulti() {
             if (!res.ok) throw new Error("Failed to load report template");
             const buf = await res.arrayBuffer();
             const zip = new PizZip(buf);
+            const documentXml = zip.file("word/document.xml");
+            if (documentXml) {
+              const xml = documentXml.asText();
+              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\{@scientificXml\}<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
+              const rawTagMatch = xml.match(rawTagPattern);
+              const sectionPropsIndex = xml.lastIndexOf("<w:sectPr");
+              if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
+                const xmlWithoutRawTag = xml.slice(0, rawTagMatch.index) + xml.slice(rawTagMatch.index + rawTagMatch[0].length);
+                const fixedSectionPropsIndex = xmlWithoutRawTag.lastIndexOf("<w:sectPr");
+                zip.file("word/document.xml", xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex));
+              }
+            }
             const customProps = zip.file("docProps/custom.xml");
             if (customProps) {
               zip.file("docProps/custom.xml", customProps.asText().replaceAll("{", "[").replaceAll("}", "]"));
