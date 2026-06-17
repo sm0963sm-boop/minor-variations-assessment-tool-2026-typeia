@@ -572,26 +572,44 @@ function ClassifyMulti() {
             const zip = new PizZip(buf);
             const documentXml = zip.file("word/document.xml");
             if (documentXml) {
-              const xml = documentXml.asText();
-              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\{@scientificXml\}<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
+              const placeholderMap: Record<string, string> = {
+                "{tradeName}": "[[tradeName]]",
+                "{activeIngredient}": "[[activeIngredient]]",
+                "{subProductNo}": "[[subProductNo]]",
+                "{mah}": "[[mah]]",
+                "{apiManufacturer}": "[[apiManufacturer]]",
+                "{drugManufacturer}": "[[drugManufacturer]]",
+                "{pharmaceuticalForm}": "[[pharmaceuticalForm]]",
+                "{routeOfAdministration}": "[[routeOfAdministration]]",
+                "{strength}": "[[strength]]",
+                "{shelfLife}": "[[shelfLife]]",
+                "{storageConditions}": "[[storageConditions]]",
+                "{apiAssessor}": "[[apiAssessor]]",
+                "{apiEndDate}": "[[apiEndDate]]",
+                "{fppAssessor}": "[[fppAssessor]]",
+                "{fppEndDate}": "[[fppEndDate]]",
+                "{analyticalAssessor}": "[[analyticalAssessor]]",
+                "{analyticalEndDate}": "[[analyticalEndDate]]",
+                "{@scientificXml}": "[[scientificText]]",
+              };
+              const applySafePlaceholders = (input: string) =>
+                Object.entries(placeholderMap).reduce((acc, [from, to]) => acc.replaceAll(from, to), input);
+              const xml = applySafePlaceholders(documentXml.asText());
+              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\[\[scientificText\]\]<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
               const rawTagMatch = xml.match(rawTagPattern);
               const sectionPropsIndex = xml.lastIndexOf("<w:sectPr");
               if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
                 const xmlWithoutRawTag = xml.slice(0, rawTagMatch.index) + xml.slice(rawTagMatch.index + rawTagMatch[0].length);
                 const fixedSectionPropsIndex = xmlWithoutRawTag.lastIndexOf("<w:sectPr");
-                zip.file("word/document.xml", (xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex)).replace("{@scientificXml}", "{scientificText}"));
+                zip.file("word/document.xml", xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex));
               } else {
-                zip.file("word/document.xml", xml.replace("{@scientificXml}", "{scientificText}"));
+                zip.file("word/document.xml", xml);
               }
-            }
-            const customProps = zip.file("docProps/custom.xml");
-            if (customProps) {
-              zip.file("docProps/custom.xml", customProps.asText().replaceAll("{", "[").replaceAll("}", "]"));
             }
             const doc = new Docxtemplater(zip, {
               paragraphLoop: true,
               linebreaks: true,
-              delimiters: { start: "{", end: "}" },
+              delimiters: { start: "[[", end: "]]" },
             });
             doc.render({
               tradeName: productInfo.tradeName || "",
