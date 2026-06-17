@@ -530,31 +530,43 @@ function ClassifyMulti() {
             // ===== Section 1: The submitted variations =====
             xmlParts.push(heading("The submitted variations"));
             const submittedRows: string[] = [];
-            const subWidths = [1300, 4300, 800, 1400, 1560];
+            const subWidths = [1500, 5860, 1000];
             submittedRows.push(row([
               cell(para("Code", { bold: true }), subWidths[0], "D9E2F3"),
               cell(para("Variation", { bold: true }), subWidths[1], "D9E2F3"),
               cell(para("Type", { bold: true }), subWidths[2], "D9E2F3"),
-              cell(para("Status", { bold: true }), subWidths[3], "D9E2F3"),
-              cell(para("Submitted documents", { bold: true }), subWidths[4], "D9E2F3"),
             ]));
             results.forEach(r => {
-              const s = itemStatusOf(r);
-              const flags = docsSubmitted[r.v.code] || [];
-              const submittedDocs = r.v.documents.filter((_, i) => (flags[i] || "missing") === "submitted");
-              const docsContent = submittedDocs.length > 0
-                ? submittedDocs.map(d => bullet(d)).join("")
-                : para("—");
-              const statusShade = s === "APPROVED" ? "E2EFDA" : s === "SUSPENDED" ? "FFF2CC" : "FBE5D6";
               submittedRows.push(row([
                 cell(para(r.v.code), subWidths[0]),
                 cell(para(r.v.title), subWidths[1]),
                 cell(para(r.v.type), subWidths[2]),
-                cell(para(s, { bold: true }), subWidths[3], statusShade),
-                cell(docsContent, subWidths[4]),
               ]));
             });
             xmlParts.push(table(submittedRows, subWidths));
+
+            // ===== Section 1b: The submitted documents =====
+            xmlParts.push(heading("The submitted documents"));
+            const docsWidths = [1500, 5860, 1000];
+            const docsRows: string[] = [];
+            docsRows.push(row([
+              cell(para("Code", { bold: true }), docsWidths[0], "D9E2F3"),
+              cell(para("Submitted documents", { bold: true }), docsWidths[1], "D9E2F3"),
+              cell(para("Type", { bold: true }), docsWidths[2], "D9E2F3"),
+            ]));
+            results.forEach(r => {
+              const flags = docsSubmitted[r.v.code] || [];
+              const submittedDocs = r.v.documents.filter((_, i) => (flags[i] || "missing") === "submitted");
+              const docsContent = submittedDocs.length > 0
+                ? submittedDocs.map(d => bullet(d)).join("")
+                : para("— No documents submitted —");
+              docsRows.push(row([
+                cell(para(r.v.code), docsWidths[0]),
+                cell(docsContent, docsWidths[1]),
+                cell(para(r.v.type), docsWidths[2]),
+              ]));
+            });
+            xmlParts.push(table(docsRows, docsWidths));
 
             // ===== Section 2: ASSESSOR OPINION =====
             xmlParts.push(heading("ASSESSOR OPINION"));
@@ -581,38 +593,35 @@ function ClassifyMulti() {
               xmlParts.push(para("— Scientific analysis was not generated. Use the 'Generate analysis' button before downloading the report. —"));
             }
 
-            // ===== Section 3: Final recommendation =====
+            // ===== Section 3: Final recommendation (no tables — matches final step UI) =====
             xmlParts.push(heading("Final recommendation"));
-            const finalWidths = [1300, 4800, 1500, 1760];
-            const finalRows: string[] = [];
-            finalRows.push(row([
-              cell(para("Code", { bold: true }), finalWidths[0], "D9E2F3"),
-              cell(para("Variation", { bold: true }), finalWidths[1], "D9E2F3"),
-              cell(para("Decision", { bold: true }), finalWidths[2], "D9E2F3"),
-              cell(para("Details", { bold: true }), finalWidths[3], "D9E2F3"),
-            ]));
             results.forEach(r => {
               const { v, unmet, missingDocs } = r;
               const s = itemStatusOf(r);
-              const shade = s === "APPROVED" ? "E2EFDA" : s === "SUSPENDED" ? "FFF2CC" : "FBE5D6";
-              const detailParts: string[] = [];
+              const color = s === "APPROVED" ? "2E7D32" : s === "SUSPENDED" ? "B7791F" : "C0392B";
+              let statusText = "";
               if (s === "APPROVED") {
-                detailParts.push(para("Is approved."));
+                statusText = "is approved";
               } else if (s === "SUSPENDED") {
-                detailParts.push(para("Suspended — please provide the following document(s):"));
-                missingDocs.forEach(d => detailParts.push(bullet(d)));
+                statusText = "is suspended — please provide the following required document(s):";
               } else {
-                detailParts.push(para(`Rejected — the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`));
-                unmet.forEach(c => detailParts.push(bullet(c)));
+                statusText = `is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
               }
-              finalRows.push(row([
-                cell(para(v.code), finalWidths[0]),
-                cell(para(v.title), finalWidths[1]),
-                cell(para(s, { bold: true }), finalWidths[2], shade),
-                cell(detailParts.join(""), finalWidths[3]),
-              ]));
+              xmlParts.push(
+                `<w:p><w:pPr><w:spacing w:before="160" w:after="80"/></w:pPr>` +
+                `<w:r><w:rPr><w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/><w:b/><w:sz w:val="18"/><w:shd w:val="clear" w:color="auto" w:fill="EFEFEF"/></w:rPr><w:t xml:space="preserve">${esc(v.code)}</w:t></w:r>` +
+                `<w:r><w:rPr><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">  </w:t></w:r>` +
+                `<w:r><w:rPr><w:b/><w:sz w:val="22"/></w:rPr><w:t xml:space="preserve">${esc(v.title)}</w:t></w:r>` +
+                `<w:r><w:rPr><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve"> </w:t></w:r>` +
+                `<w:r><w:rPr><w:b/><w:sz w:val="22"/><w:color w:val="${color}"/></w:rPr><w:t xml:space="preserve">${esc(statusText)}</w:t></w:r>` +
+                `</w:p>`
+              );
+              if (s === "SUSPENDED") {
+                missingDocs.forEach(d => xmlParts.push(bullet(d)));
+              } else if (s === "REJECTED") {
+                unmet.forEach(c => xmlParts.push(bullet(c)));
+              }
             });
-            xmlParts.push(table(finalRows, finalWidths));
 
             const scientificXml = xmlParts.join("");
 
