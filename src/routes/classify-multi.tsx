@@ -602,6 +602,10 @@ function ClassifyMulti() {
             if (!res.ok) throw new Error("Failed to load report template");
             const buf = await res.arrayBuffer();
             const zip = new PizZip(buf);
+            const customProps = zip.file("docProps/custom.xml");
+            if (customProps) {
+              zip.file("docProps/custom.xml", customProps.asText().replaceAll("{", "[").replaceAll("}", "]"));
+            }
             const doc = new Docxtemplater(zip, {
               paragraphLoop: true,
               linebreaks: true,
@@ -638,7 +642,6 @@ function ClassifyMulti() {
 
           return (
             <>
-            <ReportMetadataForm productInfo={productInfo} setProductInfo={setProductInfo} assessors={assessors} setAssessors={setAssessors} />
             {(() => {
               const submittedByVar = results
                 .map(r => {
