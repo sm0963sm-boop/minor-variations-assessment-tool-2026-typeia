@@ -795,10 +795,10 @@ function ClassifyMulti() {
                         const res = await callAnalysis({ data: { items } });
                         setAiAnalysis(res.analysis);
                       } catch (e: any) {
-                        const msg = String(e?.message || e);
-                        if (msg.includes("429")) setAiError("Rate limit reached. Please try again shortly.");
-                        else if (msg.includes("402")) setAiError("AI credits exhausted. Add credits in your workspace settings.");
-                        else setAiError("Could not generate analysis. Please try again.");
+                        const msg = String(e?.message || e).toLowerCase();
+                        if (msg.includes("429") || msg.includes("rate")) setAiError("Rate limit reached. Please try again shortly.");
+                        else if (msg.includes("402") || msg.includes("credit") || msg.includes("exhaust") || msg.includes("payment")) setAiError("AI credits exhausted. Please add credits to your Lovable workspace (Settings → Plans & credits) to use the assessor analysis.");
+                        else setAiError(`Could not generate analysis: ${e?.message || "Unknown error"}. Please try again.`);
                       } finally {
                         setAiLoading(false);
                       }
