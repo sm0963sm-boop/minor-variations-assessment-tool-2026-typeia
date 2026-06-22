@@ -491,211 +491,305 @@ function ClassifyMulti() {
           }).join("\n\n");
 
           const downloadWord = async () => {
-            const cleanText = (s: string) => (s || "")
-              .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
-              .replace(/\*\*/g, "")
-              .trimEnd();
-            const esc = (s: string) => cleanText(s)
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&apos;");
+            const BRAND = "1F3A68";
+            const ACCENT = "2E75B6";
+            const MUTED = "595959";
+            const LIGHT_BG = "F2F6FB";
+            const SUCCESS_BG = "E8F3EC";
+            const SUCCESS_BORDER = "3F8A56";
+            const DANGER_BG = "FBEAEA";
+            const DANGER_BORDER = "B33A3A";
 
-            // ---- OOXML helpers ----
-            const para = (text: string, opts: { bold?: boolean; size?: number; color?: string } = {}) => {
-              const { bold, size = 20, color } = opts;
-              const rPr = `<w:rPr>${bold ? "<w:b/>" : ""}<w:sz w:val="${size}"/>${color ? `<w:color w:val="${color}"/>` : ""}</w:rPr>`;
-              return `<w:p><w:pPr><w:spacing w:after="60"/></w:pPr><w:r>${rPr}<w:t xml:space="preserve">${esc(text)}</w:t></w:r></w:p>`;
-            };
-            const heading = (text: string) =>
-              `<w:p><w:pPr><w:spacing w:before="320" w:after="160"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="28"/><w:color w:val="1F3864"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r></w:p>`;
-            const bullet = (text: string) =>
-              `<w:p><w:pPr><w:spacing w:after="40"/><w:ind w:left="360"/></w:pPr><w:r><w:rPr><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">• ${esc(text)}</w:t></w:r></w:p>`;
-            const emptyPara = `<w:p/>`;
-            const cell = (content: string, width: number, shade?: string) => {
-              const shading = shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>` : "";
-              const body = content || emptyPara;
-              return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${shading}<w:tcBorders><w:top w:val="single" w:sz="4" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="4" w:color="BFBFBF"/><w:left w:val="single" w:sz="4" w:color="BFBFBF"/><w:right w:val="single" w:sz="4" w:color="BFBFBF"/></w:tcBorders><w:tcMar><w:top w:w="80" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tcMar></w:tcPr>${body}</w:tc>`;
-            };
-            const row = (cells: string[]) => `<w:tr>${cells.join("")}</w:tr>`;
-            const table = (rows: string[], widths: number[]) => {
-              const total = widths.reduce((a, b) => a + b, 0);
-              return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="4" w:color="BFBFBF"/><w:left w:val="single" w:sz="4" w:color="BFBFBF"/><w:right w:val="single" w:sz="4" w:color="BFBFBF"/><w:insideH w:val="single" w:sz="4" w:color="BFBFBF"/><w:insideV w:val="single" w:sz="4" w:color="BFBFBF"/></w:tblBorders></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>${rows.join("")}</w:tbl>${emptyPara}`;
-            };
-
-            const xmlParts: string[] = [];
-
-            // ===== Section 1: The submitted variations =====
-            xmlParts.push(heading("The submitted variations"));
-            const submittedRows: string[] = [];
-            const subWidths = [1500, 5860, 1000];
-            submittedRows.push(row([
-              cell(para("Code", { bold: true }), subWidths[0], "D9E2F3"),
-              cell(para("Variation", { bold: true }), subWidths[1], "D9E2F3"),
-              cell(para("Type", { bold: true }), subWidths[2], "D9E2F3"),
-            ]));
-            results.forEach(r => {
-              submittedRows.push(row([
-                cell(para(r.v.code), subWidths[0]),
-                cell(para(r.v.title), subWidths[1]),
-                cell(para(r.v.type), subWidths[2]),
-              ]));
+            const today = new Date().toLocaleDateString("en-GB", {
+              day: "2-digit", month: "long", year: "numeric",
             });
-            xmlParts.push(table(submittedRows, subWidths));
 
-            // ===== Section 1b: The submitted documents =====
-            xmlParts.push(heading("The submitted documents"));
-            const docsWidths = [1500, 5860, 1000];
-            const docsRows: string[] = [];
-            docsRows.push(row([
-              cell(para("Code", { bold: true }), docsWidths[0], "D9E2F3"),
-              cell(para("Submitted documents", { bold: true }), docsWidths[1], "D9E2F3"),
-              cell(para("Type", { bold: true }), docsWidths[2], "D9E2F3"),
-            ]));
-            results.forEach(r => {
-              const flags = docsSubmitted[r.v.code] || [];
-              const submittedDocs = r.v.documents.filter((_, i) => (flags[i] || "missing") === "submitted");
-              const docsContent = submittedDocs.length > 0
-                ? submittedDocs.map(d => bullet(d)).join("")
-                : para("— No documents submitted —");
-              docsRows.push(row([
-                cell(para(r.v.code), docsWidths[0]),
-                cell(docsContent, docsWidths[1]),
-                cell(para(r.v.type), docsWidths[2]),
-              ]));
-            });
-            xmlParts.push(table(docsRows, docsWidths));
-
-            // ===== Section 2: ASSESSOR OPINION =====
-            xmlParts.push(heading("ASSESSOR OPINION"));
-            if (opinion.trim()) {
-              opinion.trim().split("\n").forEach(l => xmlParts.push(para(l)));
-              xmlParts.push(emptyPara);
-            }
-            if (aiAnalysis.trim()) {
-              aiAnalysis.split("\n").forEach(rawLine => {
-                const line = cleanText(rawLine.replace(/\r/g, ""));
-                if (!line.trim()) { xmlParts.push(emptyPara); return; }
-                const h2 = line.match(/^##\s+(.*)$/);
-                const h3 = line.match(/^###\s+(.*)$/);
-                const h4 = line.match(/^####\s+(.*)$/);
-                const li = line.match(/^\s*[-*]\s+(.*)$/);
-                const oli = line.match(/^\s*\d+\.\s+(.*)$/);
-                if (h2) { xmlParts.push(para(h2[1], { bold: true, size: 26, color: "1F3864" })); return; }
-                if (h3) { xmlParts.push(para(h3[1], { bold: true, size: 24, color: "1F3864" })); return; }
-                if (h4) { xmlParts.push(para(h4[1], { bold: true, size: 22 })); return; }
-                if (li || oli) { xmlParts.push(bullet((li || oli)![1])); return; }
-                xmlParts.push(para(line));
+            const h1 = (text: string) =>
+              new Paragraph({
+                heading: HeadingLevel.HEADING_1,
+                spacing: { before: 280, after: 160 },
+                border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT, space: 4 } },
+                children: [new TextRun({ text, bold: true, size: 28, color: BRAND, font: "Calibri" })],
               });
-            } else {
-              xmlParts.push(para("— Scientific analysis was not generated. Use the 'Generate analysis' button before downloading the report. —"));
+            const para = (text: string, opts: { bold?: boolean; italic?: boolean; color?: string; align?: typeof AlignmentType[keyof typeof AlignmentType] } = {}) =>
+              new Paragraph({
+                alignment: opts.align,
+                spacing: { after: 120, line: 300 },
+                children: [new TextRun({ text, bold: opts.bold, italics: opts.italic, color: opts.color, font: "Calibri", size: 22 })],
+              });
+            const bullet = (text: string) =>
+              new Paragraph({
+                numbering: { reference: "bullets", level: 0 },
+                spacing: { after: 80, line: 280 },
+                children: [new TextRun({ text, font: "Calibri", size: 22 })],
+              });
+            const spacer = () => new Paragraph({ children: [new TextRun("")], spacing: { after: 80 } });
+
+            const infoRows: [string, string][] = [
+              ["Product name", productInfo.tradeName],
+              ["Request number", productInfo.subProductNo],
+              ["API supplier", productInfo.apiManufacturers],
+              ["FPP manufacture", productInfo.drugProductManufacturer],
+              ["Strength", productInfo.strength],
+              ["Pack size", ""],
+              ["Storage condition", productInfo.storage],
+              ["Shelf life", productInfo.shelfLife],
+            ];
+            const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
+            const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
+            const infoTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [3120, 6240],
+              rows: infoRows.map(([label, value]) => new TableRow({
+                children: [
+                  new TableCell({
+                    borders,
+                    width: { size: 3120, type: WidthType.DXA },
+                    shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                    margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                  }),
+                  new TableCell({
+                    borders,
+                    width: { size: 6240, type: WidthType.DXA },
+                    margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: value || "—", font: "Calibri", size: 22 })] })],
+                  }),
+                ],
+              })),
+            });
+
+            const calloutFill = allAccepted ? SUCCESS_BG : DANGER_BG;
+            const calloutBorderColor = allAccepted ? SUCCESS_BORDER : DANGER_BORDER;
+            const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
+            const opinionText = allAccepted
+              ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
+              : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+            const opinionCallout = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [9360],
+              rows: [new TableRow({
+                children: [new TableCell({
+                  borders: { top: calloutBorder, bottom: calloutBorder, left: calloutBorder, right: calloutBorder },
+                  width: { size: 9360, type: WidthType.DXA },
+                  shading: { fill: calloutFill, type: ShadingType.CLEAR, color: "auto" },
+                  margins: { top: 200, bottom: 200, left: 240, right: 240 },
+                  children: [
+                    new Paragraph({
+                      spacing: { after: 80 },
+                      children: [new TextRun({ text: allAccepted ? "APPROVED" : "NOT ACCEPTED", bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
+                    }),
+                    new Paragraph({
+                      spacing: { line: 300 },
+                      children: [new TextRun({ text: opinionText, font: "Calibri", size: 22 })],
+                    }),
+                  ],
+                })],
+              })],
+            });
+
+            const children: (Paragraph | Table)[] = [];
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              children: [new TextRun({ text: "Variation Assessment Report", bold: true, size: 40, color: BRAND, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              children: [new TextRun({ text: "Type IA / IAIN Variations — Final Decision", italics: true, size: 24, color: MUTED, font: "Calibri" })],
+            }));
+            children.push(new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 240 },
+              border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT, space: 6 } },
+              children: [new TextRun({ text: `Date: ${today}`, size: 20, color: MUTED, font: "Calibri" })],
+            }));
+
+            children.push(h1("1. Product information"));
+            children.push(infoTable);
+            children.push(spacer());
+
+            const varBorder = { style: BorderStyle.SINGLE, size: 4, color: "BFBFBF" };
+            const varBorders = { top: varBorder, bottom: varBorder, left: varBorder, right: varBorder };
+            const variationsTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [1600, 5460, 2300],
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 1600, type: WidthType.DXA },
+                      shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: "Code", bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 5460, type: WidthType.DXA },
+                      shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: "Variation title", bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 2300, type: WidthType.DXA },
+                      shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: "Type", bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                    }),
+                  ],
+                }),
+                ...selected.map(v => new TableRow({
+                  children: [
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 1600, type: WidthType.DXA },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: v.code, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 5460, type: WidthType.DXA },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: v.title, font: "Calibri", size: 22 })] })],
+                    }),
+                    new TableCell({
+                      borders: varBorders,
+                      width: { size: 2300, type: WidthType.DXA },
+                      margins: { top: 120, bottom: 120, left: 160, right: 160 },
+                      children: [new Paragraph({ children: [new TextRun({ text: v.type, font: "Calibri", size: 22, color: v.type === "IA" ? SUCCESS_BORDER : ACCENT })] })],
+                    }),
+                  ],
+                })),
+              ],
+            });
+
+            children.push(h1("2. Submitted variations"));
+            children.push(para(`The following ${selected.length} variation(s) have been submitted for assessment:`));
+            children.push(variationsTable);
+            children.push(spacer());
+
+            // Executive summary
+            const summaryRows: [string, string][] = [
+              ["Total variations submitted", String(selected.length)],
+              ...Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)] as [string, string]),
+              ["Approved", String(approvedCount)],
+              ["Rejected", String(rejectedCount)],
+              ["Overall outcome", allAccepted ? "All approved" : rejectedCount === selected.length ? "All rejected" : "Partially approved"],
+            ];
+            const summaryTable = new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              columnWidths: [4680, 4680],
+              rows: summaryRows.map(([label, value]) => new TableRow({
+                children: [
+                  new TableCell({
+                    borders: varBorders,
+                    width: { size: 4680, type: WidthType.DXA },
+                    shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
+                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
+                  }),
+                  new TableCell({
+                    borders: varBorders,
+                    width: { size: 4680, type: WidthType.DXA },
+                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
+                    children: [new Paragraph({ children: [new TextRun({ text: value, font: "Calibri", size: 22, color: value === "All approved" ? SUCCESS_BORDER : value === "All rejected" ? DANGER_BORDER : BRAND })] })],
+                  }),
+                ],
+              })),
+            });
+            children.push(para("Executive summary", { bold: true, color: BRAND }));
+            children.push(summaryTable);
+            children.push(spacer());
+
+            children.push(h1("3. Reviewer opinion"));
+            children.push(opinionCallout);
+            if (opinion.trim()) {
+              children.push(spacer());
+              children.push(para("Reviewer's note", { bold: true, color: BRAND }));
+              opinion.trim().split("\n").forEach(l => children.push(para(l)));
             }
+            children.push(spacer());
 
-            // ===== Section 3: Final recommendation (no tables — matches final step UI) =====
-            xmlParts.push(heading("Final recommendation"));
-            results.forEach(r => {
-              const { v, unmet, missingDocs } = r;
-              const s = itemStatusOf(r);
-              const color = s === "APPROVED" ? "2E7D32" : s === "SUSPENDED" ? "B7791F" : "C0392B";
-              let statusText = "";
-              if (s === "APPROVED") {
-                statusText = "is approved";
-              } else if (s === "SUSPENDED") {
-                statusText = "is suspended — please provide the following required document(s):";
-              } else {
-                statusText = `is rejected, the following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
-              }
-              xmlParts.push(
-                `<w:p><w:pPr><w:spacing w:before="160" w:after="80"/></w:pPr>` +
-                `<w:r><w:rPr><w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/><w:b/><w:sz w:val="18"/><w:shd w:val="clear" w:color="auto" w:fill="EFEFEF"/></w:rPr><w:t xml:space="preserve">${esc(v.code)}</w:t></w:r>` +
-                `<w:r><w:rPr><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">  </w:t></w:r>` +
-                `<w:r><w:rPr><w:b/><w:sz w:val="22"/></w:rPr><w:t xml:space="preserve">${esc(v.title)}</w:t></w:r>` +
-                `<w:r><w:rPr><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve"> </w:t></w:r>` +
-                `<w:r><w:rPr><w:b/><w:sz w:val="22"/><w:color w:val="${color}"/></w:rPr><w:t xml:space="preserve">${esc(statusText)}</w:t></w:r>` +
-                `</w:p>`
-              );
-              if (s === "SUSPENDED") {
-                missingDocs.forEach(d => xmlParts.push(bullet(d)));
-              } else if (s === "REJECTED") {
-                unmet.forEach(c => xmlParts.push(bullet(c)));
-              }
+            children.push(h1("4. Final recommendation"));
+            children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
+            children.push(spacer());
+            results.forEach(({ v, unmet, accepted }, idx) => {
+              const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
+              children.push(new Paragraph({
+                spacing: { before: 160, after: 80, line: 300 },
+                children: [
+                  new TextRun({ text: `${idx + 1}. ${v.code} `, bold: true, color: BRAND, font: "Calibri", size: 24 }),
+                  new TextRun({ text: v.title, bold: true, font: "Calibri", size: 24 }),
+                ],
+              }));
+              children.push(new Paragraph({
+                spacing: { after: 80 },
+                children: [
+                  new TextRun({ text: accepted ? "APPROVED" : "REJECTED", bold: true, color: statusColor, font: "Calibri", size: 20 }),
+                  new TextRun({
+                    text: accepted
+                      ? "  —  All required conditions are met."
+                      : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`,
+                    font: "Calibri", size: 22,
+                  }),
+                ],
+              }));
+              if (!accepted) unmet.forEach(c => children.push(bullet(c)));
             });
 
-            const scientificXml = xmlParts.join("");
-
-            // Load template & fill placeholders
-            const res = await fetch("/report-template.docx");
-            if (!res.ok) throw new Error("Failed to load report template");
-            const buf = await res.arrayBuffer();
-            const zip = new PizZip(buf);
-            const documentXml = zip.file("word/document.xml");
-            if (documentXml) {
-              const placeholderMap: Record<string, string> = {
-                "{tradeName}": "[[tradeName]]",
-                "{activeIngredient}": "[[activeIngredient]]",
-                "{subProductNo}": "[[subProductNo]]",
-                "{mah}": "[[mah]]",
-                "{apiManufacturer}": "[[apiManufacturer]]",
-                "{drugManufacturer}": "[[drugManufacturer]]",
-                "{pharmaceuticalForm}": "[[pharmaceuticalForm]]",
-                "{routeOfAdministration}": "[[routeOfAdministration]]",
-                "{strength}": "[[strength]]",
-                "{shelfLife}": "[[shelfLife]]",
-                "{storageConditions}": "[[storageConditions]]",
-                "{apiAssessor}": "[[apiAssessor]]",
-                "{apiEndDate}": "[[apiEndDate]]",
-                "{fppAssessor}": "[[fppAssessor]]",
-                "{fppEndDate}": "[[fppEndDate]]",
-                "{analyticalAssessor}": "[[analyticalAssessor]]",
-                "{analyticalEndDate}": "[[analyticalEndDate]]",
-                "{@scientificXml}": "[[@scientificXml]]",
-              };
-              const applySafePlaceholders = (input: string) =>
-                Object.entries(placeholderMap).reduce((acc, [from, to]) => acc.replaceAll(from, to), input);
-              const xml = applySafePlaceholders(documentXml.asText());
-              const rawTagPattern = /<w:p(?:\s[^>]*)?>\s*<w:r(?:\s[^>]*)?>\s*<w:t(?:\s[^>]*)?>\[\[@scientificXml\]\]<\/w:t>\s*<\/w:r>\s*<\/w:p>/;
-              const rawTagMatch = xml.match(rawTagPattern);
-              const sectionPropsIndex = xml.lastIndexOf("<w:sectPr");
-              if (rawTagMatch?.index !== undefined && sectionPropsIndex !== -1 && rawTagMatch.index > sectionPropsIndex) {
-                const xmlWithoutRawTag = xml.slice(0, rawTagMatch.index) + xml.slice(rawTagMatch.index + rawTagMatch[0].length);
-                const fixedSectionPropsIndex = xmlWithoutRawTag.lastIndexOf("<w:sectPr");
-                zip.file("word/document.xml", xmlWithoutRawTag.slice(0, fixedSectionPropsIndex) + rawTagMatch[0] + xmlWithoutRawTag.slice(fixedSectionPropsIndex));
-              } else {
-                zip.file("word/document.xml", xml);
-              }
-            }
-            const doc = new Docxtemplater(zip, {
-              paragraphLoop: true,
-              linebreaks: true,
-              delimiters: { start: "[[", end: "]]" },
+            const doc = new Document({
+              creator: "Variation Classifier",
+              title: "Variation Assessment Report",
+              styles: {
+                default: { document: { run: { font: "Calibri", size: 22 } } },
+              },
+              numbering: {
+                config: [{
+                  reference: "bullets",
+                  levels: [{
+                    level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT,
+                    style: { paragraph: { indent: { left: 720, hanging: 360 } } },
+                  }],
+                }],
+              },
+              sections: [{
+                properties: {
+                  page: {
+                    size: { width: 12240, height: 15840 },
+                    margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+                  },
+                },
+                headers: {
+                  default: new DocHeader({
+                    children: [new Paragraph({
+                      alignment: AlignmentType.RIGHT,
+                      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT, space: 4 } },
+                      children: [new TextRun({ text: "Variation Assessment Report", italics: true, color: MUTED, font: "Calibri", size: 18 })],
+                    })],
+                  }),
+                },
+                footers: {
+                  default: new DocFooter({
+                    children: [new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        new TextRun({ text: "Page ", color: MUTED, font: "Calibri", size: 18 }),
+                        new TextRun({ children: [PageNumber.CURRENT], color: MUTED, font: "Calibri", size: 18 }),
+                        new TextRun({ text: " of ", color: MUTED, font: "Calibri", size: 18 }),
+                        new TextRun({ children: [PageNumber.TOTAL_PAGES], color: MUTED, font: "Calibri", size: 18 }),
+                      ],
+                    })],
+                  }),
+                },
+                children,
+              }],
             });
-            doc.render({
-              tradeName: productInfo.tradeName || "",
-              activeIngredient: productInfo.activeIngredients || "",
-              subProductNo: productInfo.subProductNo || "",
-              mah: productInfo.mah || "",
-              apiManufacturer: productInfo.apiManufacturers || "",
-              drugManufacturer: productInfo.drugProductManufacturer || "",
-              pharmaceuticalForm: productInfo.pharmaceuticalForm || "",
-              routeOfAdministration: productInfo.route || "",
-              strength: productInfo.strength || "",
-              shelfLife: productInfo.shelfLife || "",
-              storageConditions: productInfo.storage || "",
-              apiAssessor: assessors.api.name || "",
-              apiEndDate: assessors.api.endDate || "",
-              fppAssessor: assessors.fpp.name || "",
-              fppEndDate: assessors.fpp.endDate || "",
-              analyticalAssessor: assessors.analytical.name || "",
-              analyticalEndDate: assessors.analytical.endDate || "",
-              scientificXml,
-            });
-            const blob = doc.getZip().generate({
-              type: "blob",
-              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            });
+            const blob = await Packer.toBlob(doc);
             const safeName = (productInfo.tradeName || "report").replace(/[^a-z0-9-_]+/gi, "_").slice(0, 40);
-            saveAs(blob, `quality-assessment-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
+            saveAs(blob, `variation-report-${safeName}-${new Date().toISOString().slice(0, 10)}.docx`);
           };
 
 
