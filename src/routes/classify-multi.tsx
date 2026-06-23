@@ -1,15 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import ReactMarkdown from "react-markdown";
+
+
 import { Header } from "@/components/Header";
 import { TypeBadge } from "@/components/TypeBadge";
 import { CATEGORIES, TYPE_INFO, VARIATIONS, type Variation } from "@/lib/variations-data";
-import { Copy, Check, FileDown, Sparkles, Loader2 } from "lucide-react";
+import { Copy, Check, FileDown } from "lucide-react";
 import { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ShadingType, PageNumber, Header as DocHeader, Footer as DocFooter, LevelFormat } from "docx";
 
 import fileSaver from "file-saver";
-import { generateScientificAnalysis } from "@/lib/assessor-ai.functions";
+
 
 const { saveAs } = fileSaver;
 
@@ -46,10 +46,6 @@ function ClassifyMulti() {
     }).slice(0, 12);
   }, [searchQuery]);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [aiAnalysis, setAiAnalysis] = useState<string>("");
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const callAnalysis = useServerFn(generateScientificAnalysis);
   // SFDA Quality Assessment Report — Administrative Information
   const [productInfo, setProductInfo] = useState({
     tradeName: "",
@@ -118,7 +114,6 @@ function ClassifyMulti() {
 
   const reset = () => {
     setStep(1); setSelectedCodes([]); setChecks({}); setDocsSubmitted({}); setOpinion("");
-    setAiAnalysis(""); setAiError(null);
   };
 
   // Build per-variation status
