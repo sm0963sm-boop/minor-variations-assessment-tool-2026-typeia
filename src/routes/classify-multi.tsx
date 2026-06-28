@@ -672,12 +672,17 @@ function ClassifyMulti() {
             children.push(spacer());
 
             // Executive summary
+            const outcomeLabel = decisionStatus === "APPROVED" ? "All approved"
+              : decisionStatus === "NOT_ACCEPTED" ? "All rejected"
+              : decisionStatus === "SUSPENDED" ? "All suspended (missing documents)"
+              : "Mixed outcome";
             const summaryRows: [string, string][] = [
               ["Total variations submitted", String(selected.length)],
               ...Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)] as [string, string]),
               ["Approved", String(approvedCount)],
+              ["Suspended", String(suspendedCount)],
               ["Rejected", String(rejectedCount)],
-              ["Overall outcome", allAccepted ? "All approved" : rejectedCount === selected.length ? "All rejected" : "Partially approved"],
+              ["Overall outcome", outcomeLabel],
             ];
             const summaryTable = new Table({
               width: { size: 9360, type: WidthType.DXA },
