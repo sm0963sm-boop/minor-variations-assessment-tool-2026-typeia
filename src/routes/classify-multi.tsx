@@ -442,8 +442,9 @@ function ClassifyMulti() {
 
         {step === 4 && (() => {
           const total = results.length;
-          const approvedCount = results.filter(r => r.accepted).length;
-          const rejectedCount = total - approvedCount;
+          const approvedCount = results.filter(r => itemStatusOf(r) === "APPROVED").length;
+          const suspendedCount = results.filter(r => itemStatusOf(r) === "SUSPENDED").length;
+          const rejectedCount = results.filter(r => itemStatusOf(r) === "REJECTED").length;
           const typeCounts = results.reduce<Record<string, number>>((acc, r) => {
             acc[r.v.type] = (acc[r.v.type] || 0) + 1;
             return acc;
@@ -554,12 +555,16 @@ function ClassifyMulti() {
               })),
             });
 
-            const calloutFill = allAccepted ? SUCCESS_BG : DANGER_BG;
-            const calloutBorderColor = allAccepted ? SUCCESS_BORDER : DANGER_BORDER;
+            const WARNING_BG = "FFF4E0";
+            const WARNING_BORDER = "B8860B";
+            const calloutFill = decisionStatus === "APPROVED" ? SUCCESS_BG : decisionStatus === "SUSPENDED" ? WARNING_BG : decisionStatus === "MIXED" ? WARNING_BG : DANGER_BG;
+            const calloutBorderColor = decisionStatus === "APPROVED" ? SUCCESS_BORDER : decisionStatus === "SUSPENDED" ? WARNING_BORDER : decisionStatus === "MIXED" ? WARNING_BORDER : DANGER_BORDER;
             const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
-            const opinionText = allAccepted
-              ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
-              : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED"
+              : decisionStatus === "SUSPENDED" ? "SUSPENDED"
+              : decisionStatus === "MIXED" ? "MIXED OUTCOME"
+              : "NOT ACCEPTED";
+            const opinionText = overall;
             const opinionCallout = new Table({
               width: { size: 9360, type: WidthType.DXA },
               columnWidths: [9360],
@@ -572,7 +577,7 @@ function ClassifyMulti() {
                   children: [
                     new Paragraph({
                       spacing: { after: 80 },
-                      children: [new TextRun({ text: allAccepted ? "APPROVED" : "NOT ACCEPTED", bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
+                      children: [new TextRun({ text: calloutLabel, bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
                     }),
                     new Paragraph({
                       spacing: { line: 300 },
@@ -667,12 +672,17 @@ function ClassifyMulti() {
             children.push(spacer());
 
             // Executive summary
+            const outcomeLabel = decisionStatus === "APPROVED" ? "All approved"
+              : decisionStatus === "NOT_ACCEPTED" ? "All rejected"
+              : decisionStatus === "SUSPENDED" ? "All suspended (missing documents)"
+              : "Mixed outcome";
             const summaryRows: [string, string][] = [
               ["Total variations submitted", String(selected.length)],
               ...Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)] as [string, string]),
               ["Approved", String(approvedCount)],
+              ["Suspended", String(suspendedCount)],
               ["Rejected", String(rejectedCount)],
-              ["Overall outcome", allAccepted ? "All approved" : rejectedCount === selected.length ? "All rejected" : "Partially approved"],
+              ["Overall outcome", outcomeLabel],
             ];
             const summaryTable = new Table({
               width: { size: 9360, type: WidthType.DXA },
@@ -711,8 +721,16 @@ function ClassifyMulti() {
             children.push(h1("4. Final recommendation"));
             children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
             children.push(spacer());
-            results.forEach(({ v, unmet, accepted }, idx) => {
-              const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
+            results.forEach((r, idx) => {
+              const { v, unmet, missingDocs } = r;
+              const s = itemStatusOf(r);
+              const statusColor = s === "APPROVED" ? SUCCESS_BORDER : s === "SUSPENDED" ? "B8860B" : DANGER_BORDER;
+              const statusLabel = s === "APPROVED" ? "APPROVED" : s === "SUSPENDED" ? "SUSPENDED" : "REJECTED";
+              const trailing = s === "APPROVED"
+                ? "  —  All required conditions are met."
+                : s === "SUSPENDED"
+                  ? "  —  Conditions are met, but the following required document(s) are missing:"
+                  : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
               children.push(new Paragraph({
                 spacing: { before: 160, after: 80, line: 300 },
                 children: [
@@ -723,16 +741,12 @@ function ClassifyMulti() {
               children.push(new Paragraph({
                 spacing: { after: 80 },
                 children: [
-                  new TextRun({ text: accepted ? "APPROVED" : "REJECTED", bold: true, color: statusColor, font: "Calibri", size: 20 }),
-                  new TextRun({
-                    text: accepted
-                      ? "  —  All required conditions are met."
-                      : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`,
-                    font: "Calibri", size: 22,
-                  }),
+                  new TextRun({ text: statusLabel, bold: true, color: statusColor, font: "Calibri", size: 20 }),
+                  new TextRun({ text: trailing, font: "Calibri", size: 22 }),
                 ],
               }));
-              if (!accepted) unmet.forEach(c => children.push(bullet(c)));
+              if (s === "REJECTED") unmet.forEach(c => children.push(bullet(c)));
+              if (s === "SUSPENDED") missingDocs.forEach(d => children.push(bullet(d)));
             });
 
             const doc = new Document({
