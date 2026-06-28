@@ -442,8 +442,9 @@ function ClassifyMulti() {
 
         {step === 4 && (() => {
           const total = results.length;
-          const approvedCount = results.filter(r => r.accepted).length;
-          const rejectedCount = total - approvedCount;
+          const approvedCount = results.filter(r => itemStatusOf(r) === "APPROVED").length;
+          const suspendedCount = results.filter(r => itemStatusOf(r) === "SUSPENDED").length;
+          const rejectedCount = results.filter(r => itemStatusOf(r) === "REJECTED").length;
           const typeCounts = results.reduce<Record<string, number>>((acc, r) => {
             acc[r.v.type] = (acc[r.v.type] || 0) + 1;
             return acc;
