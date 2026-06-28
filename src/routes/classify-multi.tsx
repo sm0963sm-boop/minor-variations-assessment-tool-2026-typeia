@@ -721,8 +721,16 @@ function ClassifyMulti() {
             children.push(h1("4. Final recommendation"));
             children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
             children.push(spacer());
-            results.forEach(({ v, unmet, accepted }, idx) => {
-              const statusColor = accepted ? SUCCESS_BORDER : DANGER_BORDER;
+            results.forEach((r, idx) => {
+              const { v, unmet, missingDocs } = r;
+              const s = itemStatusOf(r);
+              const statusColor = s === "APPROVED" ? SUCCESS_BORDER : s === "SUSPENDED" ? "B8860B" : DANGER_BORDER;
+              const statusLabel = s === "APPROVED" ? "APPROVED" : s === "SUSPENDED" ? "SUSPENDED" : "REJECTED";
+              const trailing = s === "APPROVED"
+                ? "  —  All required conditions are met."
+                : s === "SUSPENDED"
+                  ? "  —  Conditions are met, but the following required document(s) are missing:"
+                  : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`;
               children.push(new Paragraph({
                 spacing: { before: 160, after: 80, line: 300 },
                 children: [
@@ -733,16 +741,12 @@ function ClassifyMulti() {
               children.push(new Paragraph({
                 spacing: { after: 80 },
                 children: [
-                  new TextRun({ text: accepted ? "APPROVED" : "REJECTED", bold: true, color: statusColor, font: "Calibri", size: 20 }),
-                  new TextRun({
-                    text: accepted
-                      ? "  —  All required conditions are met."
-                      : `  —  The following ${unmet.length === 1 ? "condition is" : "conditions are"} not met:`,
-                    font: "Calibri", size: 22,
-                  }),
+                  new TextRun({ text: statusLabel, bold: true, color: statusColor, font: "Calibri", size: 20 }),
+                  new TextRun({ text: trailing, font: "Calibri", size: 22 }),
                 ],
               }));
-              if (!accepted) unmet.forEach(c => children.push(bullet(c)));
+              if (s === "REJECTED") unmet.forEach(c => children.push(bullet(c)));
+              if (s === "SUSPENDED") missingDocs.forEach(d => children.push(bullet(d)));
             });
 
             const doc = new Document({
