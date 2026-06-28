@@ -555,12 +555,16 @@ function ClassifyMulti() {
               })),
             });
 
-            const calloutFill = allAccepted ? SUCCESS_BG : DANGER_BG;
-            const calloutBorderColor = allAccepted ? SUCCESS_BORDER : DANGER_BORDER;
+            const WARNING_BG = "FFF4E0";
+            const WARNING_BORDER = "B8860B";
+            const calloutFill = decisionStatus === "APPROVED" ? SUCCESS_BG : decisionStatus === "SUSPENDED" ? WARNING_BG : decisionStatus === "MIXED" ? WARNING_BG : DANGER_BG;
+            const calloutBorderColor = decisionStatus === "APPROVED" ? SUCCESS_BORDER : decisionStatus === "SUSPENDED" ? WARNING_BORDER : decisionStatus === "MIXED" ? WARNING_BORDER : DANGER_BORDER;
             const calloutBorder = { style: BorderStyle.SINGLE, size: 8, color: calloutBorderColor };
-            const opinionText = allAccepted
-              ? "The proposed change and supporting documentation have been reviewed and found to comply with the applicable requirements and conditions for a Type IA variation. The provided data are considered adequate to support the proposed change and demonstrate that it does not adversely affect the quality of the product. All relevant regulatory requirements have been satisfactorily addressed. Therefore, no regulatory concerns were identified, and approval of the proposed change is recommended."
-              : "The submitted variation(s) have been incorrectly classified and do not meet the applicable criteria for the requested variation category. Therefore, the variation(s) cannot be accepted as submitted.";
+            const calloutLabel = decisionStatus === "APPROVED" ? "APPROVED"
+              : decisionStatus === "SUSPENDED" ? "SUSPENDED"
+              : decisionStatus === "MIXED" ? "MIXED OUTCOME"
+              : "NOT ACCEPTED";
+            const opinionText = overall;
             const opinionCallout = new Table({
               width: { size: 9360, type: WidthType.DXA },
               columnWidths: [9360],
@@ -573,7 +577,7 @@ function ClassifyMulti() {
                   children: [
                     new Paragraph({
                       spacing: { after: 80 },
-                      children: [new TextRun({ text: allAccepted ? "APPROVED" : "NOT ACCEPTED", bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
+                      children: [new TextRun({ text: calloutLabel, bold: true, color: calloutBorderColor, font: "Calibri", size: 22 })],
                     }),
                     new Paragraph({
                       spacing: { line: 300 },
