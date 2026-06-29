@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as GuidanceRouteImport } from './routes/guidance'
 import { Route as ClassifyMultiRouteImport } from './routes/classify-multi'
 import { Route as ClassifyRouteImport } from './routes/classify'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UnlockRoute = UnlockRouteImport.update({
+  id: '/unlock',
+  path: '/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuidanceRoute = GuidanceRouteImport.update({
   id: '/guidance',
   path: '/guidance',
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/classify': typeof ClassifyRoute
   '/classify-multi': typeof ClassifyMultiRoute
   '/guidance': typeof GuidanceRoute
+  '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/classify': typeof ClassifyRoute
   '/classify-multi': typeof ClassifyMultiRoute
   '/guidance': typeof GuidanceRoute
+  '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,25 @@ export interface FileRoutesById {
   '/classify': typeof ClassifyRoute
   '/classify-multi': typeof ClassifyMultiRoute
   '/guidance': typeof GuidanceRoute
+  '/unlock': typeof UnlockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog' | '/classify' | '/classify-multi' | '/guidance'
+  fullPaths:
+    | '/'
+    | '/catalog'
+    | '/classify'
+    | '/classify-multi'
+    | '/guidance'
+    | '/unlock'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog' | '/classify' | '/classify-multi' | '/guidance'
+  to:
+    | '/'
+    | '/catalog'
+    | '/classify'
+    | '/classify-multi'
+    | '/guidance'
+    | '/unlock'
   id:
     | '__root__'
     | '/'
@@ -75,6 +96,7 @@ export interface FileRouteTypes {
     | '/classify'
     | '/classify-multi'
     | '/guidance'
+    | '/unlock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,10 +105,18 @@ export interface RootRouteChildren {
   ClassifyRoute: typeof ClassifyRoute
   ClassifyMultiRoute: typeof ClassifyMultiRoute
   GuidanceRoute: typeof GuidanceRoute
+  UnlockRoute: typeof UnlockRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unlock': {
+      id: '/unlock'
+      path: '/unlock'
+      fullPath: '/unlock'
+      preLoaderRoute: typeof UnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guidance': {
       id: '/guidance'
       path: '/guidance'
@@ -131,17 +161,8 @@ const rootRouteChildren: RootRouteChildren = {
   ClassifyRoute: ClassifyRoute,
   ClassifyMultiRoute: ClassifyMultiRoute,
   GuidanceRoute: GuidanceRoute,
+  UnlockRoute: UnlockRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
