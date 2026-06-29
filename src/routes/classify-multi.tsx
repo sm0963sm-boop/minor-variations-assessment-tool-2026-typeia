@@ -705,7 +705,7 @@ function ClassifyMulti() {
             }
 
 
-            children.push(h1("3. Reviewer opinion"));
+            children.push(h1("4. Reviewer opinion"));
             children.push(opinionCallout);
             if (opinion.trim()) {
               children.push(spacer());
