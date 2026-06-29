@@ -1,27 +1,38 @@
 ## Goal
-The current Word export uses a `/report-template.docx` (docxtemplater) layout with fields like trade name, API manufacturer, assessors, etc. The user wants to go back to the older report you generated on 2026-06-09 (file attached), which uses a different structure built entirely in code with `docx-js`.
+Update the Word report exported from Step 4:
+1. **Remove** the **Executive summary** table.
+2. **Add** a new **Submitted data** section that mirrors the "THE SUBMITTED DATA" card on the final step (per-variation block: Type badge area + code + title + status pill, followed by a checked list of the documents marked Submitted).
 
-The old format (from commit `ad53ad8`) contains:
-1. Centered title block: **Variation Assessment Report** — *Type IA / IAIN Variations — Final Decision* — Date
-2. **1. Product information** — info table with `---` placeholders (Product name, Request number, API supplier, FPP manufacture, Strength, Pack size, Storage condition, Shelf life)
-3. **2. Submitted variations** — count sentence + 3-col table (Code / Variation title / Type)
-4. **Executive summary** table (Total, IAIN count, Approved, Rejected, Overall outcome)
-5. **3. Reviewer opinion** — colored callout box (APPROVED / NOT ACCEPTED) + optional reviewer note + optional AI scientific analysis
-6. **4. Final recommendation** — per-variation bold heading with "is approved" / "is rejected, the following conditions are not met:" and bulleted unmet conditions
-7. SFDA header/footer banner images
-8. Filename: `variation-report-<safeName>-YYYY-MM-DD.docx`
+## Report structure after the change
+1. Product information
+2. Submitted variations
+3. **Submitted data** ← new (only rendered if at least one variation has any submitted docs)
+4. Reviewer opinion (was 3)
+5. Final recommendation (was 4)
 
-## Changes
-Edit only the report-generation block inside **`src/routes/classify-multi.tsx`**:
+## Submitted data — content rules (match the UI exactly)
+- Use the same filter already in the UI (`src/routes/classify-multi.tsx` lines 809–821):
+  - Skip Type IA / IAIN variations whose status is REJECTED.
+  - Skip variations with zero `submitted` docs.
+- If the filtered list is empty, skip the whole section (no empty "3.").
+- Per variation, render in the Word doc:
+  - A bold heading paragraph: `Type <IA|IAIN|IB>  ·  <code>  —  <title>` in brand color, with a colored status label at the end (`APPROVED` = success green, `SUSPENDED` = warning amber, `REJECTED` = danger red — reuse existing `SUCCESS_BORDER` / `B8860B` / `DANGER_BORDER` constants).
+  - A bulleted list of the submitted document names, using the existing `bullet()` helper.
+  - `spacer()` between entries.
+- Section intro paragraph (same wording as UI): *"Documents submitted for each variation. Type IB shows all submitted documents; Type IA / IAIN shows submitted documents when the decision is Approved or Suspended."*
 
-- Remove the current `fetch("/report-template.docx")` + `PizZip` + `Docxtemplater` block (placeholder map, raw-XML scientificXml injection, current field render, `quality-assessment-report-...` filename).
-- Replace it with the docx-js implementation from `ad53ad8` that builds `Document` + `Paragraph` + `Table` + `Header`/`Footer` directly (using `Document`, `Packer`, `Paragraph`, `TextRun`, `Table`, `TableRow`, `TableCell`, `ImageRun`, `Header as DocHeader`, `Footer as DocFooter`, `AlignmentType`, `BorderStyle`, `WidthType`, `ShadingType`, `LevelFormat`, plus the existing helpers `h1`, `para`, `bullet`, `spacer`, `infoTable`, `opinionCallout`).
-- Keep the existing AI "Assessor opinion" (رأي المقيم) wiring — it's just rendered into the "Scientific analysis" subsection like before.
-- Keep the SFDA header/footer assets (`sfdaHeader`, `sfdaFooter`) already imported.
-- Restore the old filename pattern `variation-report-${safeName}-${date}.docx`.
+## Executive summary — removal
+Delete lines 674–710 in `src/routes/classify-multi.tsx` (the `outcomeLabel`, `summaryRows`, `summaryTable`, and the two `children.push` calls for the heading and table, plus the trailing `spacer()`). Keep the `approvedCount` / `suspendedCount` / `rejectedCount` / `typeCounts` derivations earlier in the file — they're still used by the "Final recommendation" summary line ("Summary: X of N variation(s) approved (...)").
 
-No other files are touched. The `public/report-template.docx` file is no longer referenced and can be left in place (harmless) or deleted later.
+## Technical changes (single file: `src/routes/classify-multi.tsx`)
+- Remove the Executive summary block (lines 674–710).
+- After the section 2 `spacer()`, build a `submittedByVar` array reusing the same logic as the UI (lines 809–821) — compute it once at the top of the report builder so both the UI block and the Word block share it (or duplicate inline; either way the filter must stay identical).
+- If `submittedByVar.length > 0`:
+  - `children.push(h1("3. Submitted data"))`
+  - `children.push(para("Documents submitted for each variation. Type IB shows all submitted documents; Type IA / IAIN shows submitted documents when the decision is Approved or Suspended.", { italic: true, color: MUTED }))`
+  - For each entry, push the heading paragraph (code + title + colored status label) and one `bullet(d)` per submitted doc, then `spacer()`.
+- Renumber the two remaining headings to `"4. Reviewer opinion"` and `"5. Final recommendation"`.
 
 ## Out of scope
-- No changes to the multi-step UI, classification logic, AI gateway, or other routes.
-- No change to the AI "رأي المقيم" feature (credits issue is unrelated).
+- No UI changes to Step 4.
+- No changes to classification logic, AI gateway, filename, header/footer, or other routes.
