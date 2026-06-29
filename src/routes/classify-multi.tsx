@@ -671,43 +671,39 @@ function ClassifyMulti() {
             children.push(variationsTable);
             children.push(spacer());
 
-            // Executive summary
-            const outcomeLabel = decisionStatus === "APPROVED" ? "All approved"
-              : decisionStatus === "NOT_ACCEPTED" ? "All rejected"
-              : decisionStatus === "SUSPENDED" ? "All suspended (missing documents)"
-              : "Mixed outcome";
-            const summaryRows: [string, string][] = [
-              ["Total variations submitted", String(selected.length)],
-              ...Object.entries(typeCounts).map(([t, n]) => [`Type ${t} variations`, String(n)] as [string, string]),
-              ["Approved", String(approvedCount)],
-              ["Suspended", String(suspendedCount)],
-              ["Rejected", String(rejectedCount)],
-              ["Overall outcome", outcomeLabel],
-            ];
-            const summaryTable = new Table({
-              width: { size: 9360, type: WidthType.DXA },
-              columnWidths: [4680, 4680],
-              rows: summaryRows.map(([label, value]) => new TableRow({
-                children: [
-                  new TableCell({
-                    borders: varBorders,
-                    width: { size: 4680, type: WidthType.DXA },
-                    shading: { fill: LIGHT_BG, type: ShadingType.CLEAR, color: "auto" },
-                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
-                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: BRAND, font: "Calibri", size: 22 })] })],
-                  }),
-                  new TableCell({
-                    borders: varBorders,
-                    width: { size: 4680, type: WidthType.DXA },
-                    margins: { top: 100, bottom: 100, left: 160, right: 160 },
-                    children: [new Paragraph({ children: [new TextRun({ text: value, font: "Calibri", size: 22, color: value === "All approved" ? SUCCESS_BORDER : value === "All rejected" ? DANGER_BORDER : BRAND })] })],
-                  }),
-                ],
-              })),
-            });
-            children.push(para("Executive summary", { bold: true, color: BRAND }));
-            children.push(summaryTable);
-            children.push(spacer());
+            // Submitted data (mirrors the Step 4 "THE SUBMITTED DATA" card)
+            const submittedByVarReport = results
+              .map(r => {
+                const s = itemStatusOf(r);
+                if (r.v.type !== "IB" && s === "REJECTED") return null;
+                const flags = docsSubmitted[r.v.code] || [];
+                const submitted = r.v.documents
+                  .map((d, i) => ({ d, status: (flags[i] || "missing") as DocStatus }))
+                  .filter(x => x.status === "submitted")
+                  .map(x => x.d);
+                if (submitted.length === 0) return null;
+                return { v: r.v, status: s, submitted };
+              })
+              .filter((x): x is { v: typeof results[number]["v"]; status: ItemStatus; submitted: string[] } => x !== null);
+
+            if (submittedByVarReport.length > 0) {
+              children.push(h1("3. Submitted data"));
+              children.push(para("Documents submitted for each variation. Type IB shows all submitted documents; Type IA / IAIN shows submitted documents when the decision is Approved or Suspended.", { italic: true, color: MUTED }));
+              submittedByVarReport.forEach(({ v, status, submitted }) => {
+                const statusColor = status === "APPROVED" ? SUCCESS_BORDER : status === "SUSPENDED" ? "B8860B" : DANGER_BORDER;
+                children.push(new Paragraph({
+                  spacing: { before: 160, after: 80, line: 300 },
+                  children: [
+                    new TextRun({ text: `Type ${v.type}  ·  ${v.code}  —  `, bold: true, color: BRAND, font: "Calibri", size: 22 }),
+                    new TextRun({ text: v.title, bold: true, font: "Calibri", size: 22 }),
+                    new TextRun({ text: `    [${status}]`, bold: true, color: statusColor, font: "Calibri", size: 20 }),
+                  ],
+                }));
+                submitted.forEach(d => children.push(bullet(d)));
+                children.push(spacer());
+              });
+            }
+
 
             children.push(h1("3. Reviewer opinion"));
             children.push(opinionCallout);
