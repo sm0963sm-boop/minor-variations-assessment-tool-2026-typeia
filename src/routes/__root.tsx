@@ -54,8 +54,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: async ({ location }) => {
-    // Gate temporarily disabled until 2026-06-29T<TIME>Z
-    const GATE_DISABLED_UNTIL = 0;
+    // Gate temporarily disabled for 1 hour
+    const GATE_DISABLED_UNTIL = 1782757612611;
+
     if (Date.now() < GATE_DISABLED_UNTIL) return;
     if (location.pathname === "/unlock") return;
     const { unlocked } = await checkUnlocked();
