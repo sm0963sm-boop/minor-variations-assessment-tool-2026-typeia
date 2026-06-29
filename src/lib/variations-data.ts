@@ -2166,7 +2166,7 @@ export const VARIATIONS: Variation[] = [
     ]
   },
   {
-    "code": "22.b.5",
+    "code": "b.5.22",
     "title": "Replacement of a single excipient with a comparable excipient with the same functional characteristics and at a similar level",
     "category": "Quality - Finished Product",
     "type": "IB",
