@@ -714,7 +714,7 @@ function ClassifyMulti() {
             }
             children.push(spacer());
 
-            children.push(h1("4. Final recommendation"));
+            children.push(h1("5. Final recommendation"));
             children.push(para(`Summary: ${approvedCount} of ${results.length} variation(s) approved (${typesSummary}).`, { italic: true, color: MUTED }));
             children.push(spacer());
             results.forEach((r, idx) => {
