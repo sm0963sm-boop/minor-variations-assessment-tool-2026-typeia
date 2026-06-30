@@ -43,8 +43,8 @@ function Unlock() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-elegant">
         <div className="flex flex-col items-center mb-6">
-          <div className="size-12 rounded-2xl bg-hero shadow-soft flex items-center justify-center text-primary-foreground font-display font-bold">
-            MV
+          <div className="size-16 rounded-full bg-hero shadow-elegant ring-2 ring-white/20 flex items-center justify-center text-primary-foreground font-display font-bold text-sm tracking-[0.12em]">
+            MVAT
           </div>
           <h1 className="mt-4 font-display text-xl font-bold text-foreground">Restricted Access</h1>
           <p className="mt-1 text-sm text-muted-foreground text-center">
