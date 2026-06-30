@@ -33,19 +33,20 @@ function Home() {
               <p className="font-display text-2xl sm:text-4xl font-extrabold leading-tight bg-hero bg-clip-text text-transparent mt-1">
                 (MVAT)
               </p>
-              <div className="mt-8 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100/40 p-6 shadow-soft">
-                <div className="flex items-start gap-4">
-                  <div className="mt-0.5 flex-shrink-0 w-10 h-10 rounded-full bg-emerald-500/10 ring-1 ring-emerald-300 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="mt-8 rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm p-8 shadow-soft relative overflow-hidden">
+                <div className="absolute left-0 top-4 bottom-4 w-1 rounded-full bg-gradient-to-b from-primary to-primary/40" />
+                <div className="flex items-start gap-5 pl-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg className="w-5 h-5 text-primary/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                     </svg>
                   </div>
-                  <div className="space-y-3">
-                    <p className="text-sm sm:text-base text-emerald-900 font-semibold leading-relaxed">
+                  <div className="space-y-4">
+                    <p className="text-sm sm:text-[15px] text-foreground/90 font-medium leading-relaxed">
                       This is a guided decision-support tool based on the SFDA Guidelines for Variation Requirements Version 6.4.
                     </p>
-                    <div className="h-px bg-emerald-200/70" />
-                    <p className="text-sm sm:text-base text-red-400 leading-relaxed">
+                    <div className="h-px bg-border/50" />
+                    <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
                       This tool is intended to support the evaluation process; however, the overall assessment and final decision remain the sole responsibility of the assessor.
                     </p>
                   </div>
