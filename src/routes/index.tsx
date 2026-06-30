@@ -35,9 +35,13 @@ function Home() {
                 <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
                   <span className="bg-hero bg-clip-text text-transparent">Minor Variations Assessment Tool</span>
                 </h1>
-                <span className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-bold tracking-widest text-primary border border-primary/20">
-                  MVAT
-                </span>
+                <img
+                  src={mvatLogo}
+                  alt="MVAT Logo"
+                  width={64}
+                  height={64}
+                  className="h-12 w-12 sm:h-14 sm:w-14 object-contain"
+                />
               </div>
               <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs sm:text-sm text-muted-foreground tracking-wide">
                 <svg className="w-3.5 h-3.5 text-primary/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
