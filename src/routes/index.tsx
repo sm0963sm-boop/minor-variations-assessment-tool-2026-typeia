@@ -3,10 +3,6 @@ import { ClipboardList, ShieldCheck, FileCheck, Scale } from "lucide-react";
 import { Header } from "@/components/Header";
 import { TYPE_INFO, VARIATIONS } from "@/lib/variations-data";
 import { TypeBadge } from "@/components/TypeBadge";
-import heroIllustration from "@/assets/hero-illustration.png";
-
-
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
