@@ -25,7 +25,7 @@ function Home() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-hero opacity-[0.07]" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16 relative">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div className="grid gap-10">
             <div className="max-w-3xl">
               <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-[1.1] text-foreground">
                 <span className="bg-hero bg-clip-text text-transparent">Minor Variations Assessment Tool</span>
@@ -38,16 +38,6 @@ function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                 </svg>
                 <span></span>
-              </div>
-              <div className="mt-8">
-                <Link
-                  to="/classify-multi"
-                  className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary/80 px-10 py-5 text-xl font-extrabold text-primary-foreground shadow-elegant ring-2 ring-primary/30 ring-offset-4 ring-offset-background hover:shadow-soft hover:-translate-y-0.5 transition-all"
-                >
-                  <span className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary to-primary/60 opacity-40 blur group-hover:opacity-60 transition" aria-hidden />
-                  <span className="relative">Start</span>
-                  <span className="relative text-2xl">→</span>
-                </Link>
               </div>
               <div className="mt-8 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100/40 p-6 shadow-soft">
                 <div className="flex items-start gap-4">
@@ -67,17 +57,16 @@ function Home() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="flex justify-center lg:justify-end">
-              <img
-                src={heroIllustration}
-                alt="Pharmaceutical assessor reviewing a Type IA variation request with floating documents, checklist, medicine bottle, approval badge and guideline icon"
-                width={1024}
-                height={1024}
-                className="w-full max-w-md lg:max-w-lg h-auto select-none pointer-events-none"
-                draggable={false}
-              />
+              <div className="mt-8">
+                <Link
+                  to="/classify-multi"
+                  className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary/80 px-10 py-5 text-xl font-extrabold text-primary-foreground shadow-elegant ring-2 ring-primary/30 ring-offset-4 ring-offset-background hover:shadow-soft hover:-translate-y-0.5 transition-all"
+                >
+                  <span className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary to-primary/60 opacity-40 blur group-hover:opacity-60 transition" aria-hidden />
+                  <span className="relative">Start</span>
+                  <span className="relative text-2xl">→</span>
+                </Link>
+              </div>
             </div>
           </div>
 
