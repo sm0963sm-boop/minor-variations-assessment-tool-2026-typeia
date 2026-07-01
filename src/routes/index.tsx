@@ -95,20 +95,6 @@ function Home() {
         </div>
       </section>
 
-      <div className="border-t border-border/60 py-10 text-center">
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          For any comments, suggestions, or feedback regarding this tool, please contact:
-        </p>
-        <p className="mt-2 text-base font-semibold text-foreground">
-          Salem Al Muhaydi
-        </p>
-        <a
-          href="mailto:smmhediy@sfda.gov.sa"
-          className="mt-1 inline-block text-sm text-primary hover:underline"
-        >
-          Email: smmhediy@sfda.gov.sa
-        </a>
-      </div>
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
         Advisory tool only — the official SFDA Variation Requirements Guideline remains the binding reference.
