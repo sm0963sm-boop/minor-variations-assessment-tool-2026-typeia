@@ -6,13 +6,12 @@ import {
   useRouter,
   HeadContent,
   Scripts,
-  redirect,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { checkUnlocked } from "../lib/gate.functions";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+
 
 function NotFoundComponent() {
   return (
