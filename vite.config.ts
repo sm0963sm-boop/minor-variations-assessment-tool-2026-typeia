@@ -12,4 +12,7 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    base: "/minor-variations-assessment-tool-2026-typeia/",
+  },
 });
