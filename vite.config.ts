@@ -13,6 +13,6 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    base: "/minor-variations-assessment-tool-2026-typeia/",
+    base: "/",
   },
 });
