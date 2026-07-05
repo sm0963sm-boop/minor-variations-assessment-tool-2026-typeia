@@ -5,8 +5,12 @@ import { createHash, timingSafeEqual } from "node:crypto";
 type GateSession = { unlocked?: boolean };
 
 function sessionConfig() {
+  const secret = process.env.SESSION_SECRET ?? "dev-secret-change-in-production-please";
+  if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
+    console.warn("[gate] SESSION_SECRET is not set — using insecure default. Set this variable in your Vercel environment settings.");
+  }
   return {
-    password: process.env.SESSION_SECRET!,
+    password: secret,
     name: "site-gate",
     maxAge: 60 * 60 * 24 * 7,
     cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
